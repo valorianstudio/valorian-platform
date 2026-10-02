@@ -3,6 +3,7 @@
 import { useId, useState } from 'react';
 import type { KeyboardEvent, ReactNode } from 'react';
 import { Globe, Smartphone } from 'lucide-react';
+import { track } from '@/lib/analytics';
 import { cn } from '@/lib/cn';
 
 interface Panel {
@@ -16,6 +17,7 @@ export function PlatformTabs({ panels, initial }: { panels: Panel[]; initial: Pa
   const base = useId();
 
   function select(type: Panel['type']) {
+    if (type !== active) track({ type: 'DEMO_PLATFORM_SELECT', platform: type });
     setActive(type);
     const url = new URL(window.location.href);
     url.searchParams.set('platform', type === 'MOBILE' ? 'mobile' : 'website');

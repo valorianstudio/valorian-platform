@@ -43,7 +43,7 @@ function PlatformPanel({ demo, platform }: { demo: DemoDetail; platform: Platfor
           {platform.description && <p className="mt-3 max-w-2xl whitespace-pre-line text-pretty text-lg text-muted">{platform.description}</p>}
           <div className="mt-6 flex flex-wrap items-center gap-3">
             {ctaUrl && (
-              <ButtonLink href={ctaUrl} {...(/^https?:/i.test(ctaUrl) ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>
+              <ButtonLink href={ctaUrl} data-track="live-demo" {...(/^https?:/i.test(ctaUrl) ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>
                 {ctaLabel} <ArrowUpRight className="size-4" aria-hidden />
               </ButtonLink>
             )}

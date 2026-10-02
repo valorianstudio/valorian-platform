@@ -16,7 +16,10 @@ import {
 } from '@nestjs/common';
 import { PlatformType, Prisma } from '@prisma/client';
 import type { z } from 'zod';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { assertPermission, JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { CurrentUser } from '../auth/current-user.decorator';
+import type { AdminProfile } from '../admin-users/admin-users.service';
+import { RequirePermission } from '../auth/permissions.decorator';
 import { slugify } from '../cms/resources';
 import { reorderSchema } from '../cms/schemas';
 import { ZodBodyPipe } from '../cms/zod-body.pipe';
@@ -54,11 +57,13 @@ export class AdminDemosController {
   constructor(private readonly prisma: PrismaService) {}
 
   @Get()
+  @RequirePermission('demos.view')
   list() {
     return this.prisma.demo.findMany({ orderBy: [{ displayOrder: 'asc' }, { createdAt: 'asc' }], select: listSelect });
   }
 
   @Get(':id')
+  @RequirePermission('demos.view')
   async get(@Param('id') id: string) {
     const demo = await this.prisma.demo.findUnique({
       where: { id },
@@ -83,6 +88,7 @@ export class AdminDemosController {
   }
 
   @Post()
+  @RequirePermission('demos.create')
   async create(@Body(new ZodBodyPipe(demoCreateSchema)) body: DemoInput) {
     const { relatedIds, estimatorFeatureIds, slug, ...data } = body;
     if (data.status === 'PUBLISHED') data.status = 'DRAFT';
@@ -109,13 +115,16 @@ export class AdminDemosController {
   }
 
   @Put('order')
+  @RequirePermission('demos.update')
   @HttpCode(204)
   async reorder(@Body(new ZodBodyPipe(reorderSchema)) body: { ids: string[] }) {
     await this.prisma.$transaction(body.ids.map((id, displayOrder) => this.prisma.demo.update({ where: { id }, data: { displayOrder } })));
   }
 
   @Patch(':id')
-  async update(@Param('id') id: string, @Body(new ZodBodyPipe(demoUpdateSchema)) body: DemoInput) {
+  @RequirePermission('demos.update')
+  async update(@Param('id') id: string, @Body(new ZodBodyPipe(demoUpdateSchema)) body: DemoInput, @CurrentUser() user: AdminProfile) {
+    if (body.status !== undefined) assertPermission(user, 'demos.publish');
     const { relatedIds, estimatorFeatureIds, ...data } = body;
     const current = await this.prisma.demo.findUnique({ where: { id }, select: { slug: true, publishedAt: true, status: true } });
     if (!current) throw new NotFoundException();
@@ -133,6 +142,7 @@ export class AdminDemosController {
   }
 
   @Put(':id/platforms/:type')
+  @RequirePermission('demos.update')
   async savePlatform(
     @Param('id') id: string,
     @Param('type') rawType: string,
@@ -159,6 +169,7 @@ export class AdminDemosController {
   }
 
   @Put(':id/:collection')
+  @RequirePermission('demos.update')
   async saveCollection(@Param('id') id: string, @Param('collection') name: string, @Body() body: unknown) {
     if (!Object.hasOwn(collectionSchemas, name)) throw new NotFoundException();
     const collection = name as CollectionName;
@@ -190,6 +201,7 @@ export class AdminDemosController {
   }
 
   @Post(':id/duplicate')
+  @RequirePermission('demos.create')
   async duplicate(@Param('id') id: string) {
     const source = await this.prisma.demo.findUnique({
       where: { id },
@@ -251,6 +263,7 @@ export class AdminDemosController {
   }
 
   @Delete(':id')
+  @RequirePermission('demos.delete')
   @HttpCode(204)
   async remove(@Param('id') id: string) {
     await this.guard(() => this.prisma.demo.delete({ where: { id } }));

@@ -3,6 +3,7 @@ import { ContentStatus, Prisma } from '@prisma/client';
 import { CurrentUser } from '../auth/current-user.decorator';
 import type { AdminProfile } from '../admin-users/admin-users.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { RequirePermission } from '../auth/permissions.decorator';
 import { slugify } from '../cms/resources';
 import { ZodBodyPipe } from '../cms/zod-body.pipe';
 import { PrismaService } from '../prisma/prisma.service';
@@ -32,6 +33,7 @@ export class AdminArticlesController {
   constructor(private readonly prisma: PrismaService) {}
 
   @Get()
+  @RequirePermission('insights.view')
   async list(@Query() query: { q?: string; status?: string; category?: string; featured?: string; sort?: string; page?: string }) {
     const page = Math.max(1, Number.parseInt(query.page ?? '1', 10) || 1);
     const q = query.q?.trim();
@@ -50,6 +52,7 @@ export class AdminArticlesController {
   }
 
   @Get(':id')
+  @RequirePermission('insights.view')
   async get(@Param('id') id: string) {
     const row = await this.prisma.article.findUnique({
       where: { id },
@@ -61,6 +64,7 @@ export class AdminArticlesController {
   }
 
   @Post()
+  @RequirePermission('insights.manage')
   async create(@Body(new ZodBodyPipe(articleCreateSchema)) body: Input, @CurrentUser() user: AdminProfile) {
     const { tags, serviceIds, industryIds, slug, ...data } = body;
     if (slug && (await this.prisma.article.findUnique({ where: { slug }, select: { id: true } }))) throw new ConflictException('That slug is already in use.');
@@ -82,6 +86,7 @@ export class AdminArticlesController {
   }
 
   @Patch(':id')
+  @RequirePermission('insights.manage')
   async update(@Param('id') id: string, @Body(new ZodBodyPipe(articleUpdateSchema)) body: Input) {
     const current = await this.prisma.article.findUnique({ where: { id }, select: { status: true, publishedAt: true } });
     if (!current) throw new NotFoundException();
@@ -109,6 +114,7 @@ export class AdminArticlesController {
   }
 
   @Delete(':id')
+  @RequirePermission('insights.manage')
   @HttpCode(204)
   async remove(@Param('id') id: string) {
     try {

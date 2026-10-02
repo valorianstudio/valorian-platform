@@ -1,5 +1,6 @@
 import { Body, Controller, Get, Header, Put, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { RequirePermission } from '../auth/permissions.decorator';
 import { ZodBodyPipe } from '../cms/zod-body.pipe';
 import { seoSettingsSchema } from '../content/content-schemas';
 import { PrismaService } from '../prisma/prisma.service';
@@ -21,12 +22,14 @@ export class SeoController {
 
   @Get('admin/seo')
   @UseGuards(JwtAuthGuard)
+  @RequirePermission('seo.view')
   admin() {
     return this.get();
   }
 
   @Put('admin/seo')
   @UseGuards(JwtAuthGuard)
+  @RequirePermission('seo.manage')
   async update(@Body(new ZodBodyPipe(seoSettingsSchema)) body: ReturnType<typeof seoSettingsSchema.parse>) {
     await this.get();
     return this.prisma.seoSettings.update({ where: { id: 'seo' }, data: body });

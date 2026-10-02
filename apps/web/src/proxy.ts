@@ -8,7 +8,11 @@ export function proxy(request: NextRequest): NextResponse {
   const isLogin = pathname === '/admin/login';
 
   if (!hasSession && !isLogin) return NextResponse.redirect(new URL('/admin/login', request.url));
-  return NextResponse.next();
+
+  // Lets server layouts see the requested path so they can enforce page-level permissions.
+  const headers = new Headers(request.headers);
+  headers.set('x-pathname', pathname);
+  return NextResponse.next({ request: { headers } });
 }
 
 export const config = { matcher: ['/admin/:path*'] };

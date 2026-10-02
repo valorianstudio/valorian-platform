@@ -14,6 +14,10 @@ import {
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { CurrentUser } from '../auth/current-user.decorator';
+import { AnyAdmin } from '../auth/permissions.decorator';
+import type { AdminProfile } from '../admin-users/admin-users.service';
+import { requireResourcePermission } from './cms-permissions';
 import { PrismaService } from '../prisma/prisma.service';
 import { RESOURCES, ResourceDef, Row, slugify } from './resources';
 import { reorderSchema } from './schemas';
@@ -25,14 +29,19 @@ export class AdminCmsController {
   constructor(private readonly prisma: PrismaService) {}
 
   @Get(':resource')
-  async list(@Param('resource') name: string): Promise<Row[]> {
+  @AnyAdmin()
+  async list(@Param('resource') name: string, @CurrentUser() user: AdminProfile): Promise<Row[]> {
+    requireResourcePermission(user, name, 'view');
     const def = this.resolve(name);
     const rows = await def.delegate(this.prisma).findMany({ orderBy: def.orderBy, include: this.include(def) });
     return rows.map((row) => this.serialize(def, row));
   }
 
   @Post(':resource')
-  async create(@Param('resource') name: string, @Body() body: unknown): Promise<Row> {
+  @AnyAdmin()
+  async create(@Param('resource') name: string, @Body() body: unknown, @CurrentUser() user: AdminProfile): Promise<Row> {
+    requireResourcePermission(user, name, 'create');
+    if (body && typeof body === 'object' && 'status' in body && (body as Row).status === 'PUBLISHED') requireResourcePermission(user, name, 'publish');
     const def = this.resolve(name);
     const input = this.parse(def, body, false);
     const delegate = def.delegate(this.prisma);
@@ -52,7 +61,9 @@ export class AdminCmsController {
 
   @Put(':resource/order')
   @HttpCode(204)
-  async reorder(@Param('resource') name: string, @Body(new ZodBodyPipe(reorderSchema)) body: { ids: string[] }): Promise<void> {
+  @AnyAdmin()
+  async reorder(@Param('resource') name: string, @Body(new ZodBodyPipe(reorderSchema)) body: { ids: string[] }, @CurrentUser() user: AdminProfile): Promise<void> {
+    requireResourcePermission(user, name, 'update');
     const def = this.resolve(name);
     if (!('displayOrder' in def.schema.shape)) throw new NotFoundException();
     await this.prisma.$transaction(async (tx) => {
@@ -64,7 +75,10 @@ export class AdminCmsController {
   }
 
   @Patch(':resource/:id')
-  async update(@Param('resource') name: string, @Param('id') id: string, @Body() body: unknown): Promise<Row> {
+  @AnyAdmin()
+  async update(@Param('resource') name: string, @Param('id') id: string, @Body() body: unknown, @CurrentUser() user: AdminProfile): Promise<Row> {
+    requireResourcePermission(user, name, 'update');
+    if (body && typeof body === 'object' && 'status' in body) requireResourcePermission(user, name, 'publish');
     const def = this.resolve(name);
     const input = this.parse(def, body, true);
     if (def.slugFrom && input.slug === undefined) delete input.slug;
@@ -77,7 +91,9 @@ export class AdminCmsController {
 
   @Delete(':resource/:id')
   @HttpCode(204)
-  async remove(@Param('resource') name: string, @Param('id') id: string): Promise<void> {
+  @AnyAdmin()
+  async remove(@Param('resource') name: string, @Param('id') id: string, @CurrentUser() user: AdminProfile): Promise<void> {
+    requireResourcePermission(user, name, 'delete');
     await this.guard(() => this.resolve(name).delegate(this.prisma).delete({ where: { id } }));
   }
 

@@ -26,7 +26,11 @@ export interface AdminProfile {
   id: string;
   name: string;
   email: string;
-  role: 'SUPER_ADMIN';
+  role: { id: string; key: string; name: string } | null;
+  isSuper: boolean;
+  permissions: string[];
+  mustChangePassword: boolean;
+  totpEnabled: boolean;
   lastLoginAt: string | null;
   createdAt: string;
 }

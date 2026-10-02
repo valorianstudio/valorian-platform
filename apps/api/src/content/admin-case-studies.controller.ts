@@ -16,6 +16,7 @@ import {
 } from '@nestjs/common';
 import { ContentStatus, Prisma } from '@prisma/client';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { RequireAnyPermission, RequirePermission } from '../auth/permissions.decorator';
 import { slugify } from '../cms/resources';
 import { ZodBodyPipe } from '../cms/zod-body.pipe';
 import { PrismaService } from '../prisma/prisma.service';
@@ -43,6 +44,7 @@ export class AdminCaseStudiesController {
   constructor(private readonly prisma: PrismaService) {}
 
   @Get()
+  @RequirePermission('case_studies.view')
   async list(@Query() query: { q?: string; status?: string; featured?: string; industry?: string; sort?: string; page?: string }) {
     const page = Math.max(1, Number.parseInt(query.page ?? '1', 10) || 1);
     const q = query.q?.trim();
@@ -61,11 +63,13 @@ export class AdminCaseStudiesController {
   }
 
   @Get('options')
+  @RequireAnyPermission('case_studies.view', 'testimonials.view')
   options() {
     return this.prisma.caseStudy.findMany({ orderBy: { title: 'asc' }, select: { id: true, title: true } });
   }
 
   @Get(':id')
+  @RequirePermission('case_studies.view')
   async get(@Param('id') id: string) {
     const row = await this.prisma.caseStudy.findUnique({
       where: { id },
@@ -82,6 +86,7 @@ export class AdminCaseStudiesController {
   }
 
   @Post()
+  @RequirePermission('case_studies.manage')
   async create(@Body(new ZodBodyPipe(caseStudyCreateSchema)) body: Input) {
     const { serviceIds, technologyIds, demoIds, slug, ...data } = body;
     this.assertPublishable(data.status, data.clientApproved);
@@ -104,6 +109,7 @@ export class AdminCaseStudiesController {
   }
 
   @Patch(':id')
+  @RequirePermission('case_studies.manage')
   async update(@Param('id') id: string, @Body(new ZodBodyPipe(caseStudyUpdateSchema)) body: Input) {
     const current = await this.prisma.caseStudy.findUnique({ where: { id }, select: { status: true, publishedAt: true, clientApproved: true } });
     if (!current) throw new NotFoundException();
@@ -131,6 +137,7 @@ export class AdminCaseStudiesController {
   }
 
   @Put(':id/media')
+  @RequirePermission('case_studies.manage')
   async saveMedia(@Param('id') id: string, @Body(new ZodBodyPipe(caseMediaSchema)) rows: ReturnType<typeof caseMediaSchema.parse>) {
     if (!(await this.prisma.caseStudy.findUnique({ where: { id }, select: { id: true } }))) throw new NotFoundException();
     await this.prisma.$transaction([
@@ -141,6 +148,7 @@ export class AdminCaseStudiesController {
   }
 
   @Delete(':id')
+  @RequirePermission('case_studies.manage')
   @HttpCode(204)
   async remove(@Param('id') id: string) {
     try {

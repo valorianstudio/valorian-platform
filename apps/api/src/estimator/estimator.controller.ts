@@ -1,5 +1,6 @@
 import { Body, Controller, Get, Header, HttpCode, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { RequirePermission } from '../auth/permissions.decorator';
 import { ZodBodyPipe } from '../cms/zod-body.pipe';
 import { PrismaService } from '../prisma/prisma.service';
 import { calculateSchema, estimatorSettingsSchema } from './estimator-schemas';
@@ -27,6 +28,7 @@ export class EstimatorController {
 
   @Get('admin/estimator/settings')
   @UseGuards(JwtAuthGuard)
+  @RequirePermission('estimator.view')
   @Header('Cache-Control', 'no-store')
   settings() {
     return this.estimator.getSettings();
@@ -34,6 +36,7 @@ export class EstimatorController {
 
   @Put('admin/estimator/settings')
   @UseGuards(JwtAuthGuard)
+  @RequirePermission('pricing.manage')
   async updateSettings(@Body(new ZodBodyPipe(estimatorSettingsSchema)) body: ReturnType<typeof estimatorSettingsSchema.parse>) {
     await this.estimator.getSettings();
     return this.prisma.estimatorSettings.update({ where: { id: 'estimator' }, data: body });

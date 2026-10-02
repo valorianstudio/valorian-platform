@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { sessionIdSchema } from '../analytics/analytics-schemas';
 
 const required = (max: number) => z.string().trim().min(1, 'is required').max(max);
 const optional = (max: number) =>
@@ -35,6 +36,7 @@ const contactBase = {
   sourceUrl: path,
   /** Honeypot: real visitors never see or fill this. */
   website: z.string().max(200).optional(),
+  sessionId: sessionIdSchema.optional(),
 };
 
 function requireContactDetail<T extends { preferredContact: string; phone?: string; whatsapp?: string }>(value: T, ctx: z.RefinementCtx) {

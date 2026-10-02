@@ -17,6 +17,8 @@ import { ApiError, apiRequest } from '@/lib/client-api';
 import { EntityForm } from './entity-form';
 import { initialValues, toPayload } from './field-defs';
 import type { FormValues, RelationOptions } from './field-defs';
+import { useAccess } from '../access';
+import { resourceCan } from '@/lib/permissions';
 import { CONFIGS } from './resource-configs';
 import type { Item } from './resource-configs';
 
@@ -33,6 +35,9 @@ export function ResourceManager({ configKey, initialItems, relationItems = {}, l
   const config = CONFIGS[configKey];
   const toast = useToast();
   const [items, setItems] = useState(initialItems);
+  const { permissions } = useAccess();
+  const mayCreate = resourceCan(permissions, config.resource, 'create');
+  const mayDelete = resourceCan(permissions, config.resource, 'delete');
   const [editing, setEditing] = useState<Item | 'new' | null>(null);
   const [values, setValues] = useState<FormValues>({});
   const [saving, setSaving] = useState(false);
@@ -200,9 +205,11 @@ export function ResourceManager({ configKey, initialItems, relationItems = {}, l
               </Select>
             </div>
           )}
-          <Button onClick={() => openEditor('new')}>
-            <Plus className="size-4" aria-hidden /> New {config.singular}
-          </Button>
+          {mayCreate && (
+            <Button onClick={() => openEditor('new')}>
+              <Plus className="size-4" aria-hidden /> New {config.singular}
+            </Button>
+          )}
         </div>
       </div>
 
@@ -210,7 +217,7 @@ export function ResourceManager({ configKey, initialItems, relationItems = {}, l
         <EmptyState
           title={items.length === 0 ? `No ${config.plural.toLowerCase()} yet` : 'No matches'}
           description={items.length === 0 ? `Create your first ${config.singular} to show it on the website.` : 'Try a different search or filter.'}
-          action={items.length === 0 ? <Button onClick={() => openEditor('new')}>New {config.singular}</Button> : undefined}
+          action={items.length === 0 && mayCreate ? <Button onClick={() => openEditor('new')}>New {config.singular}</Button> : undefined}
         />
       ) : (
         <ul className="space-y-3">
@@ -262,9 +269,11 @@ export function ResourceManager({ configKey, initialItems, relationItems = {}, l
                     <Button size="sm" variant="ghost" aria-label="Edit" onClick={() => openEditor(item)}>
                       <Pencil className="size-4" />
                     </Button>
-                    <Button size="sm" variant="ghost" aria-label="Delete" className="text-danger" onClick={() => setToDelete(item)}>
-                      <Trash2 className="size-4" />
-                    </Button>
+                    {mayDelete && (
+                      <Button size="sm" variant="ghost" aria-label="Delete" className="text-danger" onClick={() => setToDelete(item)}>
+                        <Trash2 className="size-4" />
+                      </Button>
+                    )}
                   </div>
                 </Card>
               </li>

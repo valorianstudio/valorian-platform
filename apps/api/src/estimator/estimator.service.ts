@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 import type { EstimatorCurrency, EstimatorSettings, FeaturePlatform, Prisma } from '@prisma/client';
+import { AnalyticsService } from '../analytics/analytics.service';
 import { PrismaService } from '../prisma/prisma.service';
 import type { CalculateInput } from './estimator-schemas';
 
@@ -31,7 +32,10 @@ export function availablePlatforms(item: Priced): Exclude<Platform, 'BOTH'>[] {
 
 @Injectable()
 export class EstimatorService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly analytics: AnalyticsService,
+  ) {}
 
   async getSettings(): Promise<EstimatorSettings> {
     return this.prisma.estimatorSettings.upsert({ where: { id: 'estimator' }, update: {}, create: { id: 'estimator' } });
@@ -135,6 +139,7 @@ export class EstimatorService {
 
     const submission = await this.prisma.estimatorSubmission.create({
       data: {
+        sessionId: input.sessionId,
         projectTypeSlug: type.slug,
         projectTypeName: type.name,
         demoSlug: input.demo ?? null,
@@ -170,6 +175,8 @@ export class EstimatorService {
       },
       select: { id: true },
     });
+
+    void this.analytics.record({ type: 'ESTIMATOR_COMPLETE', sessionId: input.sessionId, path: '/estimate', platform, estimatorSubmissionId: submission.id, entityName: type.name });
 
     return {
       id: submission.id,

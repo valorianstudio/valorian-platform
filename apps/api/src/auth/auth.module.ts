@@ -6,15 +6,11 @@ import { AdminProfileController } from './admin-profile.controller';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './jwt-auth.guard';
-import { SESSION_MAX_AGE_SECONDS } from './session.constants';
 
 @Module({
-  imports: [
-    AdminUsersModule,
-    JwtModule.register({ secret: env.JWT_SECRET, signOptions: { expiresIn: SESSION_MAX_AGE_SECONDS } }),
-  ],
+  imports: [AdminUsersModule, JwtModule.register({ secret: env.JWT_SECRET, signOptions: { expiresIn: 60 * 60 * 24 * 7 } })],
   controllers: [AuthController, AdminProfileController],
   providers: [AuthService, JwtAuthGuard],
-  exports: [JwtModule, AdminUsersModule, JwtAuthGuard],
+  exports: [JwtModule, AdminUsersModule, JwtAuthGuard, AuthService],
 })
 export class AuthModule {}

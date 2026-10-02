@@ -51,6 +51,7 @@ export const getInsights = cache((query: string) => fetchContent<ArticleListData
 export const getInsight = cache((slug: string) => fetchContent<{ article: ArticleDetail; related: ArticleListData['items'] }>(`insights/${encodeURIComponent(slug)}`));
 export const getPageSeo = cache(async (key: string): Promise<Seo | null> => (await fetchContent<Record<string, Seo>>('page-seo'))?.[key] ?? null);
 export const getSeoConfig = cache(() => fetchContent<SeoConfig>('../seo/config'));
+export const getAnalyticsConfig = cache(async () => (await fetchContent<{ enabled: boolean }>('../analytics/config')) ?? { enabled: false });
 export const getDemo = cache((slug: string) => fetchContent<DemoDetail>(`demos/${encodeURIComponent(slug)}`));
 
 const FALLBACK_NAV: NavigationData = {

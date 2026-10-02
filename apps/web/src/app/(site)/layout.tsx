@@ -1,15 +1,16 @@
 import { Wrench } from 'lucide-react';
 import { SiteFooter } from '@/components/site/site-footer';
 import { SiteHeader } from '@/components/site/site-header';
+import { AnalyticsTracker } from '@/components/site/analytics-tracker';
 import { JsonLd } from '@/components/site/seo';
-import { getNavigation, getSeoConfig } from '@/lib/cms';
+import { getAnalyticsConfig, getNavigation, getSeoConfig } from '@/lib/cms';
 import { SITE_URL } from '@/lib/site';
 import { getSiteSettings } from '@/lib/server-api';
 
 export const dynamic = 'force-dynamic';
 
 export default async function SiteLayout({ children }: { children: React.ReactNode }) {
-  const [settings, navigation, seo] = await Promise.all([getSiteSettings(), getNavigation(), getSeoConfig()]);
+  const [settings, navigation, seo, analytics] = await Promise.all([getSiteSettings(), getNavigation(), getSeoConfig(), getAnalyticsConfig()]);
   const base = seo?.canonicalBaseUrl || SITE_URL;
   const absolute = (url: string | null) => (url ? (url.startsWith('/') ? `${base}${url}` : url) : undefined);
   const sameAs = [settings.linkedinUrl, settings.githubUrl, settings.twitterUrl, settings.facebookUrl, settings.instagramUrl].filter(Boolean);
@@ -36,6 +37,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
           { '@context': 'https://schema.org', '@type': 'WebSite', name: seo?.siteName || settings.companyName, url: base },
         ]}
       />
+      {analytics.enabled && <AnalyticsTracker />}
       <SiteHeader brandName={settings.brandName} items={headerItems} cta={navigation.cta} />
       <main id="main" className="min-h-[70vh]">
         {settings.maintenanceMode ? (

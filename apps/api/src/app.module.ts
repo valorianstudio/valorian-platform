@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AdminUsersModule } from './admin-users/admin-users.module';
+import { SecurityModule } from './audit/security.module';
+import { AnalyticsModule } from './analytics/analytics.module';
 import { ContentModule } from './content/content.module';
 import { LeadsModule } from './leads/leads.module';
 import { EstimatorModule } from './estimator/estimator.module';
@@ -12,7 +14,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { SiteSettingsModule } from './site-settings/site-settings.module';
 
 @Module({
-  imports: [PrismaModule, AdminUsersModule, AuthModule, SiteSettingsModule, CmsModule, StorageModule, DemosModule, EstimatorModule, LeadsModule, ContentModule],
+  imports: [PrismaModule, AdminUsersModule, AuthModule, SiteSettingsModule, CmsModule, StorageModule, DemosModule, EstimatorModule, LeadsModule, ContentModule, AnalyticsModule, SecurityModule],
   controllers: [HealthController],
 })
 export class AppModule {}

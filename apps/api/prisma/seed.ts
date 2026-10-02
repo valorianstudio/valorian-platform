@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import * as argon2 from 'argon2';
+import { ensureRbac } from '../src/rbac/bootstrap';
 import { seedContent } from './seed-content';
 
 try {
@@ -17,10 +18,12 @@ async function main(): Promise<void> {
     throw new Error('Set SEED_ADMIN_PASSWORD (min 10 characters) to seed the Super Admin.');
   }
 
+  await ensureRbac(prisma);
+  const superRole = await prisma.role.findUniqueOrThrow({ where: { key: 'SUPER_ADMIN' }, select: { id: true } });
   await prisma.adminUser.upsert({
     where: { email },
     update: {},
-    create: { name: 'Valorian Admin', email, passwordHash: await argon2.hash(password), role: 'SUPER_ADMIN' },
+    create: { name: 'Valorian Admin', email, passwordHash: await argon2.hash(password), role: 'SUPER_ADMIN', roleId: superRole.id },
   });
 
   await prisma.siteSetting.upsert({

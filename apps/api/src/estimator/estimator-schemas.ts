@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { sessionIdSchema } from '../analytics/analytics-schemas';
 import { slugSchema } from '../cms/schemas';
 
 const required = (max: number) => z.string().trim().min(1, 'is required').max(max);
@@ -108,5 +109,6 @@ export const calculateSchema = z.object({
   complexity: z.string().min(1).max(80),
   scale: z.string().min(1).max(40),
   urgency: z.string().min(1).max(40),
+  sessionId: sessionIdSchema.optional(),
 });
 export type CalculateInput = z.infer<typeof calculateSchema>;

@@ -1,5 +1,6 @@
 import { BadRequestException, ConflictException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { ActivityType, LeadPriority, LeadSettings, LeadSource, LeadStatus, Prisma } from '@prisma/client';
+import { AnalyticsService } from '../analytics/analytics.service';
 import { env } from '../config/env';
 import { PrismaService } from '../prisma/prisma.service';
 import type { LeadUpdateInput, PublicLeadInput, StatusChangeInput } from './lead-schemas';
@@ -59,7 +60,10 @@ const addDays = (date: Date, days: number) => new Date(date.getTime() + days * 8
 export class LeadsService {
   private readonly logger = new Logger(LeadsService.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly analytics: AnalyticsService,
+  ) {}
 
   /* ---------- settings ---------- */
 
@@ -85,6 +89,7 @@ export class LeadsService {
       input.service ? this.prisma.service.findFirst({ where: { slug: input.service }, select: { id: true, title: true } }) : null,
     ]);
 
+    const attribution = await this.analytics.attributionFor(input.sessionId);
     const lead = await this.createWithReference(async (tx, referenceCode) => {
       const created = await tx.lead.create({
         data: {
@@ -109,6 +114,11 @@ export class LeadsService {
           expectedTimeline: input.expectedTimeline,
           budgetRange: input.budgetRange,
           clientMessage: input.message,
+          sessionId: input.sessionId,
+          trafficChannel: attribution?.channel,
+          utmSource: attribution?.source,
+          utmMedium: attribution?.medium,
+          utmCampaign: attribution?.campaign,
         },
         select: { id: true, referenceCode: true },
       });
@@ -123,6 +133,8 @@ export class LeadsService {
       return created;
     });
 
+    void this.analytics.record({ type: 'LEAD_CREATED', sessionId: input.sessionId, path: input.sourceUrl, estimatorSubmissionId: submission?.id, leadId: lead.id, demoId: demo?.id, serviceId: service?.id, platform: submission?.platform ?? input.platform, entityName: demo?.name ?? service?.title ?? null, metadata: { cta: (submission ? 'ESTIMATOR' : input.source).toLowerCase() } });
+    if (!submission) void this.analytics.record({ type: 'CONTACT_FORM_SUBMIT', sessionId: input.sessionId, path: input.sourceUrl, leadId: lead.id, demoId: demo?.id, serviceId: service?.id });
     void this.notify(lead.referenceCode, input, submission ? `${submission.currency} ${submission.minAmount}–${submission.maxAmount}` : null);
     return { reference: lead.referenceCode };
   }

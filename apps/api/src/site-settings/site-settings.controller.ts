@@ -1,6 +1,7 @@
 import { Body, Controller, Get, Header, Patch, Put, UseGuards } from '@nestjs/common';
 import { SiteSetting } from '@prisma/client';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { RequirePermission } from '../auth/permissions.decorator';
 import { z } from 'zod';
 import { ZodBodyPipe } from '../cms/zod-body.pipe';
 import { UpdateSiteSettingsDto } from './dto/update-site-settings.dto';
@@ -27,6 +28,7 @@ export class SiteSettingsController {
 
   @Get('admin/settings')
   @UseGuards(JwtAuthGuard)
+  @RequirePermission('settings.view')
   @Header('Cache-Control', 'no-store')
   getAdmin(): Promise<SiteSetting> {
     return this.settings.get();
@@ -34,12 +36,14 @@ export class SiteSettingsController {
 
   @Put('admin/settings')
   @UseGuards(JwtAuthGuard)
+  @RequirePermission('settings.manage')
   update(@Body() dto: UpdateSiteSettingsDto): Promise<SiteSetting> {
     return this.settings.update(dto);
   }
 
   @Patch('admin/settings/footer')
   @UseGuards(JwtAuthGuard)
+  @RequirePermission('website.manage')
   updateFooter(@Body(new ZodBodyPipe(footerSchema)) body: { copyrightText: string | null }): Promise<SiteSetting> {
     return this.settings.updateFooter(body.copyrightText);
   }

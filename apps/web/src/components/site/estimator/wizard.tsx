@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
 import { ArrowLeft, ArrowRight, Check, Clock, Search, Sparkles } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
@@ -10,10 +10,12 @@ import { Input } from '@/components/ui/field';
 import { ApiError, apiRequest } from '@/lib/client-api';
 import type { EstimateResult, EstimatorConfig } from '@/lib/cms-types';
 import { cn } from '@/lib/cn';
+import { getSessionId, track } from '@/lib/analytics';
 import { whatsappLink, whatsappMessages } from '@/lib/whatsapp';
 import { LeadForm } from '../lead-form';
 
 const STEPS = ['Project', 'Industry', 'Features', 'Complexity', 'Integrations', 'Scale'] as const;
+const STEP_KEYS = ['project', 'industry', 'features', 'complexity', 'integrations', 'scale'] as const;
 const SYMBOLS = { BDT: '৳', USD: '$' } as const;
 
 function money(amount: number, currency: EstimateResult['currency']): string {
@@ -86,6 +88,10 @@ export function EstimatorWizard({ config, company, whatsappNumber, responseNote 
   const [error, setError] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
 
+  useEffect(() => {
+    track({ type: 'ESTIMATOR_START' });
+  }, []);
+
   const selectedType = config.projectTypes.find((t) => t.slug === projectType);
   const platform = selectedType?.platform;
   const availableOn = (platforms: ('WEBSITE' | 'MOBILE')[]) => !platform || platform === 'BOTH' || platforms.includes(platform);
@@ -115,6 +121,7 @@ export function EstimatorWizard({ config, company, whatsappNumber, responseNote 
         complexity,
         scale,
         urgency,
+        sessionId: getSessionId(),
       };
       setResult(await apiRequest<EstimateResult>('POST', '/estimator/calculate', body));
     } catch (e) {
@@ -375,7 +382,14 @@ export function EstimatorWizard({ config, company, whatsappNumber, responseNote 
             {loading ? 'Calculating…' : 'See my estimate'}
           </Button>
         ) : (
-          <Button size="lg" disabled={!canContinue} onClick={() => setStep(step + 1)}>
+          <Button
+            size="lg"
+            disabled={!canContinue}
+            onClick={() => {
+              track({ type: 'ESTIMATOR_STEP_COMPLETE', step: STEP_KEYS[step] });
+              setStep(step + 1);
+            }}
+          >
             Next <ArrowRight className="size-4" aria-hidden />
           </Button>
         )}

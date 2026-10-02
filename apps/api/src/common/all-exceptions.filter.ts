@@ -12,6 +12,7 @@ interface ErrorBody {
   statusCode: number;
   message: string;
   errors?: string[];
+  code?: string;
 }
 
 @Catch()
@@ -39,7 +40,8 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const statusCode = exception.getStatus();
     const response = exception.getResponse();
     if (typeof response === 'string') return { statusCode, message: response };
-    const { message, errors } = response as { message?: string | string[]; errors?: string[] };
+    const { message, errors, code } = response as { message?: string | string[]; errors?: string[]; code?: string };
+    if (code) return { statusCode, message: typeof message === 'string' ? message : exception.message, code };
     if (Array.isArray(message)) return { statusCode, message: 'Validation failed', errors: message };
     if (Array.isArray(errors)) return { statusCode, message: message ?? exception.message, errors };
     return { statusCode, message: message ?? exception.message };

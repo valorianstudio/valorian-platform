@@ -1,5 +1,5 @@
 import { Transform } from 'class-transformer';
-import { IsEmail, IsNotEmpty, IsString, MaxLength, MinLength } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString, MaxLength } from 'class-validator';
 
 const trim = ({ value }: { value: unknown }): unknown => (typeof value === 'string' ? value.trim() : value);
 
@@ -19,10 +19,12 @@ export class UpdateProfileDto {
 export class ChangePasswordDto {
   @IsString()
   @IsNotEmpty()
+  @MaxLength(128)
   currentPassword: string;
 
+  /** Length and strength are enforced by the password policy using the live security settings. */
   @IsString()
-  @MinLength(10)
+  @IsNotEmpty()
   @MaxLength(128)
   newPassword: string;
 }

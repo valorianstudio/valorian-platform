@@ -1,12 +1,13 @@
 'use client';
 
-import { useId, useState } from 'react';
+import { useId, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
 import Link from 'next/link';
 import { CheckCircle2, MessageCircle } from 'lucide-react';
 import { FormAlert } from '@/components/admin/form-alert';
 import { Button, ButtonLink } from '@/components/ui/button';
 import { Field, Input, Select, Textarea } from '@/components/ui/field';
+import { getSessionId, track } from '@/lib/analytics';
 import { ApiError, apiRequest } from '@/lib/client-api';
 import { whatsappLink, whatsappMessages } from '@/lib/whatsapp';
 
@@ -49,6 +50,7 @@ const PHONE = /^\+?[0-9 ()-]{6,24}$/;
 
 export function LeadForm({ context, company, whatsappNumber, responseNote, showInquiryTypes, submitLabel = 'Send request' }: LeadFormProps) {
   const formId = useId();
+  const started = useRef(false);
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [apiError, setApiError] = useState<ApiError | null>(null);
@@ -85,6 +87,7 @@ export function LeadForm({ context, company, whatsappNumber, responseNote, showI
       message: text('message') || undefined,
       sourceUrl: window.location.pathname,
       website: text('website'),
+      sessionId: getSessionId(),
     };
     try {
       if (type === 'PROJECT') {
@@ -151,7 +154,7 @@ export function LeadForm({ context, company, whatsappNumber, responseNote, showI
   const contextLabel = context.demoName ? `Demo: ${context.demoName}${context.platform ? ` · ${context.platform === 'MOBILE' ? 'Mobile App' : context.platform === 'BOTH' ? 'Website + Mobile' : 'Website'}` : ''}` : context.serviceName ? `Service: ${context.serviceName}` : context.estimateId ? 'Includes your estimate configuration' : null;
 
   return (
-    <form onSubmit={onSubmit} noValidate aria-labelledby={`${formId}-title`} className="space-y-5">
+    <form onSubmit={onSubmit} onFocusCapture={() => !started.current && ((started.current = true), track({ type: 'CONTACT_FORM_START' }))} noValidate aria-labelledby={`${formId}-title`} className="space-y-5">
       <h2 id={`${formId}-title`} className="sr-only">
         Project inquiry form
       </h2>

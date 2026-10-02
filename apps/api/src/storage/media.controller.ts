@@ -18,6 +18,7 @@ import {
 import type { Prisma } from '@prisma/client';
 import type { FastifyReply } from 'fastify';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { RequirePermission } from '../auth/permissions.decorator';
 import { ZodBodyPipe } from '../cms/zod-body.pipe';
 import { mediaUpdateSchema } from '../content/content-schemas';
 import { PrismaService } from '../prisma/prisma.service';
@@ -44,6 +45,7 @@ export class MediaController {
 
   @Post('admin/media')
   @UseGuards(JwtAuthGuard)
+  @RequirePermission('media.manage')
   async upload(@Body() body: unknown, @Query('name') name?: string) {
     if (!Buffer.isBuffer(body) || body.length === 0) throw new BadRequestException('Send the image as the raw request body (png, jpeg, webp or gif).');
     if (body.length > MAX_UPLOAD_BYTES) throw new BadRequestException('Image must be 5 MB or smaller.');
@@ -69,6 +71,7 @@ export class MediaController {
 
   @Get('admin/media')
   @UseGuards(JwtAuthGuard)
+  @RequirePermission('media.view')
   async list(@Query() query: { q?: string; type?: string; page?: string }) {
     const page = Math.max(1, Number.parseInt(query.page ?? '1', 10) || 1);
     const q = query.q?.trim();
@@ -85,6 +88,7 @@ export class MediaController {
 
   @Patch('admin/media/:id')
   @UseGuards(JwtAuthGuard)
+  @RequirePermission('media.manage')
   async update(@Param('id') id: string, @Body(new ZodBodyPipe(mediaUpdateSchema)) body: ReturnType<typeof mediaUpdateSchema.parse>) {
     if (!(await this.prisma.media.findUnique({ where: { id }, select: { id: true } }))) throw new NotFoundException();
     return this.prisma.media.update({ where: { id }, data: body });
@@ -92,6 +96,7 @@ export class MediaController {
 
   @Get('admin/media/:id/usage')
   @UseGuards(JwtAuthGuard)
+  @RequirePermission('media.view')
   async usage(@Param('id') id: string) {
     const media = await this.prisma.media.findUnique({ where: { id }, select: { url: true } });
     if (!media) throw new NotFoundException();
@@ -100,6 +105,7 @@ export class MediaController {
 
   @Delete('admin/media/:id')
   @UseGuards(JwtAuthGuard)
+  @RequirePermission('media.manage')
   @HttpCode(204)
   async remove(@Param('id') id: string, @Query('force') force?: string) {
     const media = await this.prisma.media.findUnique({ where: { id } });

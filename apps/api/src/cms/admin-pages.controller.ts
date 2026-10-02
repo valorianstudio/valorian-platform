@@ -1,6 +1,7 @@
 import { BadRequestException, Body, Controller, Get, HttpCode, NotFoundException, Param, Patch, Put, UseGuards } from '@nestjs/common';
 import { PageKey, Prisma } from '@prisma/client';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { RequireAnyPermission, RequirePermission } from '../auth/permissions.decorator';
 import { PrismaService } from '../prisma/prisma.service';
 import { pageSeoSchema, reorderSchema, sectionSchemas, sectionUpdateSchema } from './schemas';
 import { ZodBodyPipe } from './zod-body.pipe';
@@ -11,6 +12,7 @@ export class AdminPagesController {
   constructor(private readonly prisma: PrismaService) {}
 
   @Get(':key')
+  @RequireAnyPermission('website.view', 'seo.view')
   async get(@Param('key') rawKey: string) {
     const key = this.pageKey(rawKey);
     const page = await this.prisma.page.upsert({
@@ -23,12 +25,14 @@ export class AdminPagesController {
   }
 
   @Patch(':key')
+  @RequireAnyPermission('website.manage', 'seo.manage')
   update(@Param('key') rawKey: string, @Body(new ZodBodyPipe(pageSeoSchema)) body: Prisma.PageUpdateInput) {
     const key = this.pageKey(rawKey);
     return this.prisma.page.update({ where: { key }, data: body });
   }
 
   @Patch(':key/sections/:section')
+  @RequirePermission('website.manage')
   async updateSection(
     @Param('key') rawKey: string,
     @Param('section') section: string,
@@ -50,6 +54,7 @@ export class AdminPagesController {
   }
 
   @Put(':key/order')
+  @RequirePermission('website.manage')
   @HttpCode(204)
   async reorder(@Param('key') rawKey: string, @Body(new ZodBodyPipe(reorderSchema)) body: { ids: string[] }): Promise<void> {
     const pageKey = this.pageKey(rawKey);

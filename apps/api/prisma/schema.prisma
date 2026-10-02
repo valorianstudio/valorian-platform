@@ -21,6 +21,21 @@ model AdminUser {
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
   lastLoginAt  DateTime?
+  roleId             String?
+  roleRef            Role?     @relation(fields: [roleId], references: [id], onDelete: SetNull)
+  mustChangePassword Boolean   @default(false)
+  tokenVersion       Int       @default(0)
+  passwordChangedAt  DateTime?
+  failedLogins       Int       @default(0)
+  lockedUntil        DateTime?
+  totpSecret         String?
+  totpEnabled        Boolean   @default(false)
+  backupCodes        String[]
+  createdById        String?
+  auditLogs          AuditLog[]
+
+  @@index([roleId])
+  @@index([isActive])
 }
 
 model SiteSetting {
@@ -582,6 +597,7 @@ model EstimatorPricingRule {
 }
 
 model EstimatorSubmission {
+  sessionId       String?
   lead Lead?
   id              String   @id @default(cuid())
   projectTypeSlug String
@@ -734,6 +750,11 @@ model Lead {
   lostAt                 DateTime?
   lostReason             LostReason?
   archivedAt             DateTime?
+  sessionId              String?
+  trafficChannel         TrafficChannel?
+  utmSource              String?
+  utmMedium              String?
+  utmCampaign            String?
   createdAt              DateTime             @default(now())
   updatedAt              DateTime             @updatedAt
   demo                   Demo?                @relation(fields: [demoId], references: [id], onDelete: SetNull)
@@ -749,6 +770,7 @@ model Lead {
   @@index([createdAt])
   @@index([followUpAt])
   @@index([archivedAt])
+  @@index([trafficChannel])
 }
 
 model LeadNote {
@@ -974,4 +996,182 @@ model Article {
   @@index([status, publishedAt])
   @@index([featured])
   @@index([categoryId])
+}
+
+enum AnalyticsEventType {
+  PAGE_VIEW
+  DEMO_VIEW
+  DEMO_PLATFORM_SELECT
+  SERVICE_VIEW
+  SOLUTION_VIEW
+  CASE_STUDY_VIEW
+  ARTICLE_VIEW
+  ESTIMATOR_START
+  ESTIMATOR_STEP_COMPLETE
+  ESTIMATOR_COMPLETE
+  FEATURE_SELECT
+  INTEGRATION_SELECT
+  CTA_CLICK
+  WHATSAPP_CLICK
+  CONTACT_FORM_START
+  CONTACT_FORM_SUBMIT
+  LEAD_CREATED
+}
+
+enum TrafficChannel {
+  DIRECT
+  ORGANIC_SEARCH
+  SOCIAL
+  REFERRAL
+  PAID
+  UNKNOWN
+}
+
+/// Anonymous browsing session. Holds first-touch attribution only; no IP, no user agent.
+model AnalyticsSession {
+  id           String         @id
+  channel      TrafficChannel @default(UNKNOWN)
+  source       String?
+  medium       String?
+  campaign     String?
+  content      String?
+  term         String?
+  referrerHost String?
+  landingPath  String?
+  firstSeenAt  DateTime       @default(now())
+  lastSeenAt   DateTime       @default(now())
+  pageCount    Int            @default(0)
+
+  @@index([firstSeenAt])
+  @@index([channel])
+  @@index([lastSeenAt])
+}
+
+/// Subject columns are plain strings (no foreign keys) so history survives deleted or archived content.
+model AnalyticsEvent {
+  id                    String             @id @default(cuid())
+  type                  AnalyticsEventType
+  sessionId             String
+  path                  String?
+  demoId                String?
+  serviceId             String?
+  solutionId            String?
+  caseStudyId           String?
+  articleId             String?
+  entityName            String?
+  platform              String?
+  featureId             String?
+  estimatorSubmissionId String?
+  leadId                String?
+  channel               TrafficChannel?
+  source                String?
+  metadata              Json?
+  createdAt             DateTime           @default(now())
+
+  @@index([type, createdAt])
+  @@index([createdAt])
+  @@index([sessionId])
+  @@index([demoId, type])
+  @@index([serviceId, type])
+  @@index([solutionId, type])
+  @@index([estimatorSubmissionId])
+}
+
+model AnalyticsSettings {
+  id                String   @id @default("analytics")
+  enabled           Boolean  @default(true)
+  retentionDays     Int      @default(180)
+  excludeAdmin      Boolean  @default(true)
+  trackArticles     Boolean  @default(true)
+  trackEstimator    Boolean  @default(true)
+  defaultRangeDays  Int      @default(30)
+  idleLeadDays      Int      @default(14)
+  updatedAt         DateTime @updatedAt
+}
+
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+  ARCHIVE
+  RESTORE
+  PUBLISH
+  UNPUBLISH
+  LOGIN
+  LOGIN_FAILED
+  LOGOUT
+  ROLE_CHANGE
+  PASSWORD_CHANGE
+  STATUS_CHANGE
+  PRICE_CHANGE
+  SETTINGS_CHANGE
+}
+
+model Permission {
+  id          String           @id @default(cuid())
+  key         String           @unique
+  module      String
+  label       String
+  description String?
+  roles       RolePermission[]
+
+  @@index([module])
+}
+
+model Role {
+  id          String           @id @default(cuid())
+  key         String           @unique
+  name        String           @unique
+  description String?
+  isSystem    Boolean          @default(false)
+  active      Boolean          @default(true)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  permissions RolePermission[]
+  users       AdminUser[]
+}
+
+model RolePermission {
+  roleId       String
+  permissionId String
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+  @@index([permissionId])
+}
+
+/// Append-only history of meaningful admin actions. Never stores passwords, tokens or large bodies.
+model AuditLog {
+  id          String      @id @default(cuid())
+  adminUserId String?
+  adminName   String
+  adminEmail  String?
+  action      AuditAction
+  module      String
+  entityType  String?
+  entityId    String?
+  entityLabel String?
+  summary     String
+  changes     Json?
+  ipMasked    String?
+  userAgent   String?
+  createdAt   DateTime    @default(now())
+  admin       AdminUser?  @relation(fields: [adminUserId], references: [id], onDelete: SetNull)
+
+  @@index([adminUserId])
+  @@index([action])
+  @@index([module])
+  @@index([entityType])
+  @@index([createdAt])
+}
+
+model SecuritySettings {
+  id                 String   @id @default("security")
+  sessionHours       Int      @default(168)
+  minPasswordLength  Int      @default(10)
+  maxFailedLogins    Int      @default(8)
+  lockoutMinutes     Int      @default(15)
+  auditRetentionDays Int      @default(365)
+  updatedAt          DateTime @updatedAt
 }
