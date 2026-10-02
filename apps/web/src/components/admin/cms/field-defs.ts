@@ -1,4 +1,5 @@
-export type FormValue = string | boolean | string[] | Record<string, string>[];
+export type ItemValue = string | boolean;
+export type FormValue = string | boolean | string[] | Record<string, ItemValue>[];
 export type FormValues = Record<string, FormValue>;
 export type Option = { value: string; label: string };
 
@@ -9,18 +10,23 @@ interface Base {
   half?: boolean;
 }
 
-export type ItemField = { name: string; label: string; kind: 'text' | 'textarea' };
+export type ItemField = { name: string; label: string; kind: 'text' | 'textarea' | 'select' | 'switch' | 'image'; options?: Option[]; default?: ItemValue };
 
 export type FieldDef =
-  | (Base & { kind: 'text' | 'url' | 'textarea' | 'number'; required?: boolean; max?: number; rows?: number; placeholder?: string })
-  | (Base & { kind: 'select'; options: Option[] })
+  | (Base & { kind: 'text' | 'url' | 'textarea' | 'number'; required?: boolean; max?: number; rows?: number; placeholder?: string; step?: string; nullable?: boolean })
+  | (Base & { kind: 'select'; options: Option[]; optionsFrom?: string })
   | (Base & { kind: 'switch'; description?: string })
   | (Base & { kind: 'lines' })
+  | (Base & { kind: 'image' })
   | (Base & { kind: 'items'; addLabel: string; fields: ItemField[] })
   | (Base & { kind: 'relations'; source: string })
   | { kind: 'heading'; name: string; label: string; half?: undefined; hint?: string };
 
 export type RelationOptions = Record<string, { id: string; label: string }[]>;
+
+export function blankItem(fields: ItemField[]): Record<string, ItemValue> {
+  return Object.fromEntries(fields.map((f) => [f.name, f.default ?? (f.kind === 'switch' ? false : f.kind === 'select' ? (f.options?.[0]?.value ?? '') : '')]));
+}
 
 export function initialValues(fields: FieldDef[], source: Record<string, unknown> | null, defaults: FormValues = {}): FormValues {
   const values: FormValues = {};
@@ -35,7 +41,7 @@ export function initialValues(fields: FieldDef[], source: Record<string, unknown
         values[field.name] = Array.isArray(raw) ? (raw as string[]).join('\n') : '';
         break;
       case 'items':
-        values[field.name] = Array.isArray(raw) ? (raw as Record<string, string>[]).map((item) => ({ ...item })) : [];
+        values[field.name] = Array.isArray(raw) ? (raw as Record<string, ItemValue>[]).map((item) => ({ ...item })) : [];
         break;
       case 'relations':
         values[field.name] = Array.isArray(raw) ? (raw as string[]) : [];
@@ -55,6 +61,7 @@ export function toPayload(fields: FieldDef[], values: FormValues): Record<string
     if (field.kind === 'lines') payload[field.name] = String(value).split('\n').map((line) => line.trim()).filter(Boolean);
     else if (field.kind === 'number') {
       if (value !== '') payload[field.name] = Number(value);
+      else if (field.nullable) payload[field.name] = null;
     } else payload[field.name] = value;
   }
   return payload;

@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { AlertCircle, ArrowRight } from 'lucide-react';
-import { CheckList, CtaBand, ServiceGrid, TechList } from '@/components/site/blocks';
+import { CheckList, CtaBand, DemoSection, ServiceGrid, TechList } from '@/components/site/blocks';
 import { ButtonLink } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Section } from '@/components/ui/section';
@@ -89,8 +89,10 @@ export default async function SolutionDetailPage({ params }: { params: Promise<{
         </div>
       </Section>
 
+      <DemoSection intro={{ eyebrow: 'Demos', title: `${solution.name} demos`, subtitle: 'Explore concepts and prototypes for this industry.' }} demos={solution.demos} tone="surface" showAll={false} />
+
       {solution.services.length > 0 && (
-        <Section tone="surface" eyebrow="Related services" title="How we deliver it">
+        <Section eyebrow="Related services" title="How we deliver it">
           <ServiceGrid services={solution.services} />
         </Section>
       )}

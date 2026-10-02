@@ -3,6 +3,9 @@ import { cache } from 'react';
 import type { Metadata } from 'next';
 import type {
   AboutData,
+  EstimatorConfig,
+  DemoDetail,
+  DemoListData,
   HomeData,
   NavigationData,
   SectionRow,
@@ -32,7 +35,12 @@ export const getServices = cache(() => fetchContent<ServicesData>('services'));
 export const getService = cache((slug: string) => fetchContent<ServiceDetailData>(`services/${encodeURIComponent(slug)}`));
 export const getSolutions = cache(() => fetchContent<SolutionsData>('solutions'));
 export const getSolution = cache((slug: string) => fetchContent<SolutionDetailData>(`solutions/${encodeURIComponent(slug)}`));
-export const getSlugs = cache(() => fetchContent<{ services: { slug: string; updatedAt: string }[]; solutions: { slug: string; updatedAt: string }[] }>('slugs'));
+type SlugList = { slug: string; updatedAt: string }[];
+export const getSlugs = cache(() => fetchContent<{ services: SlugList; solutions: SlugList; demos: SlugList }>('slugs'));
+export const getDemoList = cache((query: string) => fetchContent<DemoListData>(`demos${query ? `?${query}` : ''}`));
+export const getEstimatorConfig = cache((query: string) => fetchContent<EstimatorConfig>(`../estimator/config${query ? `?${query}` : ''}`));
+export const getLeadConfig = cache(() => fetchContent<{ responseNote: string | null }>('../leads/config'));
+export const getDemo = cache((slug: string) => fetchContent<DemoDetail>(`demos/${encodeURIComponent(slug)}`));
 
 const FALLBACK_NAV: NavigationData = {
   items: [

@@ -1,3 +1,4 @@
+import { ESTIMATOR_CONFIGS } from './estimator-configs';
 import { ICON_OPTIONS } from '@/lib/icon-names';
 import type { FieldDef, FormValues, Option } from './field-defs';
 
@@ -64,8 +65,11 @@ export const CONFIGS: Record<string, ResourceConfig> = {
     featured: true,
     ordered: true,
     viewHref: (i) => (i.status === 'PUBLISHED' ? `/services/${str(i.slug)}` : null),
-    relationSources: { technologies: { resource: 'technologies', label: (i) => str(i.name) } },
-    defaults: { icon: 'code', status: 'DRAFT', featured: false, features: [], benefits: '', technologyIds: [], ...seoDefaults },
+    relationSources: {
+      technologies: { resource: 'technologies', label: (i) => str(i.name) },
+      projectTypes: { resource: 'estimator-types', label: (i) => str(i.name) },
+    },
+    defaults: { icon: 'code', estimatorTypeId: '', status: 'DRAFT', featured: false, features: [], benefits: '', technologyIds: [], ...seoDefaults },
     fields: [
       { kind: 'text', name: 'title', label: 'Title', required: true, max: 100 },
       { kind: 'text', name: 'slug', label: 'URL slug', hint: 'Leave empty to generate from the title. Changing it breaks existing links.', half: true },
@@ -81,6 +85,7 @@ export const CONFIGS: Record<string, ResourceConfig> = {
       { kind: 'items', name: 'features', label: 'Key capabilities', addLabel: 'Add capability', fields: [{ name: 'title', label: 'Title', kind: 'text' }, { name: 'description', label: 'Description', kind: 'textarea' }] },
       { kind: 'lines', name: 'benefits', label: 'Benefits' },
       { kind: 'relations', name: 'technologyIds', label: 'Technologies', source: 'technologies' },
+      { kind: 'select', name: 'estimatorTypeId', label: 'Estimator project type', options: [], optionsFrom: 'projectTypes', hint: 'Used by the Estimate Your Project button on this service page.' },
       { kind: 'heading', name: 'cta', label: 'Call to action', hint: 'Defaults to the global “Start a Project” CTA.' },
       { kind: 'text', name: 'ctaLabel', label: 'Button label', max: 60, half: true },
       { kind: 'url', name: 'ctaUrl', label: 'Button URL', placeholder: '/contact', half: true },
@@ -231,25 +236,22 @@ export const CONFIGS: Record<string, ResourceConfig> = {
       { kind: 'switch', name: 'enabled', label: 'Enabled' },
     ],
   },
-  work: {
-    resource: 'work',
-    singular: 'item',
-    plural: 'Featured work',
-    title: (i) => str(i.title),
-    subtitle: (i) => str(i.category),
+  'demo-categories': {
+    resource: 'demo-categories',
+    singular: 'category',
+    plural: 'Demo categories',
+    title: (i) => str(i.name),
+    subtitle: (i) => str(i.description) || str(i.slug),
     state: { field: 'active', kind: 'boolean' },
-    featured: true,
     ordered: true,
-    defaults: { featured: true, active: true },
+    defaults: { active: true },
     fields: [
-      { kind: 'text', name: 'title', label: 'Title', required: true, max: 100 },
-      { kind: 'text', name: 'category', label: 'Category', required: true, max: 40, half: true },
-      { kind: 'text', name: 'badge', label: 'Badge', max: 30, half: true },
-      { kind: 'textarea', name: 'description', label: 'Short description', required: true, max: 260, rows: 3 },
-      { kind: 'url', name: 'imageUrl', label: 'Image URL', placeholder: 'https://…', half: true },
-      { kind: 'url', name: 'ctaUrl', label: 'Link URL', placeholder: '/demos', half: true },
-      { kind: 'switch', name: 'featured', label: 'Featured on homepage' },
+      { kind: 'text', name: 'name', label: 'Name', required: true, max: 60, half: true },
+      { kind: 'text', name: 'slug', label: 'URL slug', hint: 'Leave empty to generate.', half: true },
+      { kind: 'textarea', name: 'description', label: 'Description', max: 240, rows: 2 },
       { kind: 'switch', name: 'active', label: 'Active' },
     ],
   },
 };
+
+Object.assign(CONFIGS, ESTIMATOR_CONFIGS);

@@ -46,7 +46,7 @@ export const SECTION_CONFIGS: Record<string, Record<string, SectionConfig>> = {
     },
     capabilities: { label: 'Capabilities', description: 'Cards come from services marked “Featured” in Services.', fields: intro },
     why: { label: 'Why Valorian', description: 'Items are managed under Why Valorian.', fields: intro },
-    featuredWork: { label: 'Featured work', description: 'Items are managed under Featured Work.', fields: intro },
+    featuredWork: { label: 'Featured demos', description: 'Shows demos marked Featured in Demos.', fields: intro },
     process: { label: 'Process', description: 'Steps are managed under Process.', fields: intro },
     technology: { label: 'Technology', description: 'Shows technologies marked “Show on homepage”.', fields: intro },
     cta: { label: 'Final call to action', description: 'Closing conversion block.', fields: cta },

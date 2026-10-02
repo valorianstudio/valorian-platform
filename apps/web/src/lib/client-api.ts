@@ -32,3 +32,16 @@ export async function apiRequest<T>(method: 'POST' | 'PUT' | 'PATCH' | 'DELETE',
   }
   return payload;
 }
+
+export async function uploadImage(file: File): Promise<string> {
+  if (file.size > 5 * 1024 * 1024) throw new ApiError('Image must be 5 MB or smaller.', 400);
+  let response: Response;
+  try {
+    response = await fetch('/api/admin/media', { method: 'POST', headers: { 'Content-Type': file.type }, body: file });
+  } catch {
+    throw new ApiError('Could not reach the server. Check your connection and try again.', 0);
+  }
+  const payload = (await response.json().catch(() => ({}))) as { url?: string; message?: string };
+  if (!response.ok || !payload.url) throw new ApiError(payload.message ?? 'Upload failed.', response.status);
+  return payload.url;
+}

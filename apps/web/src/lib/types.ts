@@ -30,3 +30,8 @@ export interface AdminProfile {
   lastLoginAt: string | null;
   createdAt: string;
 }
+
+export type LeadStatus = 'NEW' | 'CONTACTED' | 'QUALIFIED' | 'MEETING' | 'PROPOSAL' | 'NEGOTIATION' | 'WON' | 'LOST';
+export type LeadPriority = 'LOW' | 'NORMAL' | 'HIGH' | 'URGENT';
+export const LEAD_STATUSES: LeadStatus[] = ['NEW', 'CONTACTED', 'QUALIFIED', 'MEETING', 'PROPOSAL', 'NEGOTIATION', 'WON', 'LOST'];
+export const LEAD_PRIORITIES: LeadPriority[] = ['LOW', 'NORMAL', 'HIGH', 'URGENT'];

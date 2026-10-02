@@ -4,7 +4,7 @@ import { useState } from 'react';
 import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { BarChart3, BookOpen, Briefcase, Calculator, ChevronDown, Cpu, FileText, HelpCircle, Home, Image as ImageIcon, LayoutDashboard, Layers, LogOut, Menu, MessageSquareQuote, Monitor, MousePointerClick, Navigation, PanelBottom, Search, Settings, Sparkles, User, Users, Workflow, X } from 'lucide-react';
+import { BarChart3, BookOpen, Briefcase, Calculator, ChevronDown, Cpu, FileText, HelpCircle, Home, Image as ImageIcon, Inbox, LayoutDashboard, Layers, LogOut, Menu, MessageSquareQuote, Monitor, MousePointerClick, Navigation, PanelBottom, Search, Settings, Sparkles, Tags, User, Users, Workflow, X } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { Wordmark } from '@/components/site/wordmark';
 import { Badge } from '@/components/ui/badge';
@@ -28,7 +28,6 @@ const NAV_GROUPS: { title?: string; items: NavItem[] }[] = [
     items: [
       { href: '/admin/website/home', label: 'Homepage', Icon: Home },
       { href: '/admin/website/about', label: 'About', Icon: FileText },
-      { href: '/admin/website/work', label: 'Featured work', Icon: Monitor },
       { href: '/admin/website/navigation', label: 'Navigation', Icon: Navigation },
       { href: '/admin/website/footer', label: 'Footer', Icon: PanelBottom },
     ],
@@ -36,6 +35,8 @@ const NAV_GROUPS: { title?: string; items: NavItem[] }[] = [
   {
     title: 'Content',
     items: [
+      { href: '/admin/demos', label: 'Demos', Icon: Monitor },
+      { href: '/admin/demo-categories', label: 'Demo categories', Icon: Tags },
       { href: '/admin/services', label: 'Services', Icon: Layers },
       { href: '/admin/solutions', label: 'Solutions', Icon: Briefcase },
       { href: '/admin/technologies', label: 'Technologies', Icon: Cpu },
@@ -43,6 +44,14 @@ const NAV_GROUPS: { title?: string; items: NavItem[] }[] = [
       { href: '/admin/why', label: 'Why Valorian', Icon: Sparkles },
       { href: '/admin/faqs', label: 'FAQs', Icon: HelpCircle },
       { href: '/admin/ctas', label: 'CTAs', Icon: MousePointerClick },
+      { href: '/admin/estimator', label: 'Estimator', Icon: Calculator },
+    ],
+  },
+  {
+    title: 'Sales',
+    items: [
+      { href: '/admin/leads', label: 'Leads', Icon: Users },
+      { href: '/admin/inquiries', label: 'Inquiries', Icon: Inbox },
     ],
   },
   {
@@ -54,9 +63,6 @@ const NAV_GROUPS: { title?: string; items: NavItem[] }[] = [
 ];
 
 const UPCOMING_NAV: Omit<NavItem, 'href'>[] = [
-  { label: 'Demos', Icon: Monitor },
-  { label: 'Estimator', Icon: Calculator },
-  { label: 'Leads', Icon: Users },
   { label: 'Case Studies', Icon: FileText },
   { label: 'Testimonials', Icon: MessageSquareQuote },
   { label: 'Blog', Icon: BookOpen },

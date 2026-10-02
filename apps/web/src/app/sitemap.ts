@@ -9,6 +9,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const entries = [
     ...(slugs?.services ?? []).map((item) => ({ path: `/services/${item.slug}`, updatedAt: item.updatedAt })),
     ...(slugs?.solutions ?? []).map((item) => ({ path: `/solutions/${item.slug}`, updatedAt: item.updatedAt })),
+    ...(slugs?.demos ?? []).map((item) => ({ path: `/demos/${item.slug}`, updatedAt: item.updatedAt })),
   ];
 
   return [

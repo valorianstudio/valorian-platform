@@ -4,7 +4,9 @@ import { ArrowDown, ArrowUp, Plus, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Field, Input, Select, Switch, Textarea } from '@/components/ui/field';
 import { cn } from '@/lib/cn';
-import type { FieldDef, FormValues, ItemField, RelationOptions } from './field-defs';
+import { blankItem } from './field-defs';
+import type { FieldDef, FormValues, ItemValue, RelationOptions } from './field-defs';
+import { ImageInput } from './image-input';
 
 interface EntityFormProps {
   fields: FieldDef[];
@@ -14,32 +16,59 @@ interface EntityFormProps {
   disabled?: boolean;
 }
 
-function ItemsEditor({ field, rows, onChange }: { field: Extract<FieldDef, { kind: 'items' }>; rows: Record<string, string>[]; onChange: (rows: Record<string, string>[]) => void }) {
-  const update = (index: number, name: string, value: string) => onChange(rows.map((row, i) => (i === index ? { ...row, [name]: value } : row)));
+function ItemsEditor({ field, rows, onChange }: { field: Extract<FieldDef, { kind: 'items' }>; rows: Record<string, ItemValue>[]; onChange: (rows: Record<string, ItemValue>[]) => void }) {
+  const update = (index: number, name: string, value: ItemValue) => onChange(rows.map((row, i) => (i === index ? { ...row, [name]: value } : row)));
   const move = (index: number, delta: number) => {
     const next = [...rows];
     const [item] = next.splice(index, 1);
     next.splice(index + delta, 0, item);
     onChange(next);
   };
-  const blank = Object.fromEntries(field.fields.map((f: ItemField) => [f.name, '']));
 
   return (
     <fieldset className="space-y-3">
       <legend className="mb-1.5 text-sm font-medium">{field.label}</legend>
       {rows.map((row, index) => (
         <div key={index} className="space-y-3 rounded-xl border border-border bg-surface p-4">
-          {field.fields.map((sub) => (
-            <Field key={sub.name} label={sub.label}>
-              {(props) =>
-                sub.kind === 'textarea' ? (
-                  <Textarea {...props} className="min-h-20" value={row[sub.name] ?? ''} onChange={(e) => update(index, sub.name, e.target.value)} />
-                ) : (
-                  <Input {...props} value={row[sub.name] ?? ''} onChange={(e) => update(index, sub.name, e.target.value)} />
-                )
+          <div className="grid gap-3 sm:grid-cols-2">
+            {field.fields.map((sub) => {
+              const cell = row[sub.name];
+              const wide = sub.kind === 'textarea' || sub.kind === 'image' ? 'sm:col-span-2' : '';
+              if (sub.kind === 'switch') {
+                return (
+                  <div key={sub.name} className="self-center">
+                    <Switch label={sub.label} checked={Boolean(cell)} onChange={(checked) => update(index, sub.name, checked)} />
+                  </div>
+                );
               }
-            </Field>
-          ))}
+              if (sub.kind === 'image') {
+                return (
+                  <div key={sub.name} className={wide}>
+                    <ImageInput label={sub.label} value={String(cell ?? '')} onChange={(url) => update(index, sub.name, url)} />
+                  </div>
+                );
+              }
+              return (
+                <Field key={sub.name} label={sub.label} className={wide}>
+                  {(props) =>
+                    sub.kind === 'textarea' ? (
+                      <Textarea {...props} className="min-h-20" value={String(cell ?? '')} onChange={(e) => update(index, sub.name, e.target.value)} />
+                    ) : sub.kind === 'select' ? (
+                      <Select {...props} value={String(cell ?? '')} onChange={(e) => update(index, sub.name, e.target.value)}>
+                        {sub.options?.map((option) => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
+                      </Select>
+                    ) : (
+                      <Input {...props} value={String(cell ?? '')} onChange={(e) => update(index, sub.name, e.target.value)} />
+                    )
+                  }
+                </Field>
+              );
+            })}
+          </div>
           <div className="flex gap-1">
             <Button size="sm" variant="ghost" aria-label="Move up" disabled={index === 0} onClick={() => move(index, -1)}>
               <ArrowUp className="size-4" />
@@ -53,7 +82,7 @@ function ItemsEditor({ field, rows, onChange }: { field: Extract<FieldDef, { kin
           </div>
         </div>
       ))}
-      <Button size="sm" variant="secondary" onClick={() => onChange([...rows, { ...blank }])}>
+      <Button size="sm" variant="secondary" onClick={() => onChange([...rows, blankItem(field.fields)])}>
         <Plus className="size-4" aria-hidden /> {field.addLabel}
       </Button>
       {field.hint && <p className="text-sm text-muted">{field.hint}</p>}
@@ -86,7 +115,9 @@ export function EntityForm({ fields, values, onChange, relationOptions = {}, dis
                   <Input
                     {...props}
                     type={field.kind === 'number' ? 'number' : field.kind === 'url' ? 'text' : 'text'}
-                    inputMode={field.kind === 'number' ? 'numeric' : undefined}
+                    inputMode={field.kind === 'number' ? (field.step ? 'decimal' : 'numeric') : undefined}
+                    step={field.kind === 'number' ? (field.step ?? '1') : undefined}
+                    min={field.kind === 'number' ? 0 : undefined}
                     required={field.required}
                     maxLength={field.max}
                     placeholder={field.placeholder}
@@ -111,7 +142,7 @@ export function EntityForm({ fields, values, onChange, relationOptions = {}, dis
               <Field label={field.label} hint={field.hint}>
                 {(props) => (
                   <Select {...props} disabled={disabled} value={String(value ?? '')} onChange={(e) => set(field.name, e.target.value)}>
-                    {field.options.map((option) => (
+                    {(field.optionsFrom ? [{ value: '', label: 'None' }, ...(relationOptions[field.optionsFrom] ?? []).map((o) => ({ value: o.id, label: o.label }))] : field.options).map((option) => (
                       <option key={option.value} value={option.value}>
                         {option.label}
                       </option>
@@ -120,7 +151,8 @@ export function EntityForm({ fields, values, onChange, relationOptions = {}, dis
                 )}
               </Field>
             )}
-            {field.kind === 'items' && <ItemsEditor field={field} rows={value as Record<string, string>[]} onChange={(rows) => set(field.name, rows)} />}
+            {field.kind === 'image' && <ImageInput label={field.label} hint={field.hint} value={String(value ?? '')} onChange={(url) => set(field.name, url)} disabled={disabled} />}
+            {field.kind === 'items' && <ItemsEditor field={field} rows={value as Record<string, ItemValue>[]} onChange={(rows) => set(field.name, rows)} />}
             {field.kind === 'relations' && (
               <fieldset>
                 <legend className="mb-2 text-sm font-medium">{field.label}</legend>

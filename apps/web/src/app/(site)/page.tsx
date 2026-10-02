@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { CapabilitySection, CtaBand, ProcessSection, TechSection, WhySection, WorkSection } from '@/components/site/blocks';
+import { CapabilitySection, CtaBand, DemoSection, ProcessSection, TechSection, WhySection } from '@/components/site/blocks';
 import { Hero } from '@/components/site/home/hero';
 import { buildMetadata, findSection, getHome } from '@/lib/cms';
 import type { CtaContent, HeroContent, HomeData, IntroContent } from '@/lib/cms-types';
@@ -21,7 +21,7 @@ function renderSection(key: string, home: HomeData) {
     case 'why':
       return <WhySection intro={content} values={home.values} />;
     case 'featuredWork':
-      return <WorkSection intro={content} work={home.work} />;
+      return <DemoSection intro={content} demos={home.demos} />;
     case 'process':
       return <ProcessSection intro={content} steps={home.steps} />;
     case 'technology':

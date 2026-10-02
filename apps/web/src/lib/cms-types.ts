@@ -80,14 +80,59 @@ export interface FaqItem {
   answer: string;
   category: string;
 }
-export interface WorkItem {
-  id: string;
-  title: string;
-  description: string;
-  category: string;
-  imageUrl: string | null;
+export type PlatformType = 'WEBSITE' | 'MOBILE';
+
+export interface DemoCardData {
+  slug: string;
+  name: string;
+  shortDescription: string;
+  thumbnailUrl: string | null;
+  coverImageUrl: string | null;
   badge: string | null;
+  statusLabel: 'INTERACTIVE_CONCEPT' | 'PROTOTYPE' | 'DEMO_PRODUCT' | 'PRODUCTION_EXAMPLE';
+  featured: boolean;
+  category: { name: string; slug: string } | null;
+  industry: { name: string; slug: string } | null;
+  platforms: { type: PlatformType }[];
+}
+export interface DemoListData {
+  items: DemoCardData[];
+  total: number;
+  page: number;
+  pageSize: number;
+  categories: { name: string; slug: string }[];
+  industries: { name: string; slug: string }[];
+  featured: DemoCardData[];
+}
+export interface DemoDetail extends DemoCardData, Seo {
+  fullDescription: string;
+  problem: string | null;
+  solution: string | null;
+  targetUsers: string | null;
+  targetBusinesses: string | null;
+  outcomes: string[];
+  highlight: string | null;
+  ctaLabel: string | null;
   ctaUrl: string | null;
+  platforms: {
+    type: PlatformType;
+    title: string | null;
+    description: string | null;
+    demoUrl: string | null;
+    videoUrl: string | null;
+    ctaLabel: string | null;
+    ctaUrl: string | null;
+    android: boolean;
+    ios: boolean;
+    playStoreUrl: string | null;
+    appStoreUrl: string | null;
+    technologies: { id: string; name: string; category: string; logoUrl: string | null }[];
+  }[];
+  features: { id: string; platform: PlatformType | 'BOTH'; title: string; description: string | null; icon: string | null; featured: boolean }[];
+  modules: { id: string; platform: PlatformType | 'BOTH'; title: string; description: string | null; icon: string | null }[];
+  screenshots: { id: string; platform: PlatformType; kind: string; url: string; altText: string; caption: string | null; featured: boolean }[];
+  points: { id: string; type: 'BENEFIT' | 'USE_CASE'; title: string; description: string | null }[];
+  related: DemoCardData[];
 }
 export interface CtaLink {
   label: string;
@@ -105,7 +150,7 @@ export interface HomeData extends PageBase {
   values: ValueItem[];
   steps: ProcessStepItem[];
   technologies: TechnologyCard[];
-  work: WorkItem[];
+  demos: DemoCardData[];
 }
 export interface AboutData extends PageBase {
   faqs: FaqItem[];
@@ -125,6 +170,7 @@ export interface ServiceDetail extends ServiceCard, Seo {
   ctaUrl: string | null;
   technologies: TechnologyCard[];
   industries: { slug: string; name: string }[];
+  estimatorType: { slug: string } | null;
 }
 export interface ServiceDetailData {
   service: ServiceDetail;
@@ -153,6 +199,7 @@ export interface SolutionDetail extends SolutionCard, Seo {
   ctaUrl: string | null;
   technologies: TechnologyCard[];
   services: ServiceCard[];
+  demos: DemoCardData[];
 }
 export interface SolutionDetailData {
   solution: SolutionDetail;
@@ -169,4 +216,35 @@ export interface NavItem {
 export interface NavigationData {
   items: NavItem[];
   cta: CtaLink | null;
+}
+
+export type EstimatorPlatform = 'WEBSITE' | 'MOBILE' | 'BOTH';
+export interface EstimatorConfig {
+  currency: 'BDT' | 'USD';
+  disclaimer: string;
+  enabled: boolean;
+  projectTypes: { slug: string; name: string; description: string | null; platform: EstimatorPlatform }[];
+  industries: { slug: string; name: string; icon: string }[];
+  categories: { id: string; name: string }[];
+  features: { id: string; name: string; description: string | null; categoryId: string | null; required: boolean; recommended: boolean; platforms: ('WEBSITE' | 'MOBILE')[]; industries: string[] }[];
+  integrations: { id: string; name: string; description: string | null; platforms: ('WEBSITE' | 'MOBILE')[] }[];
+  complexities: { slug: string; name: string; description: string | null }[];
+  scales: { key: string; label: string; description: string | null }[];
+  urgencies: { key: string; label: string; description: string | null }[];
+  preset: { demo: { slug: string; name: string } | null; projectType: string | null; industry: string | null; featureIds: string[] };
+}
+export interface EstimateResult {
+  id: string;
+  currency: 'BDT' | 'USD';
+  disclaimer: string;
+  min: number;
+  max: number;
+  weeks: { min: number; max: number };
+  projectType: string;
+  platform: EstimatorPlatform;
+  features: { id: string; name: string; category: string | null; required: boolean }[];
+  integrations: { id: string; name: string }[];
+  complexity: string;
+  scale: string;
+  urgency: string;
 }

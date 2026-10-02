@@ -72,3 +72,13 @@ export async function getAdminPage(key: string): Promise<AdminPage | null> {
   const response = await authedFetch(`/admin/pages/${key}`);
   return response?.ok ? ((await response.json()) as AdminPage) : null;
 }
+
+export async function getAdminDemos<T>(): Promise<T[]> {
+  const response = await authedFetch('/admin/demos');
+  return response?.ok ? ((await response.json()) as T[]) : [];
+}
+
+export async function getAdminJson<T>(path: string): Promise<T | null> {
+  const response = await authedFetch(path);
+  return response?.ok ? ((await response.json()) as T) : null;
+}

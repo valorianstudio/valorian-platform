@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Calculator } from 'lucide-react';
 import { CheckList, CtaBand, FaqSection, ProcessSection, ServiceGrid, TechList } from '@/components/site/blocks';
 import { ButtonLink } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -24,7 +24,8 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
   const { service, steps, faqs, related, cta } = data;
   const Icon = getIcon(service.icon);
   const ctaLabel = service.ctaLabel ?? cta?.label ?? 'Start a Project';
-  const ctaUrl = service.ctaUrl ?? cta?.url ?? '/contact';
+  const customUrl = [service.ctaUrl, cta?.url].find((url) => url && url !== '/contact');
+  const ctaUrl = customUrl ?? `/contact?service=${service.slug}`;
 
   return (
     <>
@@ -45,9 +46,12 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
               </span>
               <h1 className="mt-6 text-balance text-4xl font-semibold tracking-tight sm:text-5xl">{service.heroTitle || service.title}</h1>
               <p className="mt-5 max-w-2xl text-pretty text-lg text-muted sm:text-xl">{service.heroSubtitle || service.shortDescription}</p>
-              <div className="mt-8">
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                 <ButtonLink href={ctaUrl} size="lg">
                   {ctaLabel} <ArrowRight className="size-4" aria-hidden />
+                </ButtonLink>
+                <ButtonLink href={service.estimatorType ? `/estimate?type=${service.estimatorType.slug}` : '/estimate'} size="lg" variant="secondary">
+                  <Calculator className="size-4" aria-hidden /> Estimate Your Project
                 </ButtonLink>
               </div>
             </div>

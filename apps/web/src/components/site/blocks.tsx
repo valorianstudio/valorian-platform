@@ -6,7 +6,8 @@ import { ButtonLink } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Section } from '@/components/ui/section';
 import { isExternal } from '@/lib/cms';
-import type { CtaContent, FaqItem, IntroContent, ProcessStepItem, ServiceCard, TechnologyCard, ValueItem, WorkItem } from '@/lib/cms-types';
+import type { CtaContent, DemoCardData, FaqItem, IntroContent, ProcessStepItem, ServiceCard, TechnologyCard, ValueItem } from '@/lib/cms-types';
+import { DemoCard } from './demos/demo-card';
 import { getIcon } from '@/lib/icons';
 
 export function SmartLink({ href, className, children, newTab }: { href: string; className?: string; children: ReactNode; newTab?: boolean }) {
@@ -122,51 +123,24 @@ export function WhySection({ intro, values }: { intro: IntroContent; values: Val
   );
 }
 
-export function WorkSection({ intro, work }: { intro: IntroContent; work: WorkItem[] }) {
-  if (work.length === 0) return null;
+export function DemoSection({ intro, demos, tone = 'default', showAll = true }: { intro: IntroContent; demos: DemoCardData[]; tone?: 'default' | 'surface'; showAll?: boolean }) {
+  if (demos.length === 0) return null;
   return (
-    <Section eyebrow={intro.eyebrow ?? undefined} title={intro.title} description={intro.subtitle ?? undefined}>
-      <ul className="grid gap-5 md:grid-cols-3">
-        {work.map((item, index) => (
-          <li key={item.id}>
-            <Card className="group h-full overflow-hidden transition-[border-color,box-shadow] duration-200 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5">
-              <div aria-hidden className={`relative h-40 overflow-hidden border-b border-border ${index % 2 ? 'bg-accent-soft' : 'bg-primary-soft'}`}>
-                {item.imageUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={item.imageUrl} alt="" loading="lazy" decoding="async" width={640} height={320} className="size-full object-cover" />
-                ) : (
-                  <div className="absolute inset-x-6 top-6 space-y-2.5 rounded-t-xl border border-b-0 border-border bg-background p-4 shadow-sm">
-                    <div className="h-2.5 w-1/3 rounded bg-surface-strong" />
-                    <div className="flex items-end gap-1.5">
-                      {[40, 65, 50, 80, 60, 90].map((height, i) => (
-                        <span key={i} className={`w-full rounded-sm ${index % 2 ? 'bg-accent' : 'bg-primary'}`} style={{ height: `${height * 0.6}px`, opacity: 0.35 + i * 0.12 }} />
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-              <div className="p-6">
-                <div className="flex flex-wrap gap-2">
-                  <Badge tone={index % 2 ? 'accent' : 'primary'}>{item.category}</Badge>
-                  {item.badge && <Badge>{item.badge}</Badge>}
-                </div>
-                <h3 className="mt-3 text-lg font-semibold">{item.title}</h3>
-                <p className="mt-2 text-muted">{item.description}</p>
-                {item.ctaUrl && (
-                  <SmartLink href={item.ctaUrl} className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-primary">
-                    View <ArrowUpRight className="size-4" aria-hidden />
-                  </SmartLink>
-                )}
-              </div>
-            </Card>
+    <Section tone={tone} eyebrow={intro.eyebrow ?? undefined} title={intro.title} description={intro.subtitle ?? undefined}>
+      <ul className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+        {demos.map((demo) => (
+          <li key={demo.slug}>
+            <DemoCard demo={demo} />
           </li>
         ))}
       </ul>
-      <div className="mt-10">
-        <ButtonLink href="/demos" variant="secondary">
-          View all demos <ArrowUpRight className="size-4" aria-hidden />
-        </ButtonLink>
-      </div>
+      {showAll && (
+        <div className="mt-10">
+          <ButtonLink href="/demos" variant="secondary">
+            View all demos <ArrowUpRight className="size-4" aria-hidden />
+          </ButtonLink>
+        </div>
+      )}
     </Section>
   );
 }
