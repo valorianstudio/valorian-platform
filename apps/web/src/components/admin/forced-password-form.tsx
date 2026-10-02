@@ -10,7 +10,7 @@ import { passwordSchema, toFieldErrors } from '@/lib/schemas';
 import type { FieldErrors, PasswordValues } from '@/lib/schemas';
 import { FormAlert } from './form-alert';
 
-export function ForcedPasswordForm() {
+export function ForcedPasswordForm({ endpoint = '/admin/profile/password', redirectTo = '/admin' }: { endpoint?: string; redirectTo?: string }) {
   const router = useRouter();
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState<FieldErrors<PasswordValues>>({});
@@ -26,8 +26,8 @@ export function ForcedPasswordForm() {
     setApiError(null);
     setSubmitting(true);
     try {
-      await apiRequest('POST', '/admin/profile/password', { currentPassword: parsed.data.currentPassword, newPassword: parsed.data.newPassword });
-      router.replace('/admin');
+      await apiRequest('POST', endpoint, { currentPassword: parsed.data.currentPassword, newPassword: parsed.data.newPassword });
+      router.replace(redirectTo);
       router.refresh();
     } catch (error) {
       setApiError(error instanceof ApiError ? error : null);

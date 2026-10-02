@@ -1,6 +1,7 @@
 import 'server-only';
 import { cookies } from 'next/headers';
 import type { AdminPage } from './cms-types';
+import type { ClientSession } from './portal';
 import type { AdminProfile, SiteSettings } from './types';
 
 const API_URL = process.env.API_URL ?? 'http://localhost:4000';
@@ -81,4 +82,9 @@ export async function getAdminDemos<T>(): Promise<T[]> {
 export async function getAdminJson<T>(path: string): Promise<T | null> {
   const response = await authedFetch(path);
   return response?.ok ? ((await response.json()) as T) : null;
+}
+
+export async function getCurrentClient(): Promise<ClientSession | null> {
+  const response = await authedFetch('/client-auth/me');
+  return response?.ok ? ((await response.json()) as ClientSession) : null;
 }

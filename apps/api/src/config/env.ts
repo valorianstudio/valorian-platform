@@ -13,6 +13,8 @@ const schema = z.object({
   JWT_SECRET: z.string().min(32, 'JWT_SECRET must be at least 32 characters'),
   LEAD_WEBHOOK_URL: z.string().url().optional(),
   UPLOAD_DIR: z.string().default('./uploads'),
+  /** Private client documents. Never served statically; downloads go through an authorized endpoint. */
+  PRIVATE_UPLOAD_DIR: z.string().default('./private-uploads'),
   WEB_ORIGIN: z.string().url().default('http://localhost:3000'),
 });
 

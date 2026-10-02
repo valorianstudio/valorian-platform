@@ -8,6 +8,7 @@ import fastifyRateLimit from '@fastify/rate-limit';
 import { AppModule } from './app.module';
 import { AllExceptionsFilter } from './common/all-exceptions.filter';
 import { env, isProduction } from './config/env';
+import { MAX_PROJECT_FILE_BYTES } from './project-files/project-file-storage';
 import { MAX_UPLOAD_BYTES } from './storage/storage.service';
 
 async function bootstrap(): Promise<void> {
@@ -27,6 +28,7 @@ async function bootstrap(): Promise<void> {
   const fastify = app.getHttpAdapter().getInstance();
   await fastify.register(fastifyHelmet, { contentSecurityPolicy: false, hsts: isProduction });
   fastify.addContentTypeParser(/^image\/(png|jpeg|webp|gif)$/, { parseAs: 'buffer', bodyLimit: MAX_UPLOAD_BYTES }, (_request, body, done) => done(null, body));
+  fastify.addContentTypeParser('application/octet-stream', { parseAs: 'buffer', bodyLimit: MAX_PROJECT_FILE_BYTES }, (_request, body, done) => done(null, body));
   await fastify.register(fastifyCookie);
   await fastify.register(fastifyRateLimit, { global: false });
 
@@ -37,7 +39,7 @@ async function bootstrap(): Promise<void> {
   const generalLimit = fastify.rateLimit({ max: 300, timeWindow: '1 minute' });
   fastify.addHook('onRequest', async (request, reply) => {
     const isSubmission = request.method === 'POST' && /^\/api\/(leads|inquiries)(\?|$)/.test(request.url);
-    const limiter = request.url.startsWith('/api/auth/login')
+    const limiter = request.url.startsWith('/api/auth/login') || request.url.startsWith('/api/client-auth/login')
       ? loginLimit
       : isSubmission
         ? submitLimit
@@ -50,7 +52,7 @@ async function bootstrap(): Promise<void> {
   });
 
   fastify.addHook('onSend', async (request, reply) => {
-    if (request.url.startsWith('/api/admin')) void reply.header('Cache-Control', 'no-store');
+    if (request.url.startsWith('/api/admin') || request.url.startsWith('/api/client')) void reply.header('Cache-Control', 'no-store');
   });
 
   await app.listen(env.PORT, '0.0.0.0');

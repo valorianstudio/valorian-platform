@@ -1,9 +1,17 @@
 import { NextResponse, type NextRequest } from 'next/server';
 
 const SESSION_COOKIE = 'valorian_session';
+const CLIENT_COOKIE = 'valorian_client';
 
 export function proxy(request: NextRequest): NextResponse {
   const { pathname } = request.nextUrl;
+
+  // Client portal: its own cookie and its own login. An admin session never grants portal access.
+  if (pathname.startsWith('/client')) {
+    if (!request.cookies.has(CLIENT_COOKIE) && pathname !== '/client/login') return NextResponse.redirect(new URL('/client/login', request.url));
+    return NextResponse.next();
+  }
+
   const hasSession = request.cookies.has(SESSION_COOKIE);
   const isLogin = pathname === '/admin/login';
 
@@ -15,4 +23,4 @@ export function proxy(request: NextRequest): NextResponse {
   return NextResponse.next({ request: { headers } });
 }
 
-export const config = { matcher: ['/admin/:path*'] };
+export const config = { matcher: ['/admin/:path*', '/client/:path*'] };

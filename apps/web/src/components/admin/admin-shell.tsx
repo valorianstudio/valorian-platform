@@ -4,7 +4,7 @@ import { useState } from 'react';
 import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { BarChart3, BookOpen, Briefcase, Calculator, ChevronDown, Cpu, FileText, HelpCircle, Home, Image as ImageIcon, Inbox, LayoutDashboard, Layers, LogOut, Menu, MessageSquareQuote, Monitor, MousePointerClick, Lock, Navigation, Newspaper, ScrollText, ShieldCheck, PanelBottom, Search, Settings, Sparkles, Tags, User, Users, Workflow, X } from 'lucide-react';
+import { Building2, FolderKanban, BarChart3, BookOpen, Briefcase, Calculator, ChevronDown, Cpu, FileText, HelpCircle, Home, Image as ImageIcon, Inbox, LayoutDashboard, Layers, LogOut, Menu, MessageSquareQuote, Monitor, MousePointerClick, Lock, Navigation, Newspaper, ScrollText, ShieldCheck, PanelBottom, Search, Settings, Sparkles, Tags, User, Users, Workflow, X } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { Wordmark } from '@/components/site/wordmark';
 import { AccessProvider, useAccess } from './access';
@@ -66,6 +66,13 @@ const NAV_GROUPS: { title?: string; items: NavItem[] }[] = [
     items: [
       { href: '/admin/leads', label: 'Leads', Icon: Users, perm: 'leads.view' },
       { href: '/admin/inquiries', label: 'Inquiries', Icon: Inbox, perm: 'inquiries.view' },
+    ],
+  },
+  {
+    title: 'Clients',
+    items: [
+      { href: '/admin/clients', label: 'Clients', Icon: Building2, perm: 'clients.view' },
+      { href: '/admin/projects', label: 'Projects', Icon: FolderKanban, perm: 'projects.view' },
     ],
   },
   {

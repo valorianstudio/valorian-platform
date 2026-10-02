@@ -9,6 +9,7 @@ import { ALL_PERMISSION_KEYS, PERMISSIONS, ROLE_DEFAULTS, SUPER_ROLE_KEY } from 
  * - assigns the Super Admin role to any existing user that has no role yet.
  */
 export async function ensureRbac(prisma: PrismaClient): Promise<void> {
+  const known = new Set((await prisma.permission.findMany({ select: { key: true } })).map((p) => p.key));
   for (const permission of PERMISSIONS) {
     await prisma.permission.upsert({ where: { key: permission.key }, update: { module: permission.module, label: permission.label }, create: permission });
   }
@@ -27,7 +28,11 @@ export async function ensureRbac(prisma: PrismaClient): Promise<void> {
           permissions: { create: role.permissions.filter((k) => idOf.has(k)).map((k) => ({ permissionId: idOf.get(k) as string })) },
         },
       });
-    } else if (role.key === SUPER_ROLE_KEY) {
+    } else if (role.key !== SUPER_ROLE_KEY) {
+      // Permissions introduced after the role was created are granted by default once, without undoing admin edits.
+      const added = role.permissions.filter((k) => !known.has(k) && idOf.has(k));
+      if (added.length > 0) await prisma.rolePermission.createMany({ data: added.map((k) => ({ roleId: existing.id, permissionId: idOf.get(k) as string })), skipDuplicates: true });
+    } else {
       await prisma.rolePermission.createMany({ data: ALL_PERMISSION_KEYS.map((k) => ({ roleId: existing.id, permissionId: idOf.get(k) as string })), skipDuplicates: true });
     }
   }

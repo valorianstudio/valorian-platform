@@ -10,11 +10,12 @@ import { StorageModule } from './storage/storage.module';
 import { CmsModule } from './cms/cms.module';
 import { AuthModule } from './auth/auth.module';
 import { HealthController } from './health/health.controller';
+import { PortalModule } from './portal/portal.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { SiteSettingsModule } from './site-settings/site-settings.module';
 
 @Module({
-  imports: [PrismaModule, AdminUsersModule, AuthModule, SiteSettingsModule, CmsModule, StorageModule, DemosModule, EstimatorModule, LeadsModule, ContentModule, AnalyticsModule, SecurityModule],
+  imports: [PrismaModule, AdminUsersModule, AuthModule, SiteSettingsModule, CmsModule, StorageModule, DemosModule, EstimatorModule, LeadsModule, ContentModule, AnalyticsModule, SecurityModule, PortalModule],
   controllers: [HealthController],
 })
 export class AppModule {}
