@@ -52,9 +52,21 @@ export interface PrivateObject {
   size: number;
 }
 
-/** Local private storage. Swap for an object store without touching callers. Keys never come from users. */
+/**
+ * Storage contract for private client documents. There is deliberately no URL method: files are only ever
+ * streamed through an authorized endpoint. Implement this for S3-compatible storage (Cloudflare R2, Supabase Storage,
+ * AWS S3) with private buckets and provide it in PortalModule instead of the local implementation.
+ */
+export abstract class ProjectFileStorage {
+  abstract newKey(): string;
+  abstract put(key: string, data: Buffer): Promise<void>;
+  abstract get(key: string): Promise<PrivateObject | null>;
+  abstract remove(key: string): Promise<void>;
+}
+
+/** Local disk storage. Keys are generated here and validated on every access, never taken from users. */
 @Injectable()
-export class ProjectFileStorage {
+export class LocalProjectFileStorage extends ProjectFileStorage {
   private readonly root = resolve(env.PRIVATE_UPLOAD_DIR);
 
   newKey(): string {
@@ -69,7 +81,7 @@ export class ProjectFileStorage {
     const target = this.path(key);
     if (!target) throw new Error('Invalid storage key');
     await mkdir(this.root, { recursive: true });
-    await writeFile(target, data);
+    await writeFile(target, data, { mode: 0o600 });
   }
 
   async get(key: string): Promise<PrivateObject | null> {

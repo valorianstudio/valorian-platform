@@ -15,6 +15,7 @@ async function bootstrap(): Promise<void> {
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
     new FastifyAdapter({ trustProxy: true, bodyLimit: 256 * 1024 }),
+    { logger: isProduction ? ['log', 'warn', 'error'] : ['log', 'warn', 'error', 'debug'] },
   );
 
   app.setGlobalPrefix('api');
@@ -26,7 +27,12 @@ async function bootstrap(): Promise<void> {
   );
 
   const fastify = app.getHttpAdapter().getInstance();
-  await fastify.register(fastifyHelmet, { contentSecurityPolicy: false, hsts: isProduction });
+  // The API only serves JSON, files and images, never documents, so the strictest policy is safe.
+  await fastify.register(fastifyHelmet, {
+    contentSecurityPolicy: { directives: { defaultSrc: ["'none'"], frameAncestors: ["'none'"], baseUri: ["'none'"], formAction: ["'none'"] } },
+    hsts: isProduction ? { maxAge: 31_536_000, includeSubDomains: true } : false,
+    referrerPolicy: { policy: 'no-referrer' },
+  });
   fastify.addContentTypeParser(/^image\/(png|jpeg|webp|gif)$/, { parseAs: 'buffer', bodyLimit: MAX_UPLOAD_BYTES }, (_request, body, done) => done(null, body));
   fastify.addContentTypeParser('application/octet-stream', { parseAs: 'buffer', bodyLimit: MAX_PROJECT_FILE_BYTES }, (_request, body, done) => done(null, body));
   await fastify.register(fastifyCookie);
@@ -36,10 +42,18 @@ async function bootstrap(): Promise<void> {
   const estimateLimit = fastify.rateLimit({ max: 30, timeWindow: '1 minute' });
   const submitLimit = fastify.rateLimit({ max: 6, timeWindow: '10 minutes' });
   const collectLimit = fastify.rateLimit({ max: 90, timeWindow: '1 minute' });
+  const sensitiveLimit = fastify.rateLimit({ max: 20, timeWindow: '15 minutes' });
+  const uploadLimit = fastify.rateLimit({ max: 60, timeWindow: '10 minutes' });
   const generalLimit = fastify.rateLimit({ max: 300, timeWindow: '1 minute' });
   fastify.addHook('onRequest', async (request, reply) => {
     const isSubmission = request.method === 'POST' && /^\/api\/(leads|inquiries)(\?|$)/.test(request.url);
-    const limiter = request.url.startsWith('/api/auth/login') || request.url.startsWith('/api/client-auth/login')
+    const isSensitive = request.method !== 'GET' && /^\/api\/(admin\/profile\/password|client-auth\/(password|forgot-password)|auth\/2fa)/.test(request.url);
+    const isUpload = request.method === 'POST' && /^\/api\/admin\/(media|projects\/[^/]+\/files)(\?|$)/.test(request.url);
+    const limiter = isSensitive
+      ? sensitiveLimit
+      : isUpload
+        ? uploadLimit
+        : request.url.startsWith('/api/auth/login') || request.url.startsWith('/api/client-auth/login')
       ? loginLimit
       : isSubmission
         ? submitLimit
@@ -56,7 +70,7 @@ async function bootstrap(): Promise<void> {
   });
 
   await app.listen(env.PORT, '0.0.0.0');
-  new Logger('Bootstrap').log(`API listening on port ${env.PORT}`);
+  new Logger('Bootstrap').log(`API ${env.APP_VERSION} listening on port ${env.PORT} (${env.NODE_ENV})`);
 }
 
 void bootstrap();

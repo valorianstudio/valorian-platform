@@ -6,7 +6,10 @@ import {
   HttpStatus,
   Logger,
 } from '@nestjs/common';
-import type { FastifyReply } from 'fastify';
+import type { FastifyReply, FastifyRequest } from 'fastify';
+import { maskIp } from '../audit/audit.service';
+import { isProduction } from '../config/env';
+import { reportError } from './error-reporter';
 
 interface ErrorBody {
   statusCode: number;
@@ -18,12 +21,21 @@ interface ErrorBody {
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
   private readonly logger = new Logger(AllExceptionsFilter.name);
+  private readonly security = new Logger('Security');
 
   catch(exception: unknown, host: ArgumentsHost): void {
-    const reply = host.switchToHttp().getResponse<FastifyReply>();
+    const http = host.switchToHttp();
+    const reply = http.getResponse<FastifyReply>();
+    const request = http.getRequest<FastifyRequest>();
     const body = this.toBody(exception);
+    // Only method and path are logged: never query strings, bodies, headers or cookies.
+    const path = (request.url ?? '').split('?')[0];
     if (body.statusCode >= 500) {
-      this.logger.error(exception instanceof Error ? (exception.stack ?? exception.message) : String(exception));
+      const detail = exception instanceof Error ? (isProduction ? `${exception.name}: ${exception.message.slice(0, 200)}` : (exception.stack ?? exception.message)) : 'Non-error exception';
+      this.logger.error(`${request.method} ${path} -> ${body.statusCode} ${detail}`);
+      reportError(exception, { method: request.method, path });
+    } else if (body.statusCode === 401 || body.statusCode === 403 || body.statusCode === 429) {
+      this.security.warn(`${request.method} ${path} -> ${body.statusCode} ip=${maskIp(request.ip) ?? 'unknown'}`);
     }
     void reply.status(body.statusCode).send(body);
   }

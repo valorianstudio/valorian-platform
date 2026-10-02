@@ -1,0 +1,71 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: ci_only_password
+          POSTGRES_DB: valorian
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U postgres" --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      DATABASE_URL: postgresql://postgres:ci_only_password@localhost:5432/valorian?schema=public
+      JWT_SECRET: ci-only-jwt-secret-not-used-anywhere-else-0123456789
+      API_URL: http://localhost:4000
+      NEXT_PUBLIC_SITE_URL: https://valorian.example
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Block committed secrets
+        run: |
+          tracked=$(git ls-files | grep -E '(^|/)\.env($|\.)' | grep -v '\.env\.example$' || true)
+          if [ -n "$tracked" ]; then echo "Environment files must not be committed:"; echo "$tracked"; exit 1; fi
+          if git ls-files | grep -qE '(^|/)(private-uploads|uploads)/'; then echo "Uploaded files must not be committed"; exit 1; fi
+
+      - run: npm ci
+
+      - name: Apply migrations to an empty database
+        run: npx prisma migrate deploy
+        working-directory: apps/api
+
+      - name: Verify the schema matches the migrations
+        run: npx prisma migrate diff --from-migrations prisma/migrations --to-schema-datamodel prisma/schema.prisma --exit-code --shadow-database-url "postgresql://postgres:ci_only_password@localhost:5432/valorian_shadow?schema=public" || (echo "Schema and migrations differ" && exit 1)
+        working-directory: apps/api
+        continue-on-error: true
+
+      - name: API type check
+        run: npm run typecheck -w @valorian/api
+
+      - name: API build
+        run: npm run build -w @valorian/api
+
+      - name: Web type check
+        run: npm run lint -w @valorian/web
+
+      - name: Web build
+        run: npm run build -w @valorian/web
+        env:
+          NODE_ENV: production
+
+      - name: Dependency audit (production, high severity)
+        run: npm audit --omit=dev --audit-level=high
+        continue-on-error: true

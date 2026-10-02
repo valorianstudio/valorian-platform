@@ -1,0 +1,34 @@
+# Render blueprint for the API. The website deploys to Vercel (root directory: apps/web).
+# Other hosts (Railway, a VPS) can use apps/api/Dockerfile or the same build/start commands.
+services:
+  - type: web
+    name: valorian-api
+    runtime: node
+    plan: starter
+    rootDir: .
+    buildCommand: npm ci && npm run build -w @valorian/api
+    # Migrations run as their own step before the new version starts; a failed migration stops the deploy.
+    preDeployCommand: npm run db:deploy -w @valorian/api
+    startCommand: npm run start -w @valorian/api
+    healthCheckPath: /api/health
+    disk:
+      name: uploads
+      mountPath: /data
+      sizeGB: 5
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: UPLOAD_DIR
+        value: /data/uploads
+      - key: PRIVATE_UPLOAD_DIR
+        value: /data/private-uploads
+      - key: WEB_ORIGIN
+        value: https://valorian.com
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: ERROR_WEBHOOK_URL
+        sync: false
+      - key: MAIL_WEBHOOK_URL
+        sync: false

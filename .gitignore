@@ -1,7 +1,18 @@
 node_modules
 dist
 .next
-.env
+out
+coverage
 *.tsbuildinfo
 next-env.d.ts
+*.log
+
+# secrets and local config (only *.example files are committed)
+.env
+.env.*
+!.env.example
+
+# user-generated files and backups
 uploads
+private-uploads
+backups

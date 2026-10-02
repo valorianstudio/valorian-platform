@@ -6,7 +6,7 @@ import { ClientGuard } from '../client-auth/client.guard';
 import { ClientRequestsService } from '../client-requests/client-requests.service';
 import { ClientsController } from '../clients/clients.controller';
 import { ClientsService } from '../clients/clients.service';
-import { ProjectFileStorage } from '../project-files/project-file-storage';
+import { LocalProjectFileStorage, ProjectFileStorage } from '../project-files/project-file-storage';
 import { ProjectFilesService } from '../project-files/project-files.service';
 import { MessagesService } from '../project-messages/messages.service';
 import { ClientPortalController } from '../projects/client-portal.controller';
@@ -18,6 +18,6 @@ import { ProjectsService } from '../projects/projects.service';
 @Module({
   imports: [AuthModule],
   controllers: [ClientAuthController, ClientPortalController, ClientsController, ProjectsController],
-  providers: [ClientAuthService, ClientGuard, ClientsService, ProjectsService, ProjectFilesService, ProjectFileStorage, MessagesService, ClientRequestsService, ClientPortalService],
+  providers: [ClientAuthService, ClientGuard, ClientsService, ProjectsService, ProjectFilesService, { provide: ProjectFileStorage, useClass: LocalProjectFileStorage }, MessagesService, ClientRequestsService, ClientPortalService],
 })
 export class PortalModule {}
