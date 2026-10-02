@@ -24,7 +24,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { collectionSchemas, demoCreateSchema, demoUpdateSchema, platformSchema } from './demo-schemas';
 
 type CollectionName = keyof typeof collectionSchemas;
-type DemoInput = Record<string, unknown> & { slug?: string; relatedIds?: string[]; status?: string };
+type DemoInput = Record<string, unknown> & { slug?: string; relatedIds?: string[]; estimatorFeatureIds?: string[]; status?: string };
 
 const listSelect = {
   id: true,
@@ -69,20 +69,22 @@ export class AdminDemosController {
         screenshots: { orderBy: order },
         points: { orderBy: order },
         related: { select: { id: true } },
+        estimatorFeatures: { select: { id: true } },
       },
     });
     if (!demo) throw new NotFoundException();
-    const { related, platforms, ...rest } = demo;
+    const { related, platforms, estimatorFeatures, ...rest } = demo;
     return {
       ...rest,
       relatedIds: related.map((r) => r.id),
+      estimatorFeatureIds: estimatorFeatures.map((f) => f.id),
       platforms: platforms.map(({ technologies, ...platform }) => ({ ...platform, technologyIds: technologies.map((t) => t.id) })),
     };
   }
 
   @Post()
   async create(@Body(new ZodBodyPipe(demoCreateSchema)) body: DemoInput) {
-    const { relatedIds, slug, ...data } = body;
+    const { relatedIds, estimatorFeatureIds, slug, ...data } = body;
     if (data.status === 'PUBLISHED') data.status = 'DRAFT';
     const last = await this.prisma.demo.findFirst({ orderBy: { displayOrder: 'desc' }, select: { displayOrder: true } });
     if (slug && (await this.prisma.demo.findUnique({ where: { slug }, select: { id: true } }))) {
@@ -90,6 +92,7 @@ export class AdminDemosController {
     }
     const finalSlug = slug ?? (await this.uniqueSlug(slugify(String(data.name))));
     const related = await this.existing(relatedIds ?? []);
+    const features = await this.existingFeatures(estimatorFeatureIds ?? []);
     return this.guard(() =>
       this.prisma.demo.create({
         data: {
@@ -97,6 +100,7 @@ export class AdminDemosController {
           slug: finalSlug,
           displayOrder: (data.displayOrder as number | undefined) ?? (last?.displayOrder ?? -1) + 1,
           related: { connect: related },
+          estimatorFeatures: { connect: features },
           platforms: { create: [{ type: 'WEBSITE', enabled: true }, { type: 'MOBILE', enabled: false }] },
         },
         select: { id: true, slug: true },
@@ -112,7 +116,7 @@ export class AdminDemosController {
 
   @Patch(':id')
   async update(@Param('id') id: string, @Body(new ZodBodyPipe(demoUpdateSchema)) body: DemoInput) {
-    const { relatedIds, ...data } = body;
+    const { relatedIds, estimatorFeatureIds, ...data } = body;
     const current = await this.prisma.demo.findUnique({ where: { id }, select: { slug: true, publishedAt: true, status: true } });
     if (!current) throw new NotFoundException();
     if (data.slug === undefined) delete data.slug;
@@ -122,8 +126,9 @@ export class AdminDemosController {
       if (!current.publishedAt) data.publishedAt = new Date();
     }
     const related = relatedIds ? { set: await this.existing(relatedIds.filter((r) => r !== id)) } : undefined;
+    const estimatorFeatures = estimatorFeatureIds ? { set: await this.existingFeatures(estimatorFeatureIds) } : undefined;
     return this.guard(() =>
-      this.prisma.demo.update({ where: { id }, data: { ...(data as Prisma.DemoUpdateInput), related }, select: listSelect }),
+      this.prisma.demo.update({ where: { id }, data: { ...(data as Prisma.DemoUpdateInput), related, estimatorFeatures }, select: listSelect }),
     );
   }
 
@@ -195,6 +200,7 @@ export class AdminDemosController {
         screenshots: true,
         points: true,
         related: { select: { id: true } },
+        estimatorFeatures: { select: { id: true } },
       },
     });
     if (!source) throw new NotFoundException();
@@ -231,6 +237,7 @@ export class AdminDemosController {
         ogImageUrl: source.ogImageUrl,
         noindex: true,
         related: { connect: source.related },
+        estimatorFeatures: { connect: source.estimatorFeatures },
         platforms: {
           create: source.platforms.map(({ technologies, ...platform }) => ({ ...strip(platform), technologies: { connect: technologies } })),
         },
@@ -256,6 +263,10 @@ export class AdminDemosController {
 
   private async existing(ids: string[]) {
     return this.prisma.demo.findMany({ where: { id: { in: ids } }, select: { id: true } });
+  }
+
+  private async existingFeatures(ids: string[]) {
+    return this.prisma.estimatorFeature.findMany({ where: { id: { in: ids } }, select: { id: true } });
   }
 
   private async existingTech(ids: string[]) {

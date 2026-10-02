@@ -66,6 +66,7 @@ export const serviceSchema = z.object({
   status,
   displayOrder: order,
   technologyIds: ids,
+  estimatorTypeId: z.union([z.literal(''), z.string().max(40)]).transform((v) => (v === '' ? null : v)).nullable().optional(),
   ...seoFields,
 });
 

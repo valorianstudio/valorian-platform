@@ -68,6 +68,7 @@ const base = z.object({
   canonicalUrl: httpUrl,
   noindex: z.boolean(),
   relatedIds: ids,
+  estimatorFeatureIds: ids,
 });
 
 export const demoCreateSchema = base.partial().required({ name: true, shortDescription: true });

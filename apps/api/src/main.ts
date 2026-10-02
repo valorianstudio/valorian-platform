@@ -31,9 +31,10 @@ async function bootstrap(): Promise<void> {
   await fastify.register(fastifyRateLimit, { global: false });
 
   const loginLimit = fastify.rateLimit({ max: 10, timeWindow: '15 minutes' });
+  const estimateLimit = fastify.rateLimit({ max: 30, timeWindow: '1 minute' });
   const generalLimit = fastify.rateLimit({ max: 300, timeWindow: '1 minute' });
   fastify.addHook('onRequest', async (request, reply) => {
-    const limiter = request.url.startsWith('/api/auth/login') ? loginLimit : generalLimit;
+    const limiter = request.url.startsWith('/api/auth/login') ? loginLimit : request.url.startsWith('/api/estimator/calculate') ? estimateLimit : generalLimit;
     await limiter.call(fastify, request, reply);
   });
 

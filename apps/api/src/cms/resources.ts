@@ -2,6 +2,7 @@ import type { Prisma } from '@prisma/client';
 import type { z } from 'zod';
 import type { PrismaService } from '../prisma/prisma.service';
 import { demoCategorySchema } from '../demos/demo-schemas';
+import { complexitySchema, estimatorCategorySchema, estimatorFeatureSchema, estimatorIntegrationSchema, pricingRuleSchema, projectTypeSchema } from '../estimator/estimator-schemas';
 import {
   ctaSchema,
   faqSchema,
@@ -65,6 +66,18 @@ export const RESOURCES: Record<string, ResourceDef> = {
     orderBy: [{ location: 'asc' }, ...byOrder],
   },
   'demo-categories': { delegate: (c) => asDelegate(c.demoCategory), schema: demoCategorySchema, orderBy: byOrder, slugFrom: 'name' },
+  'estimator-types': { delegate: (c) => asDelegate(c.estimatorProjectType), schema: projectTypeSchema, orderBy: byOrder, slugFrom: 'name' },
+  'estimator-categories': { delegate: (c) => asDelegate(c.estimatorCategory), schema: estimatorCategorySchema, orderBy: byOrder, slugFrom: 'name' },
+  'estimator-features': {
+    delegate: (c) => asDelegate(c.estimatorFeature),
+    schema: estimatorFeatureSchema,
+    orderBy: byOrder,
+    slugFrom: 'name',
+    relations: { industryIds: 'industries' },
+  },
+  'estimator-integrations': { delegate: (c) => asDelegate(c.estimatorIntegration), schema: estimatorIntegrationSchema, orderBy: byOrder, slugFrom: 'name' },
+  'estimator-complexity': { delegate: (c) => asDelegate(c.estimatorComplexity), schema: complexitySchema, orderBy: byOrder, slugFrom: 'name' },
+  'estimator-rules': { delegate: (c) => asDelegate(c.estimatorPricingRule), schema: pricingRuleSchema, orderBy: [{ kind: 'asc' }, ...byOrder] },
   work: { delegate: (c) => asDelegate(c.featuredWork), schema: featuredWorkSchema, orderBy: byOrder },
 };
 

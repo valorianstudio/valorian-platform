@@ -104,6 +104,7 @@ export class PublicContentController {
         ...seoSelect,
         technologies: { where: activeTech, orderBy: byOrder, select: technologyCard },
         industries: { where: published, orderBy: byOrder, select: { slug: true, name: true } },
+        estimatorType: { select: { slug: true } },
       },
     });
     if (!service) throw new NotFoundException();

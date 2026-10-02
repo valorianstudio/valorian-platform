@@ -137,6 +137,8 @@ model Service {
   updatedAt        DateTime      @updatedAt
   technologies     Technology[]  @relation("ServiceTechnologies")
   industries       Industry[]    @relation("IndustryServices")
+  estimatorTypeId  String?
+  estimatorType    EstimatorProjectType? @relation(fields: [estimatorTypeId], references: [id], onDelete: SetNull)
 
   @@index([status, displayOrder])
 }
@@ -167,6 +169,7 @@ model Industry {
   technologies     Technology[]  @relation("IndustryTechnologies")
   services         Service[]     @relation("IndustryServices")
   demos            Demo[]
+  estimatorFeatures EstimatorFeature[]
 
   @@index([status, displayOrder])
 }
@@ -363,6 +366,7 @@ model Demo {
   points            DemoPoint[]
   related           Demo[]          @relation("RelatedDemos")
   relatedBy         Demo[]          @relation("RelatedDemos")
+  estimatorFeatures EstimatorFeature[]
 
   @@index([status, active, featured, displayOrder])
   @@index([categoryId])
@@ -447,4 +451,145 @@ model DemoPoint {
   demo         Demo      @relation(fields: [demoId], references: [id], onDelete: Cascade)
 
   @@index([demoId, type, displayOrder])
+}
+
+enum PricingRuleKind {
+  SCALE
+  URGENCY
+}
+
+enum EstimatorCurrency {
+  BDT
+  USD
+}
+
+model EstimatorSettings {
+  id                  String            @id @default("estimator")
+  enabled             Boolean           @default(true)
+  currency            EstimatorCurrency @default(BDT)
+  rangeLowPercent     Int               @default(10)
+  rangeHighPercent    Int               @default(10)
+  bothDiscountPercent Int               @default(10)
+  roundingStep        Int               @default(1000)
+  disclaimer          String            @default("Final pricing will be confirmed after detailed requirement analysis.")
+  updatedAt           DateTime          @updatedAt
+}
+
+model EstimatorProjectType {
+  id           String          @id @default(cuid())
+  name         String          @unique
+  slug         String          @unique
+  description  String?
+  platform     FeaturePlatform @default(WEBSITE)
+  basePrice    Int             @default(0)
+  baseWeeks    Int             @default(4)
+  active       Boolean         @default(true)
+  displayOrder Int             @default(0)
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+  services     Service[]
+}
+
+model EstimatorCategory {
+  id           String             @id @default(cuid())
+  name         String             @unique
+  slug         String             @unique
+  active       Boolean            @default(true)
+  displayOrder Int                @default(0)
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+  features     EstimatorFeature[]
+}
+
+model EstimatorFeature {
+  id           String             @id @default(cuid())
+  name         String             @unique
+  slug         String             @unique
+  description  String?
+  categoryId   String?
+  websitePrice Int?
+  mobilePrice  Int?
+  bothPrice    Int?
+  effortDays   Int                @default(0)
+  required     Boolean            @default(false)
+  recommended  Boolean            @default(false)
+  active       Boolean            @default(true)
+  displayOrder Int                @default(0)
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+  category     EstimatorCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  industries   Industry[]
+  demos        Demo[]
+
+  @@index([active, displayOrder])
+}
+
+model EstimatorIntegration {
+  id           String   @id @default(cuid())
+  name         String   @unique
+  slug         String   @unique
+  description  String?
+  websitePrice Int?
+  mobilePrice  Int?
+  bothPrice    Int?
+  active       Boolean  @default(true)
+  displayOrder Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model EstimatorComplexity {
+  id             String   @id @default(cuid())
+  name           String   @unique
+  slug           String   @unique
+  description    String?
+  multiplier     Float    @default(1)
+  timelineFactor Float    @default(1)
+  active         Boolean  @default(true)
+  displayOrder   Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model EstimatorPricingRule {
+  id             String          @id @default(cuid())
+  kind           PricingRuleKind
+  key            String
+  label          String
+  description    String?
+  multiplier     Float           @default(1)
+  timelineFactor Float           @default(1)
+  active         Boolean         @default(true)
+  displayOrder   Int             @default(0)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  @@unique([kind, key])
+}
+
+model EstimatorSubmission {
+  id              String   @id @default(cuid())
+  projectTypeSlug String
+  projectTypeName String
+  demoSlug        String?
+  industrySlug    String?
+  platform        FeaturePlatform
+  featureIds      String[]
+  integrationIds  String[]
+  complexity      String
+  scale           String
+  urgency         String
+  currency        EstimatorCurrency
+  minAmount       Int
+  maxAmount       Int
+  weeksMin        Int
+  weeksMax        Int
+  breakdown       Json
+  name            String?
+  email           String?
+  phone           String?
+  message         String?
+  createdAt       DateTime @default(now())
+
+  @@index([createdAt])
 }

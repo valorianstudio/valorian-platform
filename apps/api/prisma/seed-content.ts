@@ -1,5 +1,6 @@
 import type { Prisma, PrismaClient } from '@prisma/client';
 import { seedDemos } from './seed-demos';
+import { seedEstimator } from './seed-estimator';
 
 type Tech = [slug: string, name: string, category: Prisma.TechnologyCreateInput['category'], featured: boolean];
 
@@ -477,4 +478,5 @@ export async function seedContent(prisma: PrismaClient): Promise<void> {
   }
 
   await seedDemos(prisma);
+  await seedEstimator(prisma);
 }
