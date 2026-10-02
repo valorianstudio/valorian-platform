@@ -1,5 +1,6 @@
 import { applyDecorators, Controller, Get, Header, NotFoundException, Param } from '@nestjs/common';
 import { PageKey, Prisma } from '@prisma/client';
+import { demoCardSelect, demoOrder, publicDemoWhere } from '../demos/demo-queries';
 import { PrismaService } from '../prisma/prisma.service';
 
 const published = { status: 'PUBLISHED' } as const;
@@ -59,20 +60,15 @@ export class PublicContentController {
 
   @CachedGet('home')
   async home() {
-    const [page, services, values, steps, technologies, work] = await Promise.all([
+    const [page, services, values, steps, technologies, demos] = await Promise.all([
       this.page('HOME'),
       this.prisma.service.findMany({ where: { ...published, featured: true }, orderBy: byOrder, take: 9, select: serviceCard }),
       this.prisma.valueProp.findMany({ where: { active: true }, orderBy: byOrder, select: { id: true, title: true, description: true, icon: true, highlight: true } }),
       this.steps(),
       this.prisma.technology.findMany({ where: { ...activeTech, featured: true }, orderBy: byOrder, take: 24, select: technologyCard }),
-      this.prisma.featuredWork.findMany({
-        where: { active: true, featured: true },
-        orderBy: byOrder,
-        take: 6,
-        select: { id: true, title: true, description: true, category: true, imageUrl: true, badge: true, ctaUrl: true },
-      }),
+      this.prisma.demo.findMany({ where: { ...publicDemoWhere, featured: true }, orderBy: demoOrder, take: 6, select: demoCardSelect }),
     ]);
-    return { ...page, services, values, steps, technologies, work };
+    return { ...page, services, values, steps, technologies, demos };
   }
 
   @CachedGet('about')
@@ -152,6 +148,7 @@ export class PublicContentController {
         ...seoSelect,
         technologies: { where: activeTech, orderBy: byOrder, select: technologyCard },
         services: { where: published, orderBy: byOrder, select: serviceCard },
+        demos: { where: publicDemoWhere, orderBy: demoOrder, take: 6, select: demoCardSelect },
       },
     });
     if (!solution) throw new NotFoundException();
@@ -160,10 +157,11 @@ export class PublicContentController {
 
   @CachedGet('slugs')
   async slugs() {
-    const [services, solutions] = await Promise.all([
+    const [services, solutions, demos] = await Promise.all([
       this.prisma.service.findMany({ where: { ...published, noindex: false }, select: { slug: true, updatedAt: true } }),
       this.prisma.industry.findMany({ where: { ...published, noindex: false }, select: { slug: true, updatedAt: true } }),
+      this.prisma.demo.findMany({ where: { ...publicDemoWhere, noindex: false }, select: { slug: true, updatedAt: true } }),
     ]);
-    return { services, solutions };
+    return { services, solutions, demos };
   }
 }

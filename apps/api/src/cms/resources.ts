@@ -1,6 +1,7 @@
 import type { Prisma } from '@prisma/client';
 import type { z } from 'zod';
 import type { PrismaService } from '../prisma/prisma.service';
+import { demoCategorySchema } from '../demos/demo-schemas';
 import {
   ctaSchema,
   faqSchema,
@@ -63,6 +64,7 @@ export const RESOURCES: Record<string, ResourceDef> = {
     schema: navigationSchema,
     orderBy: [{ location: 'asc' }, ...byOrder],
   },
+  'demo-categories': { delegate: (c) => asDelegate(c.demoCategory), schema: demoCategorySchema, orderBy: byOrder, slugFrom: 'name' },
   work: { delegate: (c) => asDelegate(c.featuredWork), schema: featuredWorkSchema, orderBy: byOrder },
 };
 

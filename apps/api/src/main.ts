@@ -8,6 +8,7 @@ import fastifyRateLimit from '@fastify/rate-limit';
 import { AppModule } from './app.module';
 import { AllExceptionsFilter } from './common/all-exceptions.filter';
 import { env, isProduction } from './config/env';
+import { MAX_UPLOAD_BYTES } from './storage/storage.service';
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create<NestFastifyApplication>(
@@ -25,6 +26,7 @@ async function bootstrap(): Promise<void> {
 
   const fastify = app.getHttpAdapter().getInstance();
   await fastify.register(fastifyHelmet, { contentSecurityPolicy: false, hsts: isProduction });
+  fastify.addContentTypeParser(/^image\/(png|jpeg|webp|gif)$/, { parseAs: 'buffer', bodyLimit: MAX_UPLOAD_BYTES }, (_request, body, done) => done(null, body));
   await fastify.register(fastifyCookie);
   await fastify.register(fastifyRateLimit, { global: false });
 

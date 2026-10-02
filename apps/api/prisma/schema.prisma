@@ -166,6 +166,7 @@ model Industry {
   updatedAt        DateTime      @updatedAt
   technologies     Technology[]  @relation("IndustryTechnologies")
   services         Service[]     @relation("IndustryServices")
+  demos            Demo[]
 
   @@index([status, displayOrder])
 }
@@ -185,6 +186,7 @@ model Technology {
   updatedAt    DateTime     @updatedAt
   services     Service[]    @relation("ServiceTechnologies")
   industries   Industry[]   @relation("IndustryTechnologies")
+  demoPlatforms DemoPlatform[] @relation("DemoPlatformTechnologies")
 
   @@index([active, featured, displayOrder])
 }
@@ -270,4 +272,179 @@ model FeaturedWork {
   updatedAt    DateTime @updatedAt
 
   @@index([active, featured, displayOrder])
+}
+
+enum DemoLabel {
+  INTERACTIVE_CONCEPT
+  PROTOTYPE
+  DEMO_PRODUCT
+  PRODUCTION_EXAMPLE
+}
+
+enum PlatformType {
+  WEBSITE
+  MOBILE
+}
+
+enum FeaturePlatform {
+  WEBSITE
+  MOBILE
+  BOTH
+}
+
+enum ScreenshotKind {
+  DESKTOP
+  TABLET
+  MOBILE
+  DASHBOARD
+  ADMIN
+  CUSTOMER
+  OTHER
+}
+
+enum PointType {
+  BENEFIT
+  USE_CASE
+}
+
+model DemoCategory {
+  id           String   @id @default(cuid())
+  slug         String   @unique
+  name         String
+  description  String?
+  active       Boolean  @default(true)
+  displayOrder Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  demos        Demo[]
+
+  @@index([active, displayOrder])
+}
+
+model Demo {
+  id                String          @id @default(cuid())
+  slug              String          @unique
+  name              String
+  internalName      String?
+  shortDescription  String
+  fullDescription   String          @default("")
+  categoryId        String?
+  industryId        String?
+  status            ContentStatus   @default(DRAFT)
+  statusLabel       DemoLabel       @default(PROTOTYPE)
+  featured          Boolean         @default(false)
+  active            Boolean         @default(true)
+  coverImageUrl     String?
+  thumbnailUrl      String?
+  badge             String?
+  displayOrder      Int             @default(0)
+  publishedAt       DateTime?
+  problem           String?
+  solution          String?
+  targetUsers       String?
+  targetBusinesses  String?
+  outcomes          String[]
+  highlight         String?
+  ctaLabel          String?
+  ctaUrl            String?
+  metaTitle         String?
+  metaDescription   String?
+  ogImageUrl        String?
+  canonicalUrl      String?
+  noindex           Boolean         @default(false)
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  category          DemoCategory?   @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  industry          Industry?       @relation(fields: [industryId], references: [id], onDelete: SetNull)
+  platforms         DemoPlatform[]
+  features          DemoFeature[]
+  modules           DemoModule[]
+  screenshots       DemoScreenshot[]
+  points            DemoPoint[]
+  related           Demo[]          @relation("RelatedDemos")
+  relatedBy         Demo[]          @relation("RelatedDemos")
+
+  @@index([status, active, featured, displayOrder])
+  @@index([categoryId])
+  @@index([industryId])
+}
+
+model DemoPlatform {
+  id           String       @id @default(cuid())
+  demoId       String
+  type         PlatformType
+  enabled      Boolean      @default(false)
+  title        String?
+  description  String?
+  demoUrl      String?
+  videoUrl     String?
+  ctaLabel     String?
+  ctaUrl       String?
+  notes        String?
+  android      Boolean      @default(false)
+  ios          Boolean      @default(false)
+  playStoreUrl String?
+  appStoreUrl  String?
+  demo         Demo         @relation(fields: [demoId], references: [id], onDelete: Cascade)
+  technologies Technology[] @relation("DemoPlatformTechnologies")
+
+  @@unique([demoId, type])
+}
+
+model DemoFeature {
+  id           String          @id @default(cuid())
+  demoId       String
+  platform     FeaturePlatform @default(BOTH)
+  title        String
+  description  String?
+  icon         String?
+  featured     Boolean         @default(false)
+  active       Boolean         @default(true)
+  displayOrder Int             @default(0)
+  demo         Demo            @relation(fields: [demoId], references: [id], onDelete: Cascade)
+
+  @@index([demoId, displayOrder])
+}
+
+model DemoModule {
+  id           String          @id @default(cuid())
+  demoId       String
+  platform     FeaturePlatform @default(BOTH)
+  title        String
+  description  String?
+  icon         String?
+  active       Boolean         @default(true)
+  displayOrder Int             @default(0)
+  demo         Demo            @relation(fields: [demoId], references: [id], onDelete: Cascade)
+
+  @@index([demoId, displayOrder])
+}
+
+model DemoScreenshot {
+  id           String         @id @default(cuid())
+  demoId       String
+  platform     PlatformType   @default(WEBSITE)
+  kind         ScreenshotKind @default(DESKTOP)
+  url          String
+  altText      String
+  caption      String?
+  featured     Boolean        @default(false)
+  active       Boolean        @default(true)
+  displayOrder Int            @default(0)
+  demo         Demo           @relation(fields: [demoId], references: [id], onDelete: Cascade)
+
+  @@index([demoId, displayOrder])
+}
+
+model DemoPoint {
+  id           String    @id @default(cuid())
+  demoId       String
+  type         PointType
+  title        String
+  description  String?
+  active       Boolean   @default(true)
+  displayOrder Int       @default(0)
+  demo         Demo      @relation(fields: [demoId], references: [id], onDelete: Cascade)
+
+  @@index([demoId, type, displayOrder])
 }

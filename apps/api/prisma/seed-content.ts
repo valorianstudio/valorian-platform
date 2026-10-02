@@ -1,4 +1,5 @@
 import type { Prisma, PrismaClient } from '@prisma/client';
+import { seedDemos } from './seed-demos';
 
 type Tech = [slug: string, name: string, category: Prisma.TechnologyCreateInput['category'], featured: boolean];
 
@@ -474,4 +475,6 @@ export async function seedContent(prisma: PrismaClient): Promise<void> {
   if ((await prisma.featuredWork.count()) === 0) {
     await prisma.featuredWork.createMany({ data: WORK.map(([title, category, description], displayOrder) => ({ title, category, description, displayOrder })) });
   }
+
+  await seedDemos(prisma);
 }
