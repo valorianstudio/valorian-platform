@@ -19,6 +19,7 @@ export interface SiteSettings {
   logoDarkUrl: string | null;
   faviconUrl: string | null;
   maintenanceMode: boolean;
+  copyrightText: string | null;
 }
 
 export interface AdminProfile {

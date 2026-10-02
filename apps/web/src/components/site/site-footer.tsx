@@ -1,8 +1,8 @@
-import Link from 'next/link';
 import { Mail, MapPin, MessageCircle, Phone } from 'lucide-react';
 import type { ReactNode } from 'react';
 import type { SiteSettings } from '@/lib/types';
-import { NAV_LINKS } from '@/lib/site';
+import type { NavItem } from '@/lib/cms-types';
+import { SmartLink } from './blocks';
 import { Wordmark } from './wordmark';
 import { FacebookIcon, GithubIcon, InstagramIcon, LinkedinIcon, TwitterIcon } from './social-icons';
 
@@ -28,7 +28,9 @@ function ContactRow({ icon, href, children }: { icon: ReactNode; href?: string; 
   );
 }
 
-export function SiteFooter({ settings }: { settings: SiteSettings }) {
+export function SiteFooter({ settings, items }: { settings: SiteSettings; items: NavItem[] }) {
+  const footerLinks = items.filter((item) => item.location === 'FOOTER');
+  const legalLinks = items.filter((item) => item.location === 'LEGAL');
   const socials = [
     { label: 'LinkedIn', href: settings.linkedinUrl, Icon: LinkedinIcon },
     { label: 'GitHub', href: settings.githubUrl, Icon: GithubIcon },
@@ -61,11 +63,11 @@ export function SiteFooter({ settings }: { settings: SiteSettings }) {
         <nav aria-label="Footer">
           <h2 className="text-sm font-semibold">Explore</h2>
           <ul className="mt-4 grid grid-cols-2 gap-x-6 gap-y-2.5 sm:max-w-xs">
-            {NAV_LINKS.map((link) => (
-              <li key={link.href}>
-                <Link href={link.href} className="text-sm text-muted transition-colors hover:text-foreground">
+            {footerLinks.map((link) => (
+              <li key={link.id}>
+                <SmartLink href={link.url} newTab={link.openInNewTab} className="text-sm text-muted transition-colors hover:text-foreground">
                   {link.label}
-                </Link>
+                </SmartLink>
               </li>
             ))}
           </ul>
@@ -95,19 +97,16 @@ export function SiteFooter({ settings }: { settings: SiteSettings }) {
       <div className="border-t border-border">
         <div className="mx-auto flex w-full max-w-7xl flex-col gap-3 px-5 py-6 text-sm text-muted sm:flex-row sm:items-center sm:justify-between sm:px-8">
           <p>
-            &copy; {new Date().getFullYear()} {settings.companyName}. All rights reserved.
+            {settings.copyrightText ?? `© ${new Date().getFullYear()} ${settings.companyName}. All rights reserved.`}
           </p>
-          <ul className="flex gap-5">
-            <li>
-              <Link href="/privacy" className="hover:text-foreground">
-                Privacy
-              </Link>
-            </li>
-            <li>
-              <Link href="/terms" className="hover:text-foreground">
-                Terms
-              </Link>
-            </li>
+          <ul className="flex flex-wrap gap-x-5 gap-y-2">
+            {legalLinks.map((link) => (
+              <li key={link.id}>
+                <SmartLink href={link.url} newTab={link.openInNewTab} className="hover:text-foreground">
+                  {link.label}
+                </SmartLink>
+              </li>
+            ))}
           </ul>
         </div>
       </div>

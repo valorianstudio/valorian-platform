@@ -28,6 +28,9 @@ export class SiteSettingsService {
     await this.get();
     return this.prisma.siteSetting.update({ where: { id: SETTINGS_ID }, data: dto });
   }
+
+  async updateFooter(copyrightText: string | null): Promise<SiteSetting> {
+    await this.get();
+    return this.prisma.siteSetting.update({ where: { id: SETTINGS_ID }, data: { copyrightText } });
+  }
 }
-
-

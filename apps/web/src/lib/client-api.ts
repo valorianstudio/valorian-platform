@@ -13,7 +13,7 @@ interface ErrorPayload {
   errors?: string[];
 }
 
-export async function apiRequest<T>(method: 'POST' | 'PUT' | 'PATCH', path: string, body?: unknown): Promise<T> {
+export async function apiRequest<T>(method: 'POST' | 'PUT' | 'PATCH' | 'DELETE', path: string, body?: unknown): Promise<T> {
   let response: Response;
   try {
     response = await fetch(`/api${path}`, {

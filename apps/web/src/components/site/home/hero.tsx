@@ -1,6 +1,7 @@
 import { ArrowRight, Check, GitBranch } from 'lucide-react';
-import { ButtonLink } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { ButtonLink } from '@/components/ui/button';
+import type { HeroContent } from '@/lib/cms-types';
 
 function ProductMock() {
   return (
@@ -74,29 +75,37 @@ function ProductMock() {
   );
 }
 
-export function Hero({ category }: { category: string }) {
+export function Hero({ content }: { content: HeroContent }) {
   return (
     <section className="relative overflow-hidden">
       <div aria-hidden className="absolute inset-x-0 top-0 -z-10 h-[32rem] bg-[radial-gradient(60%_60%_at_50%_0%,var(--primary-soft),transparent)]" />
       <div className="mx-auto grid w-full max-w-7xl items-center gap-14 px-5 pb-20 pt-12 sm:px-8 sm:pt-20 lg:grid-cols-[1.05fr_1fr] lg:gap-10 lg:pb-28 lg:pt-24">
-        <div className="animate-fade-up">
-          <Badge tone="primary" className="mb-6 px-3 py-1 text-[13px]">
-            {category}
-          </Badge>
+        <div className="min-w-0 animate-fade-up">
+          {content.eyebrow && (
+            <Badge tone="primary" className="mb-6 px-3 py-1 text-[13px]">
+              {content.eyebrow}
+            </Badge>
+          )}
           <h1 className="text-balance text-4xl font-semibold leading-[1.08] tracking-tight sm:text-5xl lg:text-6xl">
-            Engineering digital products <span className="text-primary">built to scale.</span>
+            {content.headline}
+            {content.highlight && (
+              <>
+                {' '}
+                <span className="text-primary">{content.highlight}</span>
+              </>
+            )}
           </h1>
-          <p className="mt-6 max-w-xl text-pretty text-lg text-muted sm:text-xl">
-            Valorian Studio designs and builds custom software, web applications, SaaS platforms, mobile apps and AI-powered solutions for businesses that plan to grow.
-          </p>
+          <p className="mt-6 max-w-xl text-pretty text-lg text-muted sm:text-xl">{content.description}</p>
           <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-            <ButtonLink href="/contact" size="lg">
-              Start a Project
+            <ButtonLink href={content.primaryUrl} size="lg">
+              {content.primaryLabel}
               <ArrowRight className="size-4" aria-hidden />
             </ButtonLink>
-            <ButtonLink href="/demos" variant="secondary" size="lg">
-              Explore Our Work
-            </ButtonLink>
+            {content.secondaryLabel && content.secondaryUrl && (
+              <ButtonLink href={content.secondaryUrl} variant="secondary" size="lg">
+                {content.secondaryLabel}
+              </ButtonLink>
+            )}
           </div>
           <ul className="mt-10 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted">
             {['Production-grade engineering', 'Transparent delivery', 'Built for performance'].map((item) => (
@@ -107,7 +116,12 @@ export function Hero({ category }: { category: string }) {
             ))}
           </ul>
         </div>
-        <ProductMock />
+        {content.imageUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={content.imageUrl} alt="" width={900} height={700} fetchPriority="high" className="mx-auto w-full max-w-xl rounded-2xl border border-border shadow-2xl shadow-primary/10 lg:max-w-none" />
+        ) : (
+          <ProductMock />
+        )}
       </div>
     </section>
   );

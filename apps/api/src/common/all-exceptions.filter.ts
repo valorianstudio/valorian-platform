@@ -34,8 +34,9 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const statusCode = exception.getStatus();
     const response = exception.getResponse();
     if (typeof response === 'string') return { statusCode, message: response };
-    const { message } = response as { message?: string | string[] };
+    const { message, errors } = response as { message?: string | string[]; errors?: string[] };
     if (Array.isArray(message)) return { statusCode, message: 'Validation failed', errors: message };
+    if (Array.isArray(errors)) return { statusCode, message: message ?? exception.message, errors };
     return { statusCode, message: message ?? exception.message };
   }
 }

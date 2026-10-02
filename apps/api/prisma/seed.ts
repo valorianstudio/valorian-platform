@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import * as argon2 from 'argon2';
+import { seedContent } from './seed-content';
 
 try {
   process.loadEnvFile();
@@ -37,6 +38,8 @@ async function main(): Promise<void> {
       defaultCurrency: 'USD',
     },
   });
+
+  await seedContent(prisma);
 }
 
 main()

@@ -1,19 +1,21 @@
 import { Wrench } from 'lucide-react';
 import { SiteFooter } from '@/components/site/site-footer';
 import { SiteHeader } from '@/components/site/site-header';
+import { getNavigation } from '@/lib/cms';
 import { getSiteSettings } from '@/lib/server-api';
 
-export const revalidate = 60;
+export const dynamic = 'force-dynamic';
 
 export default async function SiteLayout({ children }: { children: React.ReactNode }) {
-  const settings = await getSiteSettings();
+  const [settings, navigation] = await Promise.all([getSiteSettings(), getNavigation()]);
+  const headerItems = navigation.items.filter((item) => item.location === 'HEADER');
 
   return (
     <>
       <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground">
         Skip to content
       </a>
-      <SiteHeader brandName={settings.brandName} />
+      <SiteHeader brandName={settings.brandName} items={headerItems} cta={navigation.cta} />
       <main id="main" className="min-h-[70vh]">
         {settings.maintenanceMode ? (
           <div className="mx-auto flex max-w-xl flex-col items-center px-5 py-32 text-center">
@@ -33,7 +35,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
           children
         )}
       </main>
-      <SiteFooter settings={settings} />
+      <SiteFooter settings={settings} items={navigation.items} />
     </>
   );
 }

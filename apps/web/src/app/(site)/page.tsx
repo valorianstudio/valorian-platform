@@ -1,18 +1,47 @@
+import type { Metadata } from 'next';
+import { CapabilitySection, CtaBand, ProcessSection, TechSection, WhySection, WorkSection } from '@/components/site/blocks';
 import { Hero } from '@/components/site/home/hero';
-import { CapabilityPreview, DemoPreviewSection, FinalCta, ProcessPreview, WhyValorian } from '@/components/site/home/sections';
+import { buildMetadata, findSection, getHome } from '@/lib/cms';
+import type { CtaContent, HeroContent, HomeData, IntroContent } from '@/lib/cms-types';
 import { getSiteSettings } from '@/lib/server-api';
 
+export async function generateMetadata(): Promise<Metadata> {
+  const [home, settings] = await Promise.all([getHome(), getSiteSettings()]);
+  return buildMetadata(home?.seo, { title: `${settings.companyName} | ${settings.tagline}`, description: settings.description, path: '/' });
+}
+
+function renderSection(key: string, home: HomeData) {
+  const content = findSection<IntroContent & HeroContent & CtaContent>(home.sections, key);
+  if (!content) return null;
+  switch (key) {
+    case 'hero':
+      return <Hero content={content} />;
+    case 'capabilities':
+      return <CapabilitySection intro={content} services={home.services} />;
+    case 'why':
+      return <WhySection intro={content} values={home.values} />;
+    case 'featuredWork':
+      return <WorkSection intro={content} work={home.work} />;
+    case 'process':
+      return <ProcessSection intro={content} steps={home.steps} />;
+    case 'technology':
+      return <TechSection intro={content} technologies={home.technologies} />;
+    case 'cta':
+      return <CtaBand content={content} />;
+    default:
+      return null;
+  }
+}
+
 export default async function HomePage() {
-  const settings = await getSiteSettings();
+  const home = await getHome();
+  if (!home) throw new Error('Homepage content is unavailable.');
 
   return (
     <>
-      <Hero category={settings.tagline} />
-      <CapabilityPreview />
-      <WhyValorian companyName={settings.companyName} />
-      <DemoPreviewSection />
-      <ProcessPreview />
-      <FinalCta companyName={settings.companyName} />
+      {home.sections.map((section) => (
+        <div key={section.key}>{renderSection(section.key, home)}</div>
+      ))}
     </>
   );
 }

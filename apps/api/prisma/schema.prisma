@@ -45,6 +45,229 @@ model SiteSetting {
   logoDarkUrl     String?
   faviconUrl      String?
   maintenanceMode Boolean  @default(false)
+  copyrightText   String?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+}
+
+enum ContentStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum PageKey {
+  HOME
+  ABOUT
+  SERVICES
+  SOLUTIONS
+}
+
+enum NavLocation {
+  HEADER
+  FOOTER
+  LEGAL
+}
+
+enum TechCategory {
+  FRONTEND
+  BACKEND
+  DATABASE
+  INFRASTRUCTURE
+  MOBILE
+  AI
+  DEVOPS
+}
+
+enum FaqCategory {
+  GENERAL
+  DEVELOPMENT
+  PRICING
+  PROCESS
+  SUPPORT
+}
+
+model Page {
+  key             PageKey       @id
+  metaTitle       String?
+  metaDescription String?
+  ogImageUrl      String?
+  canonicalUrl    String?
+  noindex         Boolean       @default(false)
+  updatedAt       DateTime      @updatedAt
+  sections        PageSection[]
+}
+
+model PageSection {
+  id           String   @id @default(cuid())
+  pageKey      PageKey
+  key          String
+  enabled      Boolean  @default(true)
+  displayOrder Int      @default(0)
+  content      Json
+  updatedAt    DateTime @updatedAt
+  page         Page     @relation(fields: [pageKey], references: [key], onDelete: Cascade)
+
+  @@unique([pageKey, key])
+  @@index([pageKey, displayOrder])
+}
+
+model Service {
+  id               String        @id @default(cuid())
+  slug             String        @unique
+  title            String
+  shortDescription String
+  description      String
+  icon             String        @default("code")
+  heroTitle        String?
+  heroSubtitle     String?
+  features         Json          @default("[]")
+  benefits         String[]
+  ctaLabel         String?
+  ctaUrl           String?
+  featured         Boolean       @default(false)
+  status           ContentStatus @default(DRAFT)
+  displayOrder     Int           @default(0)
+  metaTitle        String?
+  metaDescription  String?
+  ogImageUrl       String?
+  canonicalUrl     String?
+  noindex          Boolean       @default(false)
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  technologies     Technology[]  @relation("ServiceTechnologies")
+  industries       Industry[]    @relation("IndustryServices")
+
+  @@index([status, displayOrder])
+}
+
+model Industry {
+  id               String        @id @default(cuid())
+  slug             String        @unique
+  name             String
+  shortDescription String
+  overview         String
+  icon             String        @default("briefcase")
+  problems         String[]
+  approach         String
+  benefits         String[]
+  ctaLabel         String?
+  ctaUrl           String?
+  coverImageUrl    String?
+  featured         Boolean       @default(false)
+  status           ContentStatus @default(DRAFT)
+  displayOrder     Int           @default(0)
+  metaTitle        String?
+  metaDescription  String?
+  ogImageUrl       String?
+  canonicalUrl     String?
+  noindex          Boolean       @default(false)
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  technologies     Technology[]  @relation("IndustryTechnologies")
+  services         Service[]     @relation("IndustryServices")
+
+  @@index([status, displayOrder])
+}
+
+model Technology {
+  id           String       @id @default(cuid())
+  slug         String       @unique
+  name         String
+  category     TechCategory
+  description  String?
+  logoUrl      String?
+  websiteUrl   String?
+  featured     Boolean      @default(false)
+  active       Boolean      @default(true)
+  displayOrder Int          @default(0)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  services     Service[]    @relation("ServiceTechnologies")
+  industries   Industry[]   @relation("IndustryTechnologies")
+
+  @@index([active, featured, displayOrder])
+}
+
+model ProcessStep {
+  id           String   @id @default(cuid())
+  title        String
+  label        String?
+  description  String
+  displayOrder Int      @default(0)
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([active, displayOrder])
+}
+
+model ValueProp {
+  id           String   @id @default(cuid())
+  title        String
+  description  String
+  icon         String   @default("sparkles")
+  highlight    String?
+  displayOrder Int      @default(0)
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([active, displayOrder])
+}
+
+model Faq {
+  id           String      @id @default(cuid())
+  question     String
+  answer       String
+  category     FaqCategory @default(GENERAL)
+  featured     Boolean     @default(false)
+  active       Boolean     @default(true)
+  displayOrder Int         @default(0)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  @@index([active, displayOrder])
+}
+
+model Cta {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  label       String
+  url         String
+  description String?
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model NavigationItem {
+  id           String      @id @default(cuid())
+  label        String
+  url          String
+  location     NavLocation @default(HEADER)
+  displayOrder Int         @default(0)
+  enabled      Boolean     @default(true)
+  openInNewTab Boolean     @default(false)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  @@index([location, enabled, displayOrder])
+}
+
+model FeaturedWork {
+  id           String   @id @default(cuid())
+  title        String
+  description  String
+  category     String
+  imageUrl     String?
+  badge        String?
+  ctaUrl       String?
+  featured     Boolean  @default(true)
+  active       Boolean  @default(true)
+  displayOrder Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([active, featured, displayOrder])
 }

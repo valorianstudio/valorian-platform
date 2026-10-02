@@ -4,7 +4,7 @@ import { useState } from 'react';
 import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { BarChart3, BookOpen, Briefcase, Calculator, ChevronDown, FileText, Globe, Image as ImageIcon, LayoutDashboard, Layers, LogOut, Menu, MessageSquareQuote, Monitor, Search, Settings, User, Users, X } from 'lucide-react';
+import { BarChart3, BookOpen, Briefcase, Calculator, ChevronDown, Cpu, FileText, HelpCircle, Home, Image as ImageIcon, LayoutDashboard, Layers, LogOut, Menu, MessageSquareQuote, Monitor, MousePointerClick, Navigation, PanelBottom, Search, Settings, Sparkles, User, Users, Workflow, X } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { Wordmark } from '@/components/site/wordmark';
 import { Badge } from '@/components/ui/badge';
@@ -21,17 +21,40 @@ interface NavItem {
   Icon: LucideIcon;
 }
 
-const ACTIVE_NAV: NavItem[] = [
-  { href: '/admin', label: 'Dashboard', Icon: LayoutDashboard },
-  { href: '/admin/settings', label: 'Settings', Icon: Settings },
-  { href: '/admin/profile', label: 'Profile', Icon: User },
+const NAV_GROUPS: { title?: string; items: NavItem[] }[] = [
+  { items: [{ href: '/admin', label: 'Dashboard', Icon: LayoutDashboard }] },
+  {
+    title: 'Website',
+    items: [
+      { href: '/admin/website/home', label: 'Homepage', Icon: Home },
+      { href: '/admin/website/about', label: 'About', Icon: FileText },
+      { href: '/admin/website/work', label: 'Featured work', Icon: Monitor },
+      { href: '/admin/website/navigation', label: 'Navigation', Icon: Navigation },
+      { href: '/admin/website/footer', label: 'Footer', Icon: PanelBottom },
+    ],
+  },
+  {
+    title: 'Content',
+    items: [
+      { href: '/admin/services', label: 'Services', Icon: Layers },
+      { href: '/admin/solutions', label: 'Solutions', Icon: Briefcase },
+      { href: '/admin/technologies', label: 'Technologies', Icon: Cpu },
+      { href: '/admin/process', label: 'Process', Icon: Workflow },
+      { href: '/admin/why', label: 'Why Valorian', Icon: Sparkles },
+      { href: '/admin/faqs', label: 'FAQs', Icon: HelpCircle },
+      { href: '/admin/ctas', label: 'CTAs', Icon: MousePointerClick },
+    ],
+  },
+  {
+    items: [
+      { href: '/admin/settings', label: 'Settings', Icon: Settings },
+      { href: '/admin/profile', label: 'Profile', Icon: User },
+    ],
+  },
 ];
 
 const UPCOMING_NAV: Omit<NavItem, 'href'>[] = [
-  { label: 'Website', Icon: Globe },
   { label: 'Demos', Icon: Monitor },
-  { label: 'Services', Icon: Layers },
-  { label: 'Solutions', Icon: Briefcase },
   { label: 'Estimator', Icon: Calculator },
   { label: 'Leads', Icon: Users },
   { label: 'Case Studies', Icon: FileText },
@@ -43,29 +66,34 @@ const UPCOMING_NAV: Omit<NavItem, 'href'>[] = [
 ];
 
 function SidebarNav({ pathname }: { pathname: string }) {
-  const isActive = (href: string) => (href === '/admin' ? pathname === href : pathname.startsWith(href));
+  const isActive = (href: string) => (href === '/admin' ? pathname === href : pathname === href || pathname.startsWith(`${href}/`));
 
   return (
-    <nav aria-label="Admin" className="flex-1 space-y-6 overflow-y-auto p-3">
-      <ul className="space-y-1">
-        {ACTIVE_NAV.map(({ href, label, Icon }) => (
-          <li key={href}>
-            <Link
-              href={href}
-              aria-current={isActive(href) ? 'page' : undefined}
-              className={cn(
-                'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
-                isActive(href) ? 'bg-primary-soft text-primary' : 'text-muted hover:bg-surface-strong hover:text-foreground',
-              )}
-            >
-              <Icon className="size-4" aria-hidden />
-              {label}
-            </Link>
-          </li>
-        ))}
-      </ul>
+    <nav aria-label="Admin" className="flex-1 space-y-5 overflow-y-auto p-3">
+      {NAV_GROUPS.map((group, index) => (
+        <div key={group.title ?? index}>
+          {group.title && <p className="px-3 pb-1.5 text-xs font-medium uppercase tracking-wide text-muted/70">{group.title}</p>}
+          <ul className="space-y-0.5">
+            {group.items.map(({ href, label, Icon }) => (
+              <li key={href}>
+                <Link
+                  href={href}
+                  aria-current={isActive(href) ? 'page' : undefined}
+                  className={cn(
+                    'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                    isActive(href) ? 'bg-primary-soft text-primary' : 'text-muted hover:bg-surface-strong hover:text-foreground',
+                  )}
+                >
+                  <Icon className="size-4" aria-hidden />
+                  {label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
       <div>
-        <p className="px-3 pb-2 text-xs font-medium uppercase tracking-wide text-muted/70">Coming later</p>
+        <p className="px-3 pb-1.5 text-xs font-medium uppercase tracking-wide text-muted/70">Coming later</p>
         <ul className="space-y-0.5">
           {UPCOMING_NAV.map(({ label, Icon }) => (
             <li key={label}>

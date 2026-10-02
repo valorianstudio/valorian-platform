@@ -6,15 +6,18 @@ import { usePathname } from 'next/navigation';
 import { Menu, X } from 'lucide-react';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { ButtonLink } from '@/components/ui/button';
-import { NAV_LINKS } from '@/lib/site';
+import type { CtaLink, NavItem } from '@/lib/cms-types';
 import { cn } from '@/lib/cn';
 import { Wordmark } from './wordmark';
 
-export function SiteHeader({ brandName }: { brandName: string }) {
+export function SiteHeader({ brandName, items, cta }: { brandName: string; items: NavItem[]; cta: CtaLink | null }) {
   const pathname = usePathname();
   const [openAt, setOpenAt] = useState<string | null>(null);
   const [scrolled, setScrolled] = useState(false);
   const open = openAt === pathname;
+  const links = items.map((item) => ({ href: item.url, label: item.label, newTab: item.openInNewTab }));
+  const ctaLabel = cta?.label ?? 'Start a Project';
+  const ctaUrl = cta?.url ?? '/contact';
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -30,7 +33,7 @@ export function SiteHeader({ brandName }: { brandName: string }) {
     };
   }, [open]);
 
-  const isActive = (href: string) => (href === '/' ? pathname === '/' : pathname.startsWith(href));
+  const isActive = (href: string) => (href === '/' ? pathname === '/' : href.startsWith('/') && pathname.startsWith(href));
 
   return (
     <header
@@ -44,10 +47,11 @@ export function SiteHeader({ brandName }: { brandName: string }) {
 
         <nav aria-label="Primary" className="hidden lg:block">
           <ul className="flex items-center gap-1">
-            {NAV_LINKS.map((link) => (
-              <li key={link.href}>
+            {links.map((link) => (
+              <li key={`${link.href}-${link.label}`}>
                 <Link
                   href={link.href}
+                  {...(link.newTab ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
                   aria-current={isActive(link.href) ? 'page' : undefined}
                   className={cn(
                     'rounded-lg px-3 py-2 text-sm font-medium transition-colors hover:text-foreground',
@@ -63,8 +67,8 @@ export function SiteHeader({ brandName }: { brandName: string }) {
 
         <div className="flex items-center gap-1.5">
           <ThemeToggle />
-          <ButtonLink href="/contact" size="sm" className="hidden sm:inline-flex">
-            Start a Project
+          <ButtonLink href={ctaUrl} size="sm" className="hidden sm:inline-flex">
+            {ctaLabel}
           </ButtonLink>
           <button
             type="button"
@@ -82,10 +86,11 @@ export function SiteHeader({ brandName }: { brandName: string }) {
       {open && (
         <div id="mobile-menu" className="fixed inset-x-0 top-16 bottom-0 overflow-y-auto border-t border-border bg-background lg:hidden">
           <nav aria-label="Mobile" className="mx-auto flex max-w-7xl flex-col gap-1 px-5 py-6 sm:px-8">
-            {NAV_LINKS.map((link) => (
+            {links.map((link) => (
               <Link
-                key={link.href}
+                key={`${link.href}-${link.label}`}
                 href={link.href}
+                {...(link.newTab ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
                 aria-current={isActive(link.href) ? 'page' : undefined}
                 className={cn(
                   'rounded-xl px-4 py-3.5 text-lg font-medium transition-colors hover:bg-surface-strong',
@@ -95,8 +100,8 @@ export function SiteHeader({ brandName }: { brandName: string }) {
                 {link.label}
               </Link>
             ))}
-            <ButtonLink href="/contact" size="lg" className="mt-4">
-              Start a Project
+            <ButtonLink href={ctaUrl} size="lg" className="mt-4">
+              {ctaLabel}
             </ButtonLink>
           </nav>
         </div>

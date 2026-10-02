@@ -1,0 +1,61 @@
+import {
+  BookOpen,
+  Bot,
+  Briefcase,
+  Code2,
+  Cpu,
+  Dumbbell,
+  Gauge,
+  Globe,
+  GraduationCap,
+  HeartPulse,
+  Layers,
+  Lightbulb,
+  Monitor,
+  Rocket,
+  Server,
+  ShieldCheck,
+  ShoppingCart,
+  Smartphone,
+  Sparkles,
+  Store,
+  Users,
+  Utensils,
+  Workflow,
+  Wrench,
+  Zap,
+} from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
+import type { IconName } from './icon-names';
+
+export const ICONS: Record<IconName, LucideIcon> = {
+  'book-open': BookOpen,
+  bot: Bot,
+  briefcase: Briefcase,
+  code: Code2,
+  cpu: Cpu,
+  dumbbell: Dumbbell,
+  gauge: Gauge,
+  globe: Globe,
+  'graduation-cap': GraduationCap,
+  'heart-pulse': HeartPulse,
+  layers: Layers,
+  lightbulb: Lightbulb,
+  monitor: Monitor,
+  rocket: Rocket,
+  server: Server,
+  'shield-check': ShieldCheck,
+  'shopping-cart': ShoppingCart,
+  smartphone: Smartphone,
+  sparkles: Sparkles,
+  store: Store,
+  users: Users,
+  utensils: Utensils,
+  workflow: Workflow,
+  wrench: Wrench,
+  zap: Zap,
+};
+
+export function getIcon(name: string): LucideIcon {
+  return ICONS[name as IconName] ?? Sparkles;
+}

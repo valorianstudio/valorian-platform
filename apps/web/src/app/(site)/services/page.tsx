@@ -1,23 +1,29 @@
 import type { Metadata } from 'next';
-import { ComingSoon } from '@/components/site/coming-soon';
+import { CtaBand, FaqSection, ProcessSection, ServiceGrid } from '@/components/site/blocks';
+import { PageHero } from '@/components/site/page-hero';
+import { Section } from '@/components/ui/section';
+import { buildMetadata, findSection, getServices } from '@/lib/cms';
+import type { CtaContent, PageHeroContent } from '@/lib/cms-types';
 
-export const metadata: Metadata = {
-  title: 'Services',
-  description: 'Custom software, web applications, SaaS, mobile apps, AI integration and backend engineering.',
-  alternates: { canonical: '/services' },
-};
+const FALLBACK = { title: 'Services', description: 'Custom software, web applications, SaaS, mobile apps, AI integration and backend engineering.', path: '/services' };
 
-export default function ServicesPage() {
+export async function generateMetadata(): Promise<Metadata> {
+  return buildMetadata((await getServices())?.seo, FALLBACK);
+}
+
+export default async function ServicesPage() {
+  const data = await getServices();
+  if (!data) throw new Error('Services content is unavailable.');
+  const hero = findSection<PageHeroContent>(data.sections, 'hero');
+  const cta = findSection<CtaContent>(data.sections, 'cta');
+
   return (
-    <ComingSoon
-      eyebrow="Services"
-      title="Full-cycle software engineering"
-      description="Strategy, design and engineering under one roof, from a first prototype to a platform serving thousands."
-      highlights={[
-        { title: 'Product engineering', description: 'Web, mobile and SaaS products built on clean, scalable architecture.' },
-        { title: 'Backend & integrations', description: 'APIs, data pipelines and third-party integrations you can rely on.' },
-        { title: 'AI & automation', description: 'Practical AI features and workflow automation that save real time.' },
-      ]}
-    />
+    <>
+      <PageHero eyebrow={hero?.eyebrow ?? 'Services'} title={hero?.title ?? 'Services'} description={hero?.description ?? FALLBACK.description} />
+      <Section>{data.services.length > 0 ? <ServiceGrid services={data.services} /> : <p className="text-muted">Services will be listed here soon.</p>}</Section>
+      <ProcessSection intro={{ eyebrow: 'How we work', title: 'A clear path from idea to scale' }} steps={data.steps} />
+      <FaqSection faqs={data.faqs} />
+      {cta && <CtaBand content={cta} />}
+    </>
   );
 }
