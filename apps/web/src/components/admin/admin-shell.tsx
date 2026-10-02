@@ -1,0 +1,168 @@
+'use client';
+
+import { useState } from 'react';
+import type { ReactNode } from 'react';
+import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
+import { BarChart3, BookOpen, Briefcase, Calculator, ChevronDown, FileText, Globe, Image as ImageIcon, LayoutDashboard, Layers, LogOut, Menu, MessageSquareQuote, Monitor, Search, Settings, User, Users, X } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
+import { Wordmark } from '@/components/site/wordmark';
+import { Badge } from '@/components/ui/badge';
+import { Dropdown, menuItemClass } from '@/components/ui/dropdown';
+import { ThemeToggle } from '@/components/ui/theme-toggle';
+import { Tooltip } from '@/components/ui/tooltip';
+import { apiRequest } from '@/lib/client-api';
+import { cn } from '@/lib/cn';
+import type { AdminProfile } from '@/lib/types';
+
+interface NavItem {
+  href: string;
+  label: string;
+  Icon: LucideIcon;
+}
+
+const ACTIVE_NAV: NavItem[] = [
+  { href: '/admin', label: 'Dashboard', Icon: LayoutDashboard },
+  { href: '/admin/settings', label: 'Settings', Icon: Settings },
+  { href: '/admin/profile', label: 'Profile', Icon: User },
+];
+
+const UPCOMING_NAV: Omit<NavItem, 'href'>[] = [
+  { label: 'Website', Icon: Globe },
+  { label: 'Demos', Icon: Monitor },
+  { label: 'Services', Icon: Layers },
+  { label: 'Solutions', Icon: Briefcase },
+  { label: 'Estimator', Icon: Calculator },
+  { label: 'Leads', Icon: Users },
+  { label: 'Case Studies', Icon: FileText },
+  { label: 'Testimonials', Icon: MessageSquareQuote },
+  { label: 'Blog', Icon: BookOpen },
+  { label: 'Media', Icon: ImageIcon },
+  { label: 'SEO', Icon: Search },
+  { label: 'Analytics', Icon: BarChart3 },
+];
+
+function SidebarNav({ pathname }: { pathname: string }) {
+  const isActive = (href: string) => (href === '/admin' ? pathname === href : pathname.startsWith(href));
+
+  return (
+    <nav aria-label="Admin" className="flex-1 space-y-6 overflow-y-auto p-3">
+      <ul className="space-y-1">
+        {ACTIVE_NAV.map(({ href, label, Icon }) => (
+          <li key={href}>
+            <Link
+              href={href}
+              aria-current={isActive(href) ? 'page' : undefined}
+              className={cn(
+                'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
+                isActive(href) ? 'bg-primary-soft text-primary' : 'text-muted hover:bg-surface-strong hover:text-foreground',
+              )}
+            >
+              <Icon className="size-4" aria-hidden />
+              {label}
+            </Link>
+          </li>
+        ))}
+      </ul>
+      <div>
+        <p className="px-3 pb-2 text-xs font-medium uppercase tracking-wide text-muted/70">Coming later</p>
+        <ul className="space-y-0.5">
+          {UPCOMING_NAV.map(({ label, Icon }) => (
+            <li key={label}>
+              <Tooltip text="Available in a later phase">
+                <span aria-disabled="true" className="flex cursor-not-allowed items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted/50">
+                  <Icon className="size-4" aria-hidden />
+                  {label}
+                </span>
+              </Tooltip>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </nav>
+  );
+}
+
+export function AdminShell({ admin, brandName, children }: { admin: AdminProfile; brandName: string; children: ReactNode }) {
+  const pathname = usePathname();
+  const router = useRouter();
+  const [openAt, setOpenAt] = useState<string | null>(null);
+  const [signingOut, setSigningOut] = useState(false);
+  const drawerOpen = openAt === pathname;
+
+  async function signOut() {
+    if (signingOut) return;
+    setSigningOut(true);
+    try {
+      await apiRequest('POST', '/auth/logout');
+    } finally {
+      router.replace('/admin/login');
+      router.refresh();
+    }
+  }
+
+  return (
+    <div className="min-h-screen bg-surface lg:grid lg:grid-cols-[16rem_1fr]">
+      <aside className="sticky top-0 hidden h-screen flex-col border-r border-border bg-background lg:flex">
+        <div className="flex h-16 items-center border-b border-border px-5">
+          <Wordmark name={brandName} href="/admin" />
+        </div>
+        <SidebarNav pathname={pathname} />
+      </aside>
+
+      {drawerOpen && (
+        <div className="fixed inset-0 z-50 lg:hidden">
+          <button type="button" aria-label="Close menu" className="absolute inset-0 bg-foreground/40" onClick={() => setOpenAt(null)} />
+          <aside className="absolute inset-y-0 left-0 flex w-72 max-w-[85vw] flex-col bg-background shadow-xl">
+            <div className="flex h-16 items-center justify-between border-b border-border px-5">
+              <Wordmark name={brandName} href="/admin" />
+              <button type="button" aria-label="Close menu" onClick={() => setOpenAt(null)} className="grid size-9 place-items-center rounded-lg hover:bg-surface-strong">
+                <X className="size-5" aria-hidden />
+              </button>
+            </div>
+            <SidebarNav pathname={pathname} />
+          </aside>
+        </div>
+      )}
+
+      <div className="min-w-0">
+        <header className="sticky top-0 z-40 flex h-16 items-center justify-between gap-3 border-b border-border bg-background/90 px-4 backdrop-blur-md sm:px-6">
+          <button type="button" aria-label="Open menu" aria-expanded={drawerOpen} onClick={() => setOpenAt(pathname)} className="grid size-10 place-items-center rounded-lg hover:bg-surface-strong lg:hidden">
+            <Menu className="size-5" aria-hidden />
+          </button>
+          <div className="ml-auto flex items-center gap-2">
+            <Link href="/" target="_blank" className="hidden rounded-lg px-3 py-2 text-sm text-muted hover:text-foreground sm:block">
+              View site
+            </Link>
+            <ThemeToggle />
+            <Dropdown
+              label="Account menu"
+              trigger={
+                <span className="flex items-center gap-2 rounded-lg py-1 pl-1 pr-2 hover:bg-surface-strong">
+                  <span className="grid size-8 place-items-center rounded-full bg-primary text-sm font-semibold text-primary-foreground">{admin.name.charAt(0).toUpperCase()}</span>
+                  <ChevronDown className="size-4 text-muted" aria-hidden />
+                </span>
+              }
+            >
+              <div className="px-3 py-2">
+                <p className="truncate text-sm font-medium">{admin.name}</p>
+                <p className="truncate text-xs text-muted">{admin.email}</p>
+                <Badge tone="accent" className="mt-2">
+                  Super Admin
+                </Badge>
+              </div>
+              <hr className="my-1 border-border" />
+              <Link role="menuitem" href="/admin/profile" className={menuItemClass}>
+                <User className="size-4" aria-hidden /> Profile
+              </Link>
+              <button type="button" role="menuitem" onClick={signOut} disabled={signingOut} className={cn(menuItemClass, 'text-danger')}>
+                <LogOut className="size-4" aria-hidden /> {signingOut ? 'Signing out…' : 'Sign out'}
+              </button>
+            </Dropdown>
+          </div>
+        </header>
+        <main className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-6 lg:py-10">{children}</main>
+      </div>
+    </div>
+  );
+}

@@ -1,0 +1,50 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum AdminRole {
+  SUPER_ADMIN
+}
+
+model AdminUser {
+  id           String    @id @default(cuid())
+  name         String
+  email        String    @unique
+  passwordHash String
+  role         AdminRole @default(SUPER_ADMIN)
+  isActive     Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  lastLoginAt  DateTime?
+}
+
+model SiteSetting {
+  id              String   @id @default("site")
+  brandName       String
+  companyName     String
+  tagline         String
+  description     String
+  primaryEmail    String
+  secondaryEmail  String?
+  phone           String?
+  whatsapp        String?
+  websiteUrl      String?
+  location        String?
+  linkedinUrl     String?
+  githubUrl       String?
+  facebookUrl     String?
+  instagramUrl    String?
+  twitterUrl      String?
+  defaultCurrency String   @default("USD")
+  logoLightUrl    String?
+  logoDarkUrl     String?
+  faviconUrl      String?
+  maintenanceMode Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
