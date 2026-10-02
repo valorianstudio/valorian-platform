@@ -2,14 +2,12 @@ import type { Metadata } from 'next';
 import { PageHero } from '@/components/site/page-hero';
 import { EstimatorWizard } from '@/components/site/estimator/wizard';
 import { ButtonLink } from '@/components/ui/button';
-import { getEstimatorConfig, getLeadConfig } from '@/lib/cms';
+import { buildMetadata, getEstimatorConfig, getLeadConfig, getPageSeo } from '@/lib/cms';
 import { getSiteSettings } from '@/lib/server-api';
 
-export const metadata: Metadata = {
-  title: 'Estimate Your Project',
-  description: 'Configure your project and get an instant estimate of the investment and timeline.',
-  alternates: { canonical: '/estimate' },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return buildMetadata(await getPageSeo('ESTIMATE'), { title: 'Estimate Your Project', description: 'Configure your project and get an instant estimate of the investment and timeline.', path: '/estimate' });
+}
 
 type Params = Record<string, string | string[] | undefined>;
 const first = (value: string | string[] | undefined) => (Array.isArray(value) ? value[0] : value) ?? '';

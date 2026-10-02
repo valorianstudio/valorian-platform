@@ -1,11 +1,12 @@
 'use client';
 
 import { useId, useRef, useState } from 'react';
-import { ImageIcon, Trash2, Upload } from 'lucide-react';
+import { ImageIcon, Images, Trash2, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/field';
 import { useToast } from '@/components/ui/toast';
 import { ApiError, uploadImage } from '@/lib/client-api';
+import { MediaPicker } from '../media/media-picker';
 
 interface ImageInputProps {
   label: string;
@@ -20,6 +21,7 @@ export function ImageInput({ label, value, onChange, hint, disabled }: ImageInpu
   const toast = useToast();
   const file = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
+  const [pickerOpen, setPickerOpen] = useState(false);
 
   async function onFile(selected: File | undefined) {
     if (!selected) return;
@@ -56,6 +58,9 @@ export function ImageInput({ label, value, onChange, hint, disabled }: ImageInpu
             <Button size="sm" variant="secondary" loading={uploading} disabled={disabled} onClick={() => file.current?.click()}>
               <Upload className="size-4" aria-hidden /> {value ? 'Replace' : 'Upload'}
             </Button>
+            <Button size="sm" variant="secondary" disabled={disabled} onClick={() => setPickerOpen(true)}>
+              <Images className="size-4" aria-hidden /> Library
+            </Button>
             {value && (
               <Button size="sm" variant="ghost" className="text-danger" disabled={disabled} onClick={() => onChange('')}>
                 <Trash2 className="size-4" aria-hidden /> Remove
@@ -65,6 +70,14 @@ export function ImageInput({ label, value, onChange, hint, disabled }: ImageInpu
           {hint && <p className="text-sm text-muted">{hint}</p>}
         </div>
       </div>
+      <MediaPicker
+        open={pickerOpen}
+        onClose={() => setPickerOpen(false)}
+        onSelect={(media) => {
+          onChange(media.url);
+          setPickerOpen(false);
+        }}
+      />
     </div>
   );
 }

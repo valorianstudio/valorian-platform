@@ -1,7 +1,7 @@
 'use client';
 
 import { useId } from 'react';
-import type { InputHTMLAttributes, ReactNode, SelectHTMLAttributes, TextareaHTMLAttributes } from 'react';
+import type { ComponentProps, InputHTMLAttributes, ReactNode, SelectHTMLAttributes } from 'react';
 import { cn } from '@/lib/cn';
 
 const control =
@@ -47,7 +47,7 @@ export function Input({ className, ...props }: InputHTMLAttributes<HTMLInputElem
   return <input className={cn(control, 'h-11', className)} {...props} />;
 }
 
-export function Textarea({ className, ...props }: TextareaHTMLAttributes<HTMLTextAreaElement>) {
+export function Textarea({ className, ...props }: ComponentProps<'textarea'>) {
   return <textarea className={cn(control, 'min-h-28 py-2.5', className)} {...props} />;
 }
 

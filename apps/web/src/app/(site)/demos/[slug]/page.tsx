@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ArrowRight, ArrowUpRight, Calculator, Check, Lightbulb, MessageCircle, Play } from 'lucide-react';
+import { Breadcrumbs } from '@/components/site/seo';
 import { CheckList, CtaBand, TechList } from '@/components/site/blocks';
 import { DEMO_LABELS, DemoCard, DemoVisual, PlatformIndicators } from '@/components/site/demos/demo-card';
 import { Gallery } from '@/components/site/demos/gallery';
@@ -156,11 +157,7 @@ export default async function DemoDetailPage({ params, searchParams }: { params:
         <div aria-hidden className="absolute inset-x-0 top-0 -z-10 h-80 bg-[radial-gradient(50%_80%_at_50%_0%,var(--primary-soft),transparent)]" />
         <div className="mx-auto grid w-full max-w-7xl gap-10 px-5 py-14 sm:px-8 sm:py-20 lg:grid-cols-[1.1fr_1fr] lg:items-center">
           <div className="min-w-0">
-            <nav aria-label="Breadcrumb" className="mb-6 text-sm text-muted">
-              <Link href="/demos" className="hover:text-foreground">Demos</Link>
-              <span aria-hidden> / </span>
-              <span className="text-foreground">{demo.name}</span>
-            </nav>
+            <Breadcrumbs items={[{ name: 'Demos', href: '/demos' }, { name: demo.name }]} />
             <div className="flex flex-wrap items-center gap-2">
               {demo.industry && <Badge tone="primary">{demo.industry.name}</Badge>}
               {demo.category && demo.category.name !== demo.industry?.name && <Badge>{demo.category.name}</Badge>}

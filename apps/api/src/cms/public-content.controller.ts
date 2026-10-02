@@ -2,6 +2,7 @@ import { applyDecorators, Controller, Get, Header, NotFoundException, Param } fr
 import { PageKey, Prisma } from '@prisma/client';
 import { demoCardSelect, demoOrder, publicDemoWhere } from '../demos/demo-queries';
 import { PrismaService } from '../prisma/prisma.service';
+import { articleCardSelect, caseCardSelect, publishedNow, testimonialSelect } from '../content/public-editorial.controller';
 
 const published = { status: 'PUBLISHED' } as const;
 const byOrder = [{ displayOrder: 'asc' }, { createdAt: 'asc' }] satisfies Prisma.ServiceOrderByWithRelationInput[];
@@ -60,15 +61,18 @@ export class PublicContentController {
 
   @CachedGet('home')
   async home() {
-    const [page, services, values, steps, technologies, demos] = await Promise.all([
+    const [page, services, values, steps, technologies, demos, caseStudies, testimonials, articles] = await Promise.all([
       this.page('HOME'),
       this.prisma.service.findMany({ where: { ...published, featured: true }, orderBy: byOrder, take: 9, select: serviceCard }),
       this.prisma.valueProp.findMany({ where: { active: true }, orderBy: byOrder, select: { id: true, title: true, description: true, icon: true, highlight: true } }),
       this.steps(),
       this.prisma.technology.findMany({ where: { ...activeTech, featured: true }, orderBy: byOrder, take: 24, select: technologyCard }),
       this.prisma.demo.findMany({ where: { ...publicDemoWhere, featured: true }, orderBy: demoOrder, take: 6, select: demoCardSelect }),
+      this.prisma.caseStudy.findMany({ where: { AND: [publishedNow(), { featured: true }] }, orderBy: [{ displayOrder: 'asc' }, { createdAt: 'desc' }], take: 3, select: caseCardSelect }),
+      this.prisma.testimonial.findMany({ where: { active: true, featured: true }, orderBy: [{ displayOrder: 'asc' }, { createdAt: 'desc' }], take: 3, select: testimonialSelect }),
+      this.prisma.article.findMany({ where: publishedNow(), orderBy: [{ featured: 'desc' }, { publishedAt: { sort: 'desc', nulls: 'last' } }], take: 3, select: articleCardSelect }),
     ]);
-    return { ...page, services, values, steps, technologies, demos };
+    return { ...page, services, values, steps, technologies, demos, caseStudies, testimonials, articles };
   }
 
   @CachedGet('about')
@@ -108,13 +112,16 @@ export class PublicContentController {
       },
     });
     if (!service) throw new NotFoundException();
-    const [steps, faqs, related, cta] = await Promise.all([
+    const [steps, faqs, related, cta, caseStudies, testimonials, articles] = await Promise.all([
       this.steps(),
       this.faqs(4),
       this.prisma.service.findMany({ where: { ...published, slug: { not: slug } }, orderBy: byOrder, take: 3, select: serviceCard }),
       this.cta('start-project'),
+      this.prisma.caseStudy.findMany({ where: { AND: [publishedNow(), { services: { some: { slug } } }] }, orderBy: [{ featured: 'desc' }, { createdAt: 'desc' }], take: 3, select: caseCardSelect }),
+      this.prisma.testimonial.findMany({ where: { active: true, service: { slug } }, orderBy: [{ featured: 'desc' }, { displayOrder: 'asc' }], take: 3, select: testimonialSelect }),
+      this.prisma.article.findMany({ where: { AND: [publishedNow(), { services: { some: { slug } } }] }, orderBy: [{ publishedAt: { sort: 'desc', nulls: 'last' } }], take: 3, select: articleCardSelect }),
     ]);
-    return { service, steps, faqs, related, cta };
+    return { service, steps, faqs, related, cta, caseStudies, testimonials, articles };
   }
 
   @CachedGet('solutions')
@@ -153,16 +160,22 @@ export class PublicContentController {
       },
     });
     if (!solution) throw new NotFoundException();
-    return { solution, cta: await this.cta('start-project') };
+    const [caseStudies, articles] = await Promise.all([
+      this.prisma.caseStudy.findMany({ where: { AND: [publishedNow(), { industry: { slug } }] }, orderBy: [{ featured: 'desc' }, { createdAt: 'desc' }], take: 3, select: caseCardSelect }),
+      this.prisma.article.findMany({ where: { AND: [publishedNow(), { industries: { some: { slug } } }] }, orderBy: [{ publishedAt: { sort: 'desc', nulls: 'last' } }], take: 3, select: articleCardSelect }),
+    ]);
+    return { solution, cta: await this.cta('start-project'), caseStudies, articles };
   }
 
   @CachedGet('slugs')
   async slugs() {
-    const [services, solutions, demos] = await Promise.all([
+    const [services, solutions, demos, caseStudies, articles] = await Promise.all([
       this.prisma.service.findMany({ where: { ...published, noindex: false }, select: { slug: true, updatedAt: true } }),
       this.prisma.industry.findMany({ where: { ...published, noindex: false }, select: { slug: true, updatedAt: true } }),
       this.prisma.demo.findMany({ where: { ...publicDemoWhere, noindex: false }, select: { slug: true, updatedAt: true } }),
+      this.prisma.caseStudy.findMany({ where: { AND: [publishedNow(), { noindex: false }] }, select: { slug: true, updatedAt: true } }),
+      this.prisma.article.findMany({ where: { AND: [publishedNow(), { noindex: false }] }, select: { slug: true, updatedAt: true } }),
     ]);
-    return { services, solutions, demos };
+    return { services, solutions, demos, caseStudies, articles };
   }
 }

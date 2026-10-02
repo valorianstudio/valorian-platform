@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import { ThemeProvider } from 'next-themes';
 import { ToastProvider } from '@/components/ui/toast';
+import { getSeoConfig } from '@/lib/cms';
 import { SITE_URL } from '@/lib/site';
 import { getSiteSettings } from '@/lib/server-api';
 import './globals.css';
@@ -9,21 +10,24 @@ import './globals.css';
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'swap' });
 
 export async function generateMetadata(): Promise<Metadata> {
-  const settings = await getSiteSettings();
+  const [settings, seo] = await Promise.all([getSiteSettings(), getSeoConfig()]);
+  const siteName = seo?.siteName || settings.companyName;
+  const template = (seo?.titleTemplate ?? '%s | {site}').replace('{site}', siteName);
+  const title = seo?.defaultTitle || `${settings.companyName} | ${settings.tagline}`;
+  const description = seo?.defaultDescription || settings.description;
+  const base = seo?.canonicalBaseUrl || SITE_URL;
+  const image = seo?.defaultOgImageUrl ?? undefined;
+  const handle = seo?.twitterHandle ? `@${seo.twitterHandle}` : undefined;
+
   return {
-    metadataBase: new URL(SITE_URL),
-    title: { default: `${settings.companyName} | ${settings.tagline}`, template: `%s | ${settings.companyName}` },
-    description: settings.description,
-    applicationName: settings.companyName,
-    openGraph: {
-      type: 'website',
-      siteName: settings.companyName,
-      title: `${settings.companyName} | ${settings.tagline}`,
-      description: settings.description,
-      url: SITE_URL,
-    },
-    twitter: { card: 'summary_large_image' },
+    metadataBase: new URL(base),
+    title: { default: title, template },
+    description,
+    applicationName: siteName,
+    openGraph: { type: 'website', siteName, title, description, url: base, images: image ? [{ url: image }] : undefined },
+    twitter: { card: image ? 'summary_large_image' : 'summary', site: handle, images: image ? [image] : undefined },
     alternates: { canonical: '/' },
+    robots: seo?.allowIndexing === false ? { index: false, follow: false } : undefined,
     icons: settings.faviconUrl ? { icon: settings.faviconUrl } : undefined,
   };
 }

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { CapabilitySection, CtaBand, DemoSection, ProcessSection, TechSection, WhySection } from '@/components/site/blocks';
+import { CaseStudiesSection, InsightsSection, TestimonialsSection } from '@/components/site/editorial';
 import { Hero } from '@/components/site/home/hero';
 import { buildMetadata, findSection, getHome } from '@/lib/cms';
 import type { CtaContent, HeroContent, HomeData, IntroContent } from '@/lib/cms-types';
@@ -26,6 +27,12 @@ function renderSection(key: string, home: HomeData) {
       return <ProcessSection intro={content} steps={home.steps} />;
     case 'technology':
       return <TechSection intro={content} technologies={home.technologies} />;
+    case 'caseStudies':
+      return <CaseStudiesSection intro={content} items={home.caseStudies} />;
+    case 'testimonials':
+      return <TestimonialsSection intro={content} items={home.testimonials} />;
+    case 'insights':
+      return <InsightsSection intro={content} items={home.articles} tone="surface" />;
     case 'cta':
       return <CtaBand content={content} />;
     default:

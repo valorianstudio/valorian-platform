@@ -6,15 +6,13 @@ import type { LeadContext } from '@/components/site/lead-form';
 import { PageHero } from '@/components/site/page-hero';
 import { Card } from '@/components/ui/card';
 import { Section } from '@/components/ui/section';
-import { getDemo, getLeadConfig, getService } from '@/lib/cms';
+import { buildMetadata, getDemo, getLeadConfig, getPageSeo, getService } from '@/lib/cms';
 import { getSiteSettings } from '@/lib/server-api';
 import { whatsappLink, whatsappMessages } from '@/lib/whatsapp';
 
-export const metadata: Metadata = {
-  title: 'Contact',
-  description: 'Tell us about your project. We will get back to you with a clear plan.',
-  alternates: { canonical: '/contact' },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return buildMetadata(await getPageSeo('CONTACT'), { title: 'Contact', description: 'Tell us about your project. We will get back to you with a clear plan.', path: '/contact' });
+}
 
 type Params = Record<string, string | string[] | undefined>;
 const first = (value: string | string[] | undefined) => (Array.isArray(value) ? value[0] : value) ?? '';

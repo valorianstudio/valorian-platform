@@ -57,6 +57,11 @@ enum ContentStatus {
 }
 
 enum PageKey {
+  DEMOS
+  CASE_STUDIES
+  INSIGHTS
+  CONTACT
+  ESTIMATE
   HOME
   ABOUT
   SERVICES
@@ -113,6 +118,9 @@ model PageSection {
 }
 
 model Service {
+  caseStudies CaseStudy[] @relation("CaseStudyServices")
+  articles Article[] @relation("ArticleServices")
+  testimonials Testimonial[]
   leads Lead[]
   id               String        @id @default(cuid())
   slug             String        @unique
@@ -145,6 +153,8 @@ model Service {
 }
 
 model Industry {
+  caseStudies CaseStudy[]
+  articles Article[] @relation("ArticleIndustries")
   id               String        @id @default(cuid())
   slug             String        @unique
   name             String
@@ -176,6 +186,7 @@ model Industry {
 }
 
 model Technology {
+  caseStudies CaseStudy[] @relation("CaseStudyTechnologies")
   id           String       @id @default(cuid())
   slug         String       @unique
   name         String
@@ -326,6 +337,7 @@ model DemoCategory {
 }
 
 model Demo {
+  caseStudies CaseStudy[] @relation("CaseStudyDemos")
   leads Lead[]
   id                String          @id @default(cuid())
   slug              String          @unique
@@ -788,4 +800,178 @@ model ContactInquiry {
   @@index([status])
   @@index([isRead])
   @@index([createdAt])
+}
+
+enum CaseMediaKind {
+  DESKTOP
+  MOBILE
+  DIAGRAM
+  PRODUCT
+}
+
+model Media {
+  id               String   @id @default(cuid())
+  filename         String   @unique
+  originalFilename String
+  url              String   @unique
+  mimeType         String
+  size             Int
+  width            Int?
+  height           Int?
+  altText          String?
+  title            String?
+  caption          String?
+  storageProvider  String   @default("local")
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([createdAt])
+  @@index([mimeType])
+}
+
+model SeoSettings {
+  id                 String   @id @default("seo")
+  siteName           String?
+  titleTemplate      String   @default("%s | {site}")
+  defaultTitle       String?
+  defaultDescription String?
+  defaultOgImageUrl  String?
+  canonicalBaseUrl   String?
+  twitterHandle      String?
+  allowIndexing      Boolean  @default(true)
+  updatedAt          DateTime @updatedAt
+}
+
+model Testimonial {
+  id             String     @id @default(cuid())
+  clientName     String
+  companyName    String?
+  position       String?
+  quote          String
+  imageUrl       String?
+  companyLogoUrl String?
+  rating         Int?
+  verified       Boolean    @default(false)
+  caseStudyId    String?
+  serviceId      String?
+  featured       Boolean    @default(false)
+  active         Boolean    @default(true)
+  displayOrder   Int        @default(0)
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+  caseStudy      CaseStudy? @relation(fields: [caseStudyId], references: [id], onDelete: SetNull)
+  service        Service?   @relation(fields: [serviceId], references: [id], onDelete: SetNull)
+
+  @@index([active, featured, displayOrder])
+}
+
+model CaseStudy {
+  id               String           @id @default(cuid())
+  slug             String           @unique
+  title            String
+  shortDescription String
+  fullOverview     String           @default("")
+  clientName       String?
+  clientLogoUrl    String?
+  clientApproved   Boolean          @default(false)
+  industryId       String?
+  projectType      String?
+  challenge        String?
+  solution         String?
+  approach         String?
+  keyFeatures      String[]
+  results          Json             @default("[]")
+  coverImageUrl    String?
+  featuredImageUrl String?
+  videoUrl         String?
+  ctaLabel         String?
+  ctaUrl           String?
+  status           ContentStatus    @default(DRAFT)
+  featured         Boolean          @default(false)
+  publishedAt      DateTime?
+  displayOrder     Int              @default(0)
+  metaTitle        String?
+  metaDescription  String?
+  ogImageUrl       String?
+  canonicalUrl     String?
+  noindex          Boolean          @default(false)
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  industry         Industry?        @relation(fields: [industryId], references: [id], onDelete: SetNull)
+  services         Service[]        @relation("CaseStudyServices")
+  technologies     Technology[]     @relation("CaseStudyTechnologies")
+  demos            Demo[]           @relation("CaseStudyDemos")
+  media            CaseStudyMedia[]
+  testimonials     Testimonial[]
+
+  @@index([status, publishedAt])
+  @@index([featured])
+  @@index([industryId])
+}
+
+model CaseStudyMedia {
+  id           String        @id @default(cuid())
+  caseStudyId  String
+  kind         CaseMediaKind @default(DESKTOP)
+  url          String
+  altText      String
+  caption      String?
+  featured     Boolean       @default(false)
+  active       Boolean       @default(true)
+  displayOrder Int           @default(0)
+  caseStudy    CaseStudy     @relation(fields: [caseStudyId], references: [id], onDelete: Cascade)
+
+  @@index([caseStudyId, displayOrder])
+}
+
+model ArticleCategory {
+  id           String    @id @default(cuid())
+  slug         String    @unique
+  name         String    @unique
+  description  String?
+  active       Boolean   @default(true)
+  displayOrder Int       @default(0)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  articles     Article[]
+}
+
+model ArticleTag {
+  id       String    @id @default(cuid())
+  slug     String    @unique
+  name     String    @unique
+  articles Article[]
+}
+
+model Article {
+  id               String           @id @default(cuid())
+  slug             String           @unique
+  title            String
+  excerpt          String
+  content          String
+  featuredImageUrl String?
+  featuredImageAlt String?
+  authorName       String?
+  authorAvatarUrl  String?
+  authorBio        String?
+  categoryId       String?
+  status           ContentStatus    @default(DRAFT)
+  featured         Boolean          @default(false)
+  publishedAt      DateTime?
+  readingTime      Int?
+  metaTitle        String?
+  metaDescription  String?
+  ogImageUrl       String?
+  canonicalUrl     String?
+  noindex          Boolean          @default(false)
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  category         ArticleCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  tags             ArticleTag[]
+  services         Service[]        @relation("ArticleServices")
+  industries       Industry[]       @relation("ArticleIndustries")
+
+  @@index([status, publishedAt])
+  @@index([featured])
+  @@index([categoryId])
 }

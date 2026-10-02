@@ -8,6 +8,7 @@ import { Section } from '@/components/ui/section';
 import { isExternal } from '@/lib/cms';
 import type { CtaContent, DemoCardData, FaqItem, IntroContent, ProcessStepItem, ServiceCard, TechnologyCard, ValueItem } from '@/lib/cms-types';
 import { DemoCard } from './demos/demo-card';
+import { JsonLd } from './seo';
 import { getIcon } from '@/lib/icons';
 
 export function SmartLink({ href, className, children, newTab }: { href: string; className?: string; children: ReactNode; newTab?: boolean }) {
@@ -213,6 +214,7 @@ export function FaqSection({ faqs, title = 'Frequently asked questions' }: { faq
   if (faqs.length === 0) return null;
   return (
     <Section eyebrow="FAQ" title={title}>
+      <JsonLd data={{ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faqs.map((faq) => ({ '@type': 'Question', name: faq.question, acceptedAnswer: { '@type': 'Answer', text: faq.answer } })) }} />
       <div className="max-w-3xl divide-y divide-border rounded-2xl border border-border">
         {faqs.map((faq) => (
           <details key={faq.id} className="group px-5 py-1 sm:px-6">

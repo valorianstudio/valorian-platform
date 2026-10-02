@@ -19,6 +19,7 @@ import { useToast } from '@/components/ui/toast';
 import { refreshContent } from '@/lib/actions';
 import { ApiError, apiRequest } from '@/lib/client-api';
 import { ICON_OPTIONS } from '@/lib/icon-names';
+import { CollectionTab, FieldsTab, TabCard, useSaver } from '@/components/admin/cms/editor-kit';
 import type { DemoFull, DemoPlatformData, NamedRef } from './types';
 
 interface Lookups {
@@ -36,51 +37,6 @@ const platformOptions: Option[] = [
   { value: 'MOBILE', label: 'Mobile App' },
   { value: 'BOTH', label: 'Both' },
 ];
-
-/** Shared save plumbing: busy flag, error banner, success toast, public cache refresh. */
-function useSaver() {
-  const toast = useToast();
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<ApiError | null>(null);
-
-  async function save<T>(action: () => Promise<T>, message: string): Promise<T | null> {
-    if (saving) return null;
-    setSaving(true);
-    setError(null);
-    try {
-      const result = await action();
-      await refreshContent();
-      toast.success(message);
-      return result;
-    } catch (e) {
-      setError(e instanceof ApiError ? e : new ApiError('Something went wrong.', 0));
-      return null;
-    } finally {
-      setSaving(false);
-    }
-  }
-  return { saving, error, save };
-}
-
-function TabCard({ children, error, footer }: { children: ReactNode; error: ApiError | null; footer: ReactNode }) {
-  return (
-    <Card className="space-y-6 p-4 sm:p-6">
-      <FormAlert error={error} />
-      {children}
-      <div>{footer}</div>
-    </Card>
-  );
-}
-
-function FieldsTab({ fields, initial, onSave, label = 'Save', relationOptions }: { fields: FieldDef[]; initial: Record<string, unknown> | null; onSave: (payload: Record<string, unknown>, saver: ReturnType<typeof useSaver>) => Promise<void>; label?: string; relationOptions?: RelationOptions }) {
-  const saver = useSaver();
-  const [values, setValues] = useState<FormValues>(() => initialValues(fields, initial, { featured: false, active: true, noindex: false }));
-  return (
-    <TabCard error={saver.error} footer={<Button loading={saver.saving} onClick={() => onSave(toPayload(fields, values), saver)}>{saver.saving ? 'Saving…' : label}</Button>}>
-      <EntityForm fields={fields} values={values} onChange={setValues} disabled={saver.saving} relationOptions={relationOptions} />
-    </TabCard>
-  );
-}
 
 function PlatformCard({ demoId, type, data, technologies }: { demoId: string; type: 'WEBSITE' | 'MOBILE'; data: DemoPlatformData | undefined; technologies: NamedRef[] }) {
   const mobile = type === 'MOBILE';
@@ -120,21 +76,6 @@ function PlatformCard({ demoId, type, data, technologies }: { demoId: string; ty
         {saver.saving ? 'Saving…' : `Save ${mobile ? 'mobile app' : 'website'}`}
       </Button>
     </Card>
-  );
-}
-
-function CollectionTab({ demoId, collection, field, initial, hint }: { demoId: string; collection: string; field: FieldDef & { kind: 'items' }; initial: Record<string, unknown>[]; hint: string }) {
-  const saver = useSaver();
-  const fields = [field];
-  const [values, setValues] = useState<FormValues>(() => initialValues(fields, { rows: initial }));
-  return (
-    <TabCard
-      error={saver.error}
-      footer={<Button loading={saver.saving} onClick={() => saver.save(() => apiRequest('PUT', `/admin/demos/${demoId}/${collection}`, values.rows), 'Saved.')}>{saver.saving ? 'Saving…' : 'Save'}</Button>}
-    >
-      <p className="text-sm text-muted">{hint}</p>
-      <EntityForm fields={fields} values={values} onChange={setValues} disabled={saver.saving} />
-    </TabCard>
   );
 }
 
@@ -316,10 +257,10 @@ export function DemoEditor({ demo, lookups }: { demo: DemoFull | null; lookups: 
               </>
             ),
           },
-          { id: 'features', label: 'Features', content: <CollectionTab demoId={demo.id} collection="features" field={featureFields('features')} initial={demo.features} hint="Features appear in the platform they are assigned to. Use the arrows to reorder." /> },
-          { id: 'modules', label: 'Modules', content: <CollectionTab demoId={demo.id} collection="modules" field={featureFields('modules')} initial={demo.modules} hint="Major product modules, separate from smaller features." /> },
-          { id: 'screenshots', label: 'Screenshots', content: <CollectionTab demoId={demo.id} collection="screenshots" field={screenshotsField} initial={demo.screenshots} hint="Upload PNG, JPEG, WebP or GIF up to 5 MB, or paste a hosted URL. Desktop and tablet shots belong to Website; mobile shots to Mobile App." /> },
-          { id: 'points', label: 'Benefits & use cases', content: <CollectionTab demoId={demo.id} collection="points" field={pointsField} initial={demo.points} hint="Short benefit and use-case statements." /> },
+          { id: 'features', label: 'Features', content: <CollectionTab endpoint={`/admin/demos/${demo.id}/features`} field={featureFields('features')} initial={demo.features} hint="Features appear in the platform they are assigned to. Use the arrows to reorder." /> },
+          { id: 'modules', label: 'Modules', content: <CollectionTab endpoint={`/admin/demos/${demo.id}/modules`} field={featureFields('modules')} initial={demo.modules} hint="Major product modules, separate from smaller features." /> },
+          { id: 'screenshots', label: 'Screenshots', content: <CollectionTab endpoint={`/admin/demos/${demo.id}/screenshots`} field={screenshotsField} initial={demo.screenshots} hint="Upload PNG, JPEG, WebP or GIF up to 5 MB, or paste a hosted URL. Desktop and tablet shots belong to Website; mobile shots to Mobile App." /> },
+          { id: 'points', label: 'Benefits & use cases', content: <CollectionTab endpoint={`/admin/demos/${demo.id}/points`} field={pointsField} initial={demo.points} hint="Short benefit and use-case statements." /> },
           { id: 'related', label: 'Related demos', content: <FieldsTab fields={relatedFields} initial={demo} onSave={patch('Related demos saved.')} relationOptions={relatedOptions} /> },
           { id: 'estimator', label: 'Estimator', content: <FieldsTab fields={estimatorFields} initial={demo} onSave={patch('Estimator features saved.')} relationOptions={estimatorOptions} /> },
           { id: 'seo', label: 'SEO', content: <FieldsTab fields={SEO_FIELDS} initial={demo} onSave={patch('SEO saved.')} /> },

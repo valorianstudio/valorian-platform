@@ -7,6 +7,7 @@ import { cn } from '@/lib/cn';
 import { blankItem } from './field-defs';
 import type { FieldDef, FormValues, ItemValue, RelationOptions } from './field-defs';
 import { ImageInput } from './image-input';
+import { MarkdownField } from './markdown-field';
 
 interface EntityFormProps {
   fields: FieldDef[];
@@ -152,6 +153,12 @@ export function EntityForm({ fields, values, onChange, relationOptions = {}, dis
               </Field>
             )}
             {field.kind === 'image' && <ImageInput label={field.label} hint={field.hint} value={String(value ?? '')} onChange={(url) => set(field.name, url)} disabled={disabled} />}
+            {field.kind === 'markdown' && <MarkdownField label={field.label} hint={field.hint} rows={field.rows} value={String(value ?? '')} onChange={(text) => set(field.name, text)} disabled={disabled} />}
+            {field.kind === 'date' && (
+              <Field label={field.label} hint={field.hint}>
+                {(props) => <Input {...props} type="datetime-local" disabled={disabled} value={String(value ?? '')} onChange={(e) => set(field.name, e.target.value)} />}
+              </Field>
+            )}
             {field.kind === 'items' && <ItemsEditor field={field} rows={value as Record<string, ItemValue>[]} onChange={(rows) => set(field.name, rows)} />}
             {field.kind === 'relations' && (
               <fieldset>

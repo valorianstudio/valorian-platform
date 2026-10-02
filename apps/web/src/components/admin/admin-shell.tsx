@@ -4,7 +4,7 @@ import { useState } from 'react';
 import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { BarChart3, BookOpen, Briefcase, Calculator, ChevronDown, Cpu, FileText, HelpCircle, Home, Image as ImageIcon, Inbox, LayoutDashboard, Layers, LogOut, Menu, MessageSquareQuote, Monitor, MousePointerClick, Navigation, PanelBottom, Search, Settings, Sparkles, Tags, User, Users, Workflow, X } from 'lucide-react';
+import { BarChart3, BookOpen, Briefcase, Calculator, ChevronDown, Cpu, FileText, HelpCircle, Home, Image as ImageIcon, Inbox, LayoutDashboard, Layers, LogOut, Menu, MessageSquareQuote, Monitor, MousePointerClick, Navigation, Newspaper, PanelBottom, Search, Settings, Sparkles, Tags, User, Users, Workflow, X } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { Wordmark } from '@/components/site/wordmark';
 import { Badge } from '@/components/ui/badge';
@@ -44,8 +44,16 @@ const NAV_GROUPS: { title?: string; items: NavItem[] }[] = [
       { href: '/admin/why', label: 'Why Valorian', Icon: Sparkles },
       { href: '/admin/faqs', label: 'FAQs', Icon: HelpCircle },
       { href: '/admin/ctas', label: 'CTAs', Icon: MousePointerClick },
+      { href: '/admin/case-studies', label: 'Case studies', Icon: FileText },
+      { href: '/admin/testimonials', label: 'Testimonials', Icon: MessageSquareQuote },
+      { href: '/admin/insights', label: 'Insights', Icon: Newspaper },
+      { href: '/admin/media', label: 'Media', Icon: ImageIcon },
       { href: '/admin/estimator', label: 'Estimator', Icon: Calculator },
     ],
+  },
+  {
+    title: 'Marketing',
+    items: [{ href: '/admin/seo', label: 'SEO', Icon: Search }],
   },
   {
     title: 'Sales',
@@ -63,11 +71,6 @@ const NAV_GROUPS: { title?: string; items: NavItem[] }[] = [
 ];
 
 const UPCOMING_NAV: Omit<NavItem, 'href'>[] = [
-  { label: 'Case Studies', Icon: FileText },
-  { label: 'Testimonials', Icon: MessageSquareQuote },
-  { label: 'Blog', Icon: BookOpen },
-  { label: 'Media', Icon: ImageIcon },
-  { label: 'SEO', Icon: Search },
   { label: 'Analytics', Icon: BarChart3 },
 ];
 

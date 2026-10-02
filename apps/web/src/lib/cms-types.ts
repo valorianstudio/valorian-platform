@@ -145,7 +145,97 @@ interface PageBase {
   sections: SectionRow[];
 }
 
+export interface TestimonialItem {
+  id: string;
+  clientName: string;
+  companyName: string | null;
+  position: string | null;
+  quote: string;
+  imageUrl: string | null;
+  companyLogoUrl: string | null;
+  rating: number | null;
+  verified: boolean;
+}
+export interface CaseCard {
+  slug: string;
+  title: string;
+  shortDescription: string;
+  coverImageUrl: string | null;
+  clientName: string | null;
+  featured: boolean;
+  publishedAt: string | null;
+  industry: { name: string; slug: string } | null;
+}
+export interface CaseDetail extends CaseCard, Seo {
+  fullOverview: string;
+  clientLogoUrl: string | null;
+  projectType: string | null;
+  challenge: string | null;
+  solution: string | null;
+  approach: string | null;
+  keyFeatures: string[];
+  results: { label: string; value: string; description?: string | null }[];
+  featuredImageUrl: string | null;
+  videoUrl: string | null;
+  ctaLabel: string | null;
+  ctaUrl: string | null;
+  updatedAt: string;
+  services: ServiceCard[];
+  technologies: TechnologyCard[];
+  demos: DemoCardData[];
+  media: { id: string; kind: 'DESKTOP' | 'MOBILE' | 'DIAGRAM' | 'PRODUCT'; url: string; altText: string; caption: string | null; featured: boolean }[];
+  testimonials: TestimonialItem[];
+}
+export interface CaseListData {
+  items: CaseCard[];
+  total: number;
+  page: number;
+  pageSize: number;
+  industries: { name: string; slug: string }[];
+}
+export interface ArticleCard {
+  slug: string;
+  title: string;
+  excerpt: string;
+  featuredImageUrl: string | null;
+  featuredImageAlt: string | null;
+  authorName: string | null;
+  publishedAt: string | null;
+  readingTime: number | null;
+  featured: boolean;
+  category: { name: string; slug: string } | null;
+}
+export interface ArticleDetail extends ArticleCard, Seo {
+  content: string;
+  authorAvatarUrl: string | null;
+  authorBio: string | null;
+  updatedAt: string;
+  tags: { name: string; slug: string }[];
+  services: { slug: string; title: string }[];
+}
+export interface ArticleListData {
+  items: ArticleCard[];
+  total: number;
+  page: number;
+  pageSize: number;
+  categories: { name: string; slug: string }[];
+  featured: ArticleCard | null;
+}
+export interface SeoConfig {
+  siteName: string | null;
+  titleTemplate: string;
+  defaultTitle: string | null;
+  defaultDescription: string | null;
+  defaultOgImageUrl: string | null;
+  canonicalBaseUrl: string | null;
+  twitterHandle: string | null;
+  allowIndexing: boolean;
+}
+
 export interface HomeData extends PageBase {
+  caseStudies: CaseCard[];
+  testimonials: TestimonialItem[];
+  articles: ArticleCard[];
   services: ServiceCard[];
   values: ValueItem[];
   steps: ProcessStepItem[];
@@ -173,6 +263,9 @@ export interface ServiceDetail extends ServiceCard, Seo {
   estimatorType: { slug: string } | null;
 }
 export interface ServiceDetailData {
+  caseStudies: CaseCard[];
+  testimonials: TestimonialItem[];
+  articles: ArticleCard[];
   service: ServiceDetail;
   steps: ProcessStepItem[];
   faqs: FaqItem[];
@@ -202,6 +295,8 @@ export interface SolutionDetail extends SolutionCard, Seo {
   demos: DemoCardData[];
 }
 export interface SolutionDetailData {
+  caseStudies: CaseCard[];
+  articles: ArticleCard[];
   solution: SolutionDetail;
   cta: CtaLink | null;
 }

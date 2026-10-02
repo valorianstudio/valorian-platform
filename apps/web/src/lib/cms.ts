@@ -3,6 +3,11 @@ import { cache } from 'react';
 import type { Metadata } from 'next';
 import type {
   AboutData,
+  ArticleDetail,
+  ArticleListData,
+  CaseDetail,
+  CaseListData,
+  SeoConfig,
   EstimatorConfig,
   DemoDetail,
   DemoListData,
@@ -36,10 +41,16 @@ export const getService = cache((slug: string) => fetchContent<ServiceDetailData
 export const getSolutions = cache(() => fetchContent<SolutionsData>('solutions'));
 export const getSolution = cache((slug: string) => fetchContent<SolutionDetailData>(`solutions/${encodeURIComponent(slug)}`));
 type SlugList = { slug: string; updatedAt: string }[];
-export const getSlugs = cache(() => fetchContent<{ services: SlugList; solutions: SlugList; demos: SlugList }>('slugs'));
+export const getSlugs = cache(() => fetchContent<{ services: SlugList; solutions: SlugList; demos: SlugList; caseStudies: SlugList; articles: SlugList }>('slugs'));
 export const getDemoList = cache((query: string) => fetchContent<DemoListData>(`demos${query ? `?${query}` : ''}`));
 export const getEstimatorConfig = cache((query: string) => fetchContent<EstimatorConfig>(`../estimator/config${query ? `?${query}` : ''}`));
 export const getLeadConfig = cache(() => fetchContent<{ responseNote: string | null }>('../leads/config'));
+export const getCaseStudies = cache((query: string) => fetchContent<CaseListData>(`case-studies${query ? `?${query}` : ''}`));
+export const getCaseStudy = cache((slug: string) => fetchContent<{ study: CaseDetail; related: CaseListData['items'] }>(`case-studies/${encodeURIComponent(slug)}`));
+export const getInsights = cache((query: string) => fetchContent<ArticleListData>(`insights${query ? `?${query}` : ''}`));
+export const getInsight = cache((slug: string) => fetchContent<{ article: ArticleDetail; related: ArticleListData['items'] }>(`insights/${encodeURIComponent(slug)}`));
+export const getPageSeo = cache(async (key: string): Promise<Seo | null> => (await fetchContent<Record<string, Seo>>('page-seo'))?.[key] ?? null);
+export const getSeoConfig = cache(() => fetchContent<SeoConfig>('../seo/config'));
 export const getDemo = cache((slug: string) => fetchContent<DemoDetail>(`demos/${encodeURIComponent(slug)}`));
 
 const FALLBACK_NAV: NavigationData = {
@@ -59,21 +70,31 @@ export function findSection<C>(sections: SectionRow[] | undefined, key: string):
   return (sections?.find((section) => section.key === key)?.content as C | undefined) ?? null;
 }
 
-export function buildMetadata(seo: Seo | null | undefined, fallback: { title: string; description: string; path: string }): Metadata {
-  const title = seo?.metaTitle || fallback.title;
-  const description = seo?.metaDescription || fallback.description;
+export async function buildMetadata(
+  seo: Seo | null | undefined,
+  fallback: { title: string; description: string; path: string; image?: string | null; type?: 'website' | 'article' },
+): Promise<Metadata> {
+  const config = await getSeoConfig();
+  const base = config?.canonicalBaseUrl || SITE_URL;
+  const title = seo?.metaTitle || (fallback.path === '/' ? config?.defaultTitle : null) || fallback.title;
+  const description = seo?.metaDescription || config?.defaultDescription || fallback.description;
   const canonical = seo?.canonicalUrl || fallback.path;
+  const image = seo?.ogImageUrl || fallback.image || config?.defaultOgImageUrl || undefined;
+  const hidden = seo?.noindex || config?.allowIndexing === false;
   return {
-    title: fallback.path === '/' && seo?.metaTitle ? { absolute: title } : title,
+    title: fallback.path === '/' ? { absolute: title } : title,
     description,
     alternates: { canonical },
-    robots: seo?.noindex ? { index: false, follow: false } : undefined,
+    robots: hidden ? { index: false, follow: false } : undefined,
     openGraph: {
+      type: fallback.type ?? 'website',
       title,
       description,
-      url: `${SITE_URL}${fallback.path}`,
-      images: seo?.ogImageUrl ? [{ url: seo.ogImageUrl }] : undefined,
+      url: `${base}${fallback.path === '/' ? '' : fallback.path}`,
+      siteName: config?.siteName ?? undefined,
+      images: image ? [{ url: image }] : undefined,
     },
+    twitter: { card: image ? 'summary_large_image' : 'summary', site: config?.twitterHandle ? `@${config.twitterHandle}` : undefined, title, description, images: image ? [image] : undefined },
   };
 }
 

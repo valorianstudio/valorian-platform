@@ -144,3 +144,5 @@ export const demoCategorySchema = z.object({
   active: z.boolean(),
   displayOrder: order,
 });
+
+export { imageRef, httpUrl, link, relationId, required, optional, ids, lines, order };

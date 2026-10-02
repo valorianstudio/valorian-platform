@@ -1,3 +1,4 @@
+import { EDITORIAL_CONFIGS } from './editorial-configs';
 import { ESTIMATOR_CONFIGS } from './estimator-configs';
 import { ICON_OPTIONS } from '@/lib/icon-names';
 import type { FieldDef, FormValues, Option } from './field-defs';
@@ -255,3 +256,4 @@ export const CONFIGS: Record<string, ResourceConfig> = {
 };
 
 Object.assign(CONFIGS, ESTIMATOR_CONFIGS);
+Object.assign(CONFIGS, EDITORIAL_CONFIGS);

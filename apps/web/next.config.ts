@@ -5,6 +5,7 @@ const apiUrl = process.env.API_URL ?? 'http://localhost:4000';
 const config: NextConfig = {
   poweredByHeader: false,
   reactStrictMode: true,
+  images: { localPatterns: [{ pathname: '/api/media/**' }] },
   async rewrites() {
     return [{ source: '/api/:path*', destination: `${apiUrl}/api/:path*` }];
   },

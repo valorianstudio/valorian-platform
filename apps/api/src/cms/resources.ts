@@ -1,6 +1,7 @@
 import type { Prisma } from '@prisma/client';
 import type { z } from 'zod';
 import type { PrismaService } from '../prisma/prisma.service';
+import { articleCategorySchema, testimonialSchema } from '../content/content-schemas';
 import { demoCategorySchema } from '../demos/demo-schemas';
 import { complexitySchema, estimatorCategorySchema, estimatorFeatureSchema, estimatorIntegrationSchema, pricingRuleSchema, projectTypeSchema } from '../estimator/estimator-schemas';
 import {
@@ -78,6 +79,8 @@ export const RESOURCES: Record<string, ResourceDef> = {
   'estimator-integrations': { delegate: (c) => asDelegate(c.estimatorIntegration), schema: estimatorIntegrationSchema, orderBy: byOrder, slugFrom: 'name' },
   'estimator-complexity': { delegate: (c) => asDelegate(c.estimatorComplexity), schema: complexitySchema, orderBy: byOrder, slugFrom: 'name' },
   'estimator-rules': { delegate: (c) => asDelegate(c.estimatorPricingRule), schema: pricingRuleSchema, orderBy: [{ kind: 'asc' }, ...byOrder] },
+  testimonials: { delegate: (c) => asDelegate(c.testimonial), schema: testimonialSchema, orderBy: byOrder },
+  'article-categories': { delegate: (c) => asDelegate(c.articleCategory), schema: articleCategorySchema, orderBy: byOrder, slugFrom: 'name' },
   work: { delegate: (c) => asDelegate(c.featuredWork), schema: featuredWorkSchema, orderBy: byOrder },
 };
 

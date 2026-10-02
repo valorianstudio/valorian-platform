@@ -7,13 +7,11 @@ import { Button, ButtonLink } from '@/components/ui/button';
 import { Input, Select } from '@/components/ui/field';
 import { Section } from '@/components/ui/section';
 import { EmptyState } from '@/components/ui/states';
-import { getDemoList } from '@/lib/cms';
+import { buildMetadata, getDemoList, getPageSeo } from '@/lib/cms';
 
-export const metadata: Metadata = {
-  title: 'Demos',
-  description: 'Explore web and mobile product concepts and prototypes built by Valorian Studio.',
-  alternates: { canonical: '/demos' },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return buildMetadata(await getPageSeo('DEMOS'), { title: 'Demos', description: 'Explore web and mobile product concepts and prototypes built by Valorian Studio.', path: '/demos' });
+}
 
 type Params = Record<string, string | string[] | undefined>;
 const PLATFORMS = [

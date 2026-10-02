@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { AlertCircle, ArrowRight } from 'lucide-react';
+import { CaseStudiesSection, InsightsSection } from '@/components/site/editorial';
+import { Breadcrumbs } from '@/components/site/seo';
 import { CheckList, CtaBand, DemoSection, ServiceGrid, TechList } from '@/components/site/blocks';
 import { ButtonLink } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -20,7 +22,7 @@ export default async function SolutionDetailPage({ params }: { params: Promise<{
   const { slug } = await params;
   const data = await getSolution(slug);
   if (!data) notFound();
-  const { solution, cta } = data;
+  const { solution, cta, caseStudies, articles } = data;
   const Icon = getIcon(solution.icon);
   const ctaLabel = solution.ctaLabel ?? cta?.label ?? 'Start a Project';
   const ctaUrl = solution.ctaUrl ?? cta?.url ?? '/contact';
@@ -30,13 +32,7 @@ export default async function SolutionDetailPage({ params }: { params: Promise<{
       <section className="relative overflow-hidden border-b border-border">
         <div aria-hidden className="absolute inset-x-0 top-0 -z-10 h-80 bg-[radial-gradient(50%_80%_at_50%_0%,var(--accent-soft),transparent)]" />
         <div className="mx-auto w-full max-w-7xl px-5 py-14 sm:px-8 sm:py-20">
-          <nav aria-label="Breadcrumb" className="mb-8 text-sm text-muted">
-            <Link href="/solutions" className="hover:text-foreground">
-              Solutions
-            </Link>
-            <span aria-hidden> / </span>
-            <span className="text-foreground">{solution.name}</span>
-          </nav>
+          <Breadcrumbs items={[{ name: 'Solutions', href: '/solutions' }, { name: solution.name }]} />
           <div className="grid gap-10 lg:grid-cols-[1.4fr_1fr] lg:items-center">
             <div className="min-w-0">
               <span className="grid size-14 place-items-center rounded-2xl bg-accent-soft text-accent">
@@ -97,11 +93,15 @@ export default async function SolutionDetailPage({ params }: { params: Promise<{
         </Section>
       )}
 
+      <CaseStudiesSection intro={{ eyebrow: 'Proof', title: `${solution.name} case studies` }} items={caseStudies} tone="surface" />
+
       {solution.technologies.length > 0 && (
         <Section eyebrow="Technology" title="Suggested stack">
           <TechList technologies={solution.technologies} />
         </Section>
       )}
+
+      <InsightsSection intro={{ eyebrow: 'Insights', title: `${solution.name} insights` }} items={articles} />
 
       <CtaBand content={{ headline: `Building for ${solution.name.toLowerCase()}?`, description: 'Tell us about your project and we’ll come back with a clear plan.', primaryLabel: ctaLabel, primaryUrl: ctaUrl }} />
     </>

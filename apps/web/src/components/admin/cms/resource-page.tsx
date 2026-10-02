@@ -10,13 +10,15 @@ interface ResourcePageProps {
   description?: string;
   lockedFilter?: string;
   hideHeader?: boolean;
+  /** Pre-fetched option lists for relation sources that are not generic CMS resources. */
+  extra?: Record<string, Item[]>;
 }
 
-export async function ResourcePage({ configKey, title, description, lockedFilter, hideHeader }: ResourcePageProps) {
+export async function ResourcePage({ configKey, title, description, lockedFilter, hideHeader, extra = {} }: ResourcePageProps) {
   const config = CONFIGS[configKey];
-  const sources = Object.values(config.relationSources ?? {}).map((source) => source.resource);
+  const sources = Object.values(config.relationSources ?? {}).map((source) => source.resource).filter((resource) => !(resource in extra));
   const [items, ...related] = await Promise.all([getAdminList<Item>(config.resource), ...sources.map((resource) => getAdminList<Item>(resource))]);
-  const relationItems = Object.fromEntries(sources.map((resource, index) => [resource, related[index]]));
+  const relationItems = { ...Object.fromEntries(sources.map((resource, index) => [resource, related[index]])), ...extra };
   const filterField = config.filterBy?.field;
   const initial = lockedFilter && filterField ? items.filter((item) => item[filterField] === lockedFilter) : items;
 

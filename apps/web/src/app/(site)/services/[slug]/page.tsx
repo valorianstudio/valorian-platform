@@ -2,12 +2,15 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ArrowRight, Calculator } from 'lucide-react';
+import { CaseStudiesSection, InsightsSection, TestimonialsSection } from '@/components/site/editorial';
+import { Breadcrumbs, JsonLd } from '@/components/site/seo';
 import { CheckList, CtaBand, FaqSection, ProcessSection, ServiceGrid, TechList } from '@/components/site/blocks';
 import { ButtonLink } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Section } from '@/components/ui/section';
 import { buildMetadata, getService } from '@/lib/cms';
 import { getIcon } from '@/lib/icons';
+import { getSiteSettings } from '@/lib/server-api';
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
@@ -19,9 +22,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function ServiceDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const data = await getService(slug);
+  const [data, settings] = await Promise.all([getService(slug), getSiteSettings()]);
   if (!data) notFound();
-  const { service, steps, faqs, related, cta } = data;
+  const { service, steps, faqs, related, cta, caseStudies, testimonials, articles } = data;
   const Icon = getIcon(service.icon);
   const ctaLabel = service.ctaLabel ?? cta?.label ?? 'Start a Project';
   const customUrl = [service.ctaUrl, cta?.url].find((url) => url && url !== '/contact');
@@ -32,13 +35,7 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
       <section className="relative overflow-hidden border-b border-border">
         <div aria-hidden className="absolute inset-x-0 top-0 -z-10 h-80 bg-[radial-gradient(50%_80%_at_50%_0%,var(--primary-soft),transparent)]" />
         <div className="mx-auto w-full max-w-7xl px-5 py-14 sm:px-8 sm:py-20">
-          <nav aria-label="Breadcrumb" className="mb-8 text-sm text-muted">
-            <Link href="/services" className="hover:text-foreground">
-              Services
-            </Link>
-            <span aria-hidden> / </span>
-            <span className="text-foreground">{service.title}</span>
-          </nav>
+          <Breadcrumbs items={[{ name: 'Services', href: '/services' }, { name: service.title }]} />
           <div className="grid gap-10 lg:grid-cols-[1.4fr_1fr] lg:items-end">
             <div className="min-w-0">
               <span className="grid size-14 place-items-center rounded-2xl bg-primary-soft text-primary">
@@ -104,8 +101,13 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
         </Section>
       )}
 
+      <JsonLd data={{ '@context': 'https://schema.org', '@type': 'Service', name: service.title, description: service.shortDescription, serviceType: service.title, provider: { '@type': 'Organization', name: settings.companyName } }} />
+      <CaseStudiesSection intro={{ eyebrow: 'Proof', title: 'Related case studies' }} items={caseStudies} />
+      <TestimonialsSection items={testimonials} />
       <ProcessSection intro={{ eyebrow: 'How we work', title: 'Our process' }} steps={steps} />
       <FaqSection faqs={faqs} />
+
+      <InsightsSection intro={{ eyebrow: 'Insights', title: 'Articles on this topic' }} items={articles} tone="surface" />
 
       {related.length > 0 && (
         <Section eyebrow="More services" title="Explore related services">

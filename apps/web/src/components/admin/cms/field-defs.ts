@@ -18,6 +18,8 @@ export type FieldDef =
   | (Base & { kind: 'switch'; description?: string })
   | (Base & { kind: 'lines' })
   | (Base & { kind: 'image' })
+  | (Base & { kind: 'date' })
+  | (Base & { kind: 'markdown'; rows?: number })
   | (Base & { kind: 'items'; addLabel: string; fields: ItemField[] })
   | (Base & { kind: 'relations'; source: string })
   | { kind: 'heading'; name: string; label: string; half?: undefined; hint?: string };
@@ -46,6 +48,11 @@ export function initialValues(fields: FieldDef[], source: Record<string, unknown
       case 'relations':
         values[field.name] = Array.isArray(raw) ? (raw as string[]) : [];
         break;
+      case 'date': {
+        const date = typeof raw === 'string' ? new Date(raw) : null;
+        values[field.name] = date && !Number.isNaN(date.getTime()) ? new Date(date.getTime() - date.getTimezoneOffset() * 60_000).toISOString().slice(0, 16) : '';
+        break;
+      }
       default:
         values[field.name] = raw === null || raw === undefined ? '' : String(raw);
     }

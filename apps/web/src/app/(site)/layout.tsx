@@ -1,13 +1,18 @@
 import { Wrench } from 'lucide-react';
 import { SiteFooter } from '@/components/site/site-footer';
 import { SiteHeader } from '@/components/site/site-header';
-import { getNavigation } from '@/lib/cms';
+import { JsonLd } from '@/components/site/seo';
+import { getNavigation, getSeoConfig } from '@/lib/cms';
+import { SITE_URL } from '@/lib/site';
 import { getSiteSettings } from '@/lib/server-api';
 
 export const dynamic = 'force-dynamic';
 
 export default async function SiteLayout({ children }: { children: React.ReactNode }) {
-  const [settings, navigation] = await Promise.all([getSiteSettings(), getNavigation()]);
+  const [settings, navigation, seo] = await Promise.all([getSiteSettings(), getNavigation(), getSeoConfig()]);
+  const base = seo?.canonicalBaseUrl || SITE_URL;
+  const absolute = (url: string | null) => (url ? (url.startsWith('/') ? `${base}${url}` : url) : undefined);
+  const sameAs = [settings.linkedinUrl, settings.githubUrl, settings.twitterUrl, settings.facebookUrl, settings.instagramUrl].filter(Boolean);
   const headerItems = navigation.items.filter((item) => item.location === 'HEADER');
 
   return (
@@ -15,6 +20,22 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
       <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground">
         Skip to content
       </a>
+      <JsonLd
+        data={[
+          {
+            '@context': 'https://schema.org',
+            '@type': 'Organization',
+            name: seo?.siteName || settings.companyName,
+            url: base,
+            description: settings.description,
+            logo: absolute(settings.logoLightUrl),
+            email: settings.primaryEmail,
+            telephone: settings.phone ?? undefined,
+            sameAs: sameAs.length ? sameAs : undefined,
+          },
+          { '@context': 'https://schema.org', '@type': 'WebSite', name: seo?.siteName || settings.companyName, url: base },
+        ]}
+      />
       <SiteHeader brandName={settings.brandName} items={headerItems} cta={navigation.cta} />
       <main id="main" className="min-h-[70vh]">
         {settings.maintenanceMode ? (
