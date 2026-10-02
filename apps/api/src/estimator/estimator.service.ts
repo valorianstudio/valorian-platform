@@ -151,6 +151,15 @@ export class EstimatorService {
         weeksMin,
         weeksMax,
         breakdown: {
+          snapshot: {
+            projectType: { name: type.name, basePrice: type.basePrice },
+            features: featureLines.map((l) => ({ id: l.item.id, name: l.item.name, category: l.item.category?.name ?? null, price: l.value })),
+            integrations: integrationLines.map((l) => ({ id: l.item.id, name: l.item.name, price: l.value })),
+            complexity: { name: complexity.name, multiplier: complexity.multiplier },
+            scale: { label: scale.label, multiplier: scale.multiplier },
+            urgency: { label: urgency.label, multiplier: urgency.multiplier },
+            range: { lowPercent: settings.rangeLowPercent, highPercent: settings.rangeHighPercent, step },
+          },
           base: type.basePrice,
           features: featureTotal,
           integrations: integrationTotal,

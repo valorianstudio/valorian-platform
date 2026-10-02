@@ -32,10 +32,22 @@ async function bootstrap(): Promise<void> {
 
   const loginLimit = fastify.rateLimit({ max: 10, timeWindow: '15 minutes' });
   const estimateLimit = fastify.rateLimit({ max: 30, timeWindow: '1 minute' });
+  const submitLimit = fastify.rateLimit({ max: 6, timeWindow: '10 minutes' });
   const generalLimit = fastify.rateLimit({ max: 300, timeWindow: '1 minute' });
   fastify.addHook('onRequest', async (request, reply) => {
-    const limiter = request.url.startsWith('/api/auth/login') ? loginLimit : request.url.startsWith('/api/estimator/calculate') ? estimateLimit : generalLimit;
+    const isSubmission = request.method === 'POST' && /^\/api\/(leads|inquiries)(\?|$)/.test(request.url);
+    const limiter = request.url.startsWith('/api/auth/login')
+      ? loginLimit
+      : isSubmission
+        ? submitLimit
+        : request.url.startsWith('/api/estimator/calculate')
+          ? estimateLimit
+          : generalLimit;
     await limiter.call(fastify, request, reply);
+  });
+
+  fastify.addHook('onSend', async (request, reply) => {
+    if (request.url.startsWith('/api/admin')) void reply.header('Cache-Control', 'no-store');
   });
 
   await app.listen(env.PORT, '0.0.0.0');

@@ -29,6 +29,11 @@ export class AllExceptionsFilter implements ExceptionFilter {
 
   private toBody(exception: unknown): ErrorBody {
     if (!(exception instanceof HttpException)) {
+      // Framework-level client errors (rate limit, malformed body) carry their own status code.
+      const code = (exception as { statusCode?: unknown } | null)?.statusCode;
+      if (typeof code === 'number' && code >= 400 && code < 500) {
+        return { statusCode: code, message: code === 429 ? 'Too many requests. Please wait a moment and try again.' : 'The request could not be processed.' };
+      }
       return { statusCode: HttpStatus.INTERNAL_SERVER_ERROR, message: 'Something went wrong. Please try again.' };
     }
     const statusCode = exception.getStatus();

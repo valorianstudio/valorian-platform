@@ -11,6 +11,7 @@ const schema = z.object({
   PORT: z.coerce.number().int().positive().default(4000),
   DATABASE_URL: z.string().min(1),
   JWT_SECRET: z.string().min(32, 'JWT_SECRET must be at least 32 characters'),
+  LEAD_WEBHOOK_URL: z.string().url().optional(),
   UPLOAD_DIR: z.string().default('./uploads'),
   WEB_ORIGIN: z.string().url().default('http://localhost:3000'),
 });

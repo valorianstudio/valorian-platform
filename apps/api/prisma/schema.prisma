@@ -113,6 +113,7 @@ model PageSection {
 }
 
 model Service {
+  leads Lead[]
   id               String        @id @default(cuid())
   slug             String        @unique
   title            String
@@ -325,6 +326,7 @@ model DemoCategory {
 }
 
 model Demo {
+  leads Lead[]
   id                String          @id @default(cuid())
   slug              String          @unique
   name              String
@@ -568,6 +570,7 @@ model EstimatorPricingRule {
 }
 
 model EstimatorSubmission {
+  lead Lead?
   id              String   @id @default(cuid())
   projectTypeSlug String
   projectTypeName String
@@ -591,5 +594,198 @@ model EstimatorSubmission {
   message         String?
   createdAt       DateTime @default(now())
 
+  @@index([createdAt])
+}
+
+enum LeadStatus {
+  NEW
+  CONTACTED
+  QUALIFIED
+  MEETING
+  PROPOSAL
+  NEGOTIATION
+  WON
+  LOST
+}
+
+enum LeadPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+enum LeadSource {
+  ESTIMATOR
+  DEMO
+  SERVICE
+  CONTACT
+  HOMEPAGE
+  DIRECT
+  OTHER
+}
+
+enum ContactMethod {
+  EMAIL
+  WHATSAPP
+  PHONE
+  VIDEO_CALL
+}
+
+enum LostReason {
+  PRICE
+  NO_RESPONSE
+  CHOSE_COMPETITOR
+  PROJECT_CANCELLED
+  REQUIREMENTS_CHANGED
+  OTHER
+}
+
+enum ActivityType {
+  CREATED
+  STATUS_CHANGED
+  PRIORITY_CHANGED
+  FOLLOW_UP
+  NOTE_ADDED
+  ESTIMATE
+  FINAL_VALUE
+  WON
+  LOST
+  ARCHIVED
+  CALL
+  WHATSAPP
+  EMAIL
+  MEETING
+  PROPOSAL_SENT
+  OTHER
+}
+
+enum InquiryType {
+  PROJECT
+  GENERAL
+  PARTNERSHIP
+  SUPPORT
+  OTHER
+}
+
+enum InquiryStatus {
+  NEW
+  REPLIED
+  CLOSED
+}
+
+model LeadCounter {
+  year  Int @id
+  value Int @default(0)
+}
+
+model LeadSettings {
+  id            String   @id @default("leads")
+  notifyEnabled Boolean  @default(false)
+  notifyEmail   String?
+  responseNote  String?
+  updatedAt     DateTime @updatedAt
+}
+
+model Lead {
+  id                     String               @id @default(cuid())
+  referenceCode          String               @unique
+  name                   String
+  email                  String
+  phone                  String?
+  whatsapp               String?
+  companyName            String?
+  country                String?
+  preferredContact       ContactMethod        @default(EMAIL)
+  source                 LeadSource           @default(OTHER)
+  sourceUrl              String?
+  projectType            String?
+  platform               FeaturePlatform?
+  demoId                 String?
+  serviceId              String?
+  estimatorSubmissionId  String?              @unique
+  estimatedMin           Int?
+  estimatedMax           Int?
+  currency               EstimatorCurrency?
+  finalProjectValue      Int?
+  finalCurrency          EstimatorCurrency?
+  priority               LeadPriority         @default(NORMAL)
+  status                 LeadStatus           @default(NEW)
+  expectedTimeline       String?
+  budgetRange            String?
+  clientMessage          String?
+  internalSummary        String?
+  assignedTo             String?
+  followUpAt             DateTime?
+  followUpNote           String?
+  wonAt                  DateTime?
+  lostAt                 DateTime?
+  lostReason             LostReason?
+  archivedAt             DateTime?
+  createdAt              DateTime             @default(now())
+  updatedAt              DateTime             @updatedAt
+  demo                   Demo?                @relation(fields: [demoId], references: [id], onDelete: SetNull)
+  service                Service?             @relation(fields: [serviceId], references: [id], onDelete: SetNull)
+  estimatorSubmission    EstimatorSubmission? @relation(fields: [estimatorSubmissionId], references: [id], onDelete: SetNull)
+  notes                  LeadNote[]
+  activities             LeadActivity[]
+
+  @@index([status])
+  @@index([priority])
+  @@index([source])
+  @@index([email])
+  @@index([createdAt])
+  @@index([followUpAt])
+  @@index([archivedAt])
+}
+
+model LeadNote {
+  id         String   @id @default(cuid())
+  leadId     String
+  content    String
+  authorId   String?
+  authorName String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  lead       Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  @@index([leadId, createdAt])
+}
+
+model LeadActivity {
+  id         String       @id @default(cuid())
+  leadId     String
+  type       ActivityType
+  title      String
+  detail     String?
+  authorName String?
+  createdAt  DateTime     @default(now())
+  lead       Lead         @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  @@index([leadId, createdAt])
+}
+
+model ContactInquiry {
+  id               String        @id @default(cuid())
+  type             InquiryType   @default(GENERAL)
+  name             String
+  email            String
+  phone            String?
+  companyName      String?
+  country          String?
+  message          String
+  preferredContact ContactMethod @default(EMAIL)
+  sourceUrl        String?
+  status           InquiryStatus @default(NEW)
+  priority         LeadPriority  @default(NORMAL)
+  isRead           Boolean       @default(false)
+  internalNote     String?
+  archivedAt       DateTime?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  @@index([type])
+  @@index([status])
+  @@index([isRead])
   @@index([createdAt])
 }
