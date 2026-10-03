@@ -70,7 +70,7 @@ export default async function InsightsPage({ searchParams }: { searchParams: Pro
         )}
 
         {data.featured && !filtered && (
-          <Link href={`/insights/${data.featured.slug}`} className="group mb-10 grid overflow-hidden rounded-2xl border border-border bg-background transition-[border-color,box-shadow] hover:border-primary/40 hover:shadow-lg md:grid-cols-2">
+          <Link href={`/insights/${data.featured.slug}`} className="group mb-10 grid grid-cols-1 overflow-hidden rounded-2xl border border-border bg-background transition-[border-color,box-shadow] hover:border-primary/40 hover:shadow-lg md:grid-cols-2">
             <div className="aspect-[16/9] bg-primary-soft md:aspect-auto">
               {data.featured.featuredImageUrl && <SmartImage src={data.featured.featuredImageUrl} alt={data.featured.featuredImageAlt ?? data.featured.title} width={800} height={450} sizes="(min-width: 768px) 50vw, 100vw" priority className="size-full object-cover" />}
             </div>
@@ -94,7 +94,7 @@ export default async function InsightsPage({ searchParams }: { searchParams: Pro
             action={filtered ? <ButtonLink href="/insights" variant="secondary">Clear filters</ButtonLink> : undefined}
           />
         ) : (
-          <ul className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+          <ul className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
             {data.items.map((item) => (
               <li key={item.slug}>
                 <ArticleCardView item={item} />

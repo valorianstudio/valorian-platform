@@ -42,7 +42,7 @@ export default async function ClientDashboard() {
             <h2 id="projects-heading" className="mb-3 text-lg font-semibold">
               Your projects
             </h2>
-            <div className="grid gap-4 md:grid-cols-2">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               {[...active, ...others].map((project) => (
                 <Link key={project.id} href={`/client/projects/${project.id}`} className="block rounded-2xl border border-border bg-background p-5 transition-colors hover:border-primary/40">
                   <div className="flex items-start justify-between gap-3">
@@ -60,7 +60,7 @@ export default async function ClientDashboard() {
             </div>
           </section>
 
-          <section className="mt-8 grid gap-3 sm:grid-cols-3" aria-label="Pending actions">
+          <section className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-3" aria-label="Pending actions">
             {[
               ['Unread messages', pending.unreadMessages, false],
               ['Open requests', pending.openRequests, false],
@@ -73,7 +73,7 @@ export default async function ClientDashboard() {
             ))}
           </section>
 
-          <div className="mt-8 grid gap-6 lg:grid-cols-2">
+          <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
             <Card className="p-5">
               <h2 className="mb-4 flex items-center gap-2 font-semibold">
                 <Megaphone className="size-4 text-primary" aria-hidden /> Recent updates

@@ -1,7 +1,6 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Copy, ExternalLink, Trash2 } from 'lucide-react';
@@ -19,7 +18,7 @@ import { useToast } from '@/components/ui/toast';
 import { refreshContent } from '@/lib/actions';
 import { ApiError, apiRequest } from '@/lib/client-api';
 import { ICON_OPTIONS } from '@/lib/icon-names';
-import { CollectionTab, FieldsTab, TabCard, useSaver } from '@/components/admin/cms/editor-kit';
+import { CollectionTab, FieldsTab, useSaver } from '@/components/admin/cms/editor-kit';
 import type { DemoFull, DemoPlatformData, NamedRef } from './types';
 
 interface Lookups {
@@ -111,7 +110,7 @@ export function DemoEditor({ demo, lookups }: { demo: DemoFull | null; lookups: 
   if (!demo) {
     return (
       <div>
-        <Link href="/admin/demos" className="mb-4 inline-flex items-center gap-1 text-sm text-muted hover:text-foreground">
+        <Link href="/admin/demos" className="mb-3 inline-flex items-center gap-1 py-2 text-sm text-muted transition-colors hover:text-foreground">
           <ArrowLeft className="size-4" aria-hidden /> Back to demos
         </Link>
         <FieldsTab fields={general} initial={null} label="Create demo" onSave={createDemo} />

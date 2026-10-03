@@ -35,9 +35,9 @@ export function MilestoneTimeline({ milestones }: { milestones: PortalMilestone[
             <span
               className={cn(
                 'absolute -left-[2.2rem] grid size-6 place-items-center rounded-full ring-4 ring-background',
-                tone === 'accent' && 'bg-accent text-white',
+                tone === 'accent' && 'bg-accent text-background',
                 tone === 'primary' && 'bg-primary text-primary-foreground',
-                tone === 'danger' && 'bg-danger text-white',
+                tone === 'danger' && 'bg-danger text-background',
                 tone === 'neutral' && 'bg-surface-strong text-muted',
               )}
             >

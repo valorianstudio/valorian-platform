@@ -20,7 +20,7 @@ export default async function UserPage({ params }: { params: Promise<{ id: strin
 
   return (
     <>
-      <Link href="/admin/users" className="mb-4 inline-flex items-center gap-1 text-sm text-muted hover:text-foreground">
+      <Link href="/admin/users" className="mb-3 inline-flex items-center gap-1 py-2 text-sm text-muted transition-colors hover:text-foreground">
         <ChevronLeft className="size-4" aria-hidden /> Users
       </Link>
       <PageHeader
@@ -35,7 +35,7 @@ export default async function UserPage({ params }: { params: Promise<{ id: strin
           </div>
         }
       />
-      <div className="grid gap-6 lg:grid-cols-[1fr_22rem]">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_22rem]">
         <div className="space-y-6">
           <UserActions user={user} viewerId={admin.id} viewerIsSuper={admin.isSuper} canManage={can(admin.permissions, 'users.manage')} />
         </div>

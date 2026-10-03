@@ -68,7 +68,7 @@ export async function ContentList({ title, description, resource, adminPath, pub
           </div>
         }
       />
-      <form method="get" action={`/admin/${adminPath}`} role="search" aria-label={`Filter ${title.toLowerCase()}`} className="mb-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-[2fr_1fr_1fr_1fr_auto]">
+      <form method="get" action={`/admin/${adminPath}`} role="search" aria-label={`Filter ${title.toLowerCase()}`} className="mb-5 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-[2fr_1fr_1fr_1fr_auto]">
         <div className="relative sm:col-span-2 lg:col-span-1">
           <Search className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted" aria-hidden />
           <Input name="q" aria-label="Search" placeholder="Search…" defaultValue={first(searchParams.q)} className="pl-10" />

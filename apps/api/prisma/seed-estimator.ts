@@ -2,7 +2,15 @@ import type { PrismaClient } from '@prisma/client';
 
 type Platform = 'WEBSITE' | 'MOBILE' | 'BOTH';
 
-const TYPES: [name: string, platform: Platform, base: number, weeks: number, description: string][] = [
+/**
+ * The catalogue below was authored in BDT. Prices are stored in USD: each amount is converted once, at a fixed
+ * 30:1 ratio rounded to the nearest $50. Existing databases are migrated by `npm run db:usd-pricing`, which only
+ * touches a catalogue that still matches these original values.
+ */
+export const usd = (bdt: number): number => Math.max(50, Math.round(bdt / 30 / 50) * 50);
+const usdOrNull = (bdt: number | null | undefined): number | null => (bdt == null ? null : usd(bdt));
+
+export const TYPES: [name: string, platform: Platform, base: number, weeks: number, description: string][] = [
   ['Website', 'WEBSITE', 35000, 3, 'A professional marketing or business website.'],
   ['Web Application', 'WEBSITE', 90000, 8, 'A custom web app with accounts, dashboards and workflows.'],
   ['Mobile App', 'MOBILE', 120000, 10, 'An iOS and Android app backed by an API.'],
@@ -26,7 +34,7 @@ type Feature = {
   industries?: string[];
 };
 
-const FEATURES: Feature[] = [
+export const FEATURES: Feature[] = [
   { name: 'Homepage', category: 'Core Pages', web: 6000, mobile: null, days: 2, required: true, description: 'A polished landing page.' },
   { name: 'About Page', category: 'Core Pages', web: 3000, mobile: null, days: 1 },
   { name: 'Service Pages', category: 'Core Pages', web: 8000, mobile: null, days: 3 },
@@ -56,7 +64,7 @@ const FEATURES: Feature[] = [
   { name: 'AI Recommendations', category: 'AI Features', web: 35000, mobile: 38000, days: 10, industries: ['ai-solutions', 'retail-ecommerce'] },
 ];
 
-const INTEGRATIONS: [name: string, web: number | null, mobile: number | null, description: string][] = [
+export const INTEGRATIONS: [name: string, web: number | null, mobile: number | null, description: string][] = [
   ['Payment Gateway', 15000, 18000, 'Cards and mobile wallets through a payment provider.'],
   ['SMS', 8000, 10000, 'Transactional and reminder text messages.'],
   ['Email Automation', 10000, 10000, 'Automated transactional and campaign emails.'],
@@ -98,10 +106,10 @@ const DEMO_FEATURES: Record<string, string[]> = {
 /** Runs once: when estimator settings do not exist yet. Never overwrites admin edits. */
 export async function seedEstimator(prisma: PrismaClient): Promise<void> {
   if (await prisma.estimatorSettings.findUnique({ where: { id: 'estimator' } })) return;
-  await prisma.estimatorSettings.create({ data: { id: 'estimator' } });
+  await prisma.estimatorSettings.create({ data: { id: 'estimator', currency: 'USD', roundingStep: 50 } });
 
   await prisma.estimatorProjectType.createMany({
-    data: TYPES.map(([name, platform, basePrice, baseWeeks, description], displayOrder) => ({ name, slug: slug(name), platform, basePrice, baseWeeks, description, displayOrder })),
+    data: TYPES.map(([name, platform, basePrice, baseWeeks, description], displayOrder) => ({ name, slug: slug(name), platform, basePrice: usd(basePrice), baseWeeks, description, displayOrder })),
   });
   await prisma.estimatorCategory.createMany({ data: CATEGORIES.map((name, displayOrder) => ({ name, slug: slug(name), displayOrder })) });
   const categories = new Map((await prisma.estimatorCategory.findMany()).map((c) => [c.name, c.id]));
@@ -113,9 +121,9 @@ export async function seedEstimator(prisma: PrismaClient): Promise<void> {
         slug: slug(f.name),
         description: f.description,
         categoryId: categories.get(f.category),
-        websitePrice: f.web,
-        mobilePrice: f.mobile,
-        bothPrice: f.both ?? null,
+        websitePrice: usdOrNull(f.web),
+        mobilePrice: usdOrNull(f.mobile),
+        bothPrice: usdOrNull(f.both),
         effortDays: f.days,
         required: f.required ?? false,
         recommended: f.recommended ?? false,
@@ -125,7 +133,7 @@ export async function seedEstimator(prisma: PrismaClient): Promise<void> {
     });
   }
   await prisma.estimatorIntegration.createMany({
-    data: INTEGRATIONS.map(([name, websitePrice, mobilePrice, description], displayOrder) => ({ name, slug: slug(name), websitePrice, mobilePrice, description, displayOrder })),
+    data: INTEGRATIONS.map(([name, websitePrice, mobilePrice, description], displayOrder) => ({ name, slug: slug(name), websitePrice: usdOrNull(websitePrice), mobilePrice: usdOrNull(mobilePrice), description, displayOrder })),
   });
   await prisma.estimatorComplexity.createMany({
     data: COMPLEXITY.map(([name, multiplier, timelineFactor, description], displayOrder) => ({ name, slug: slug(name), multiplier, timelineFactor, description, displayOrder })),

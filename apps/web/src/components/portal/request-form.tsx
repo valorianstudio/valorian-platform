@@ -43,7 +43,7 @@ export function RequestForm({ projectId }: { projectId: string }) {
   return (
     <form onSubmit={onSubmit} className="space-y-4">
       <FormAlert error={error} />
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Field label="Type">
           {(props) => (
             <Select {...props} name="type" defaultValue="QUESTION">

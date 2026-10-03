@@ -40,7 +40,7 @@ export default async function UsersPage({ searchParams }: { searchParams: Promis
     <>
       <PageHeader title="Users" description="Admin team members, their roles and sign-in status." actions={can(admin?.permissions, 'users.manage') ? <UserCreate roles={data.roles} canCreateSuper={Boolean(admin?.isSuper)} /> : undefined} />
 
-      <form method="get" className="mb-6 grid gap-3 sm:grid-cols-[1fr_12rem_10rem_auto]">
+      <form method="get" className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-[1fr_12rem_10rem_auto]">
         <Input name="q" defaultValue={values.q} placeholder="Search name or email" aria-label="Search users" />
         <Select name="role" defaultValue={values.role} aria-label="Role">
           <option value="">All roles</option>

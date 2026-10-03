@@ -53,7 +53,7 @@ export function Gallery({ shots, variant }: { shots: Shot[]; variant: 'web' | 'p
                 aria-label={`Enlarge: ${shot.altText}`}
                 className={cn(
                   'block w-full overflow-hidden border border-border bg-surface transition-[border-color,box-shadow] hover:border-primary/40 hover:shadow-lg',
-                  phone ? 'aspect-[9/19.5] rounded-[1.75rem] border-4 border-foreground/80 dark:border-border' : 'aspect-[16/10] rounded-xl',
+                  phone ? 'aspect-[9/19.5] rounded-[1.75rem] border-4 border-foreground/80' : 'aspect-[16/10] rounded-xl',
                 )}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}

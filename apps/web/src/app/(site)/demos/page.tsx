@@ -55,7 +55,7 @@ export default async function DemosPage({ searchParams }: { searchParams: Promis
       </PageHero>
 
       <Section>
-        <form action="/demos" method="get" role="search" aria-label="Filter demos" className="grid gap-3 sm:grid-cols-2 lg:grid-cols-[2fr_1fr_1fr_1fr_auto]">
+        <form action="/demos" method="get" role="search" aria-label="Filter demos" className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-[2fr_1fr_1fr_1fr_auto]">
           <div className="relative sm:col-span-2 lg:col-span-1">
             <Search className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted" aria-hidden />
             <Input name="q" aria-label="Search demos" placeholder="Search demos…" defaultValue={filters.q} className="pl-10" maxLength={80} />
@@ -95,7 +95,7 @@ export default async function DemosPage({ searchParams }: { searchParams: Promis
         {data.featured.length > 0 && (
           <div className="mt-12">
             <h2 className="mb-5 text-xl font-semibold">Featured</h2>
-            <ul className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+            <ul className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
               {data.featured.map((demo) => (
                 <li key={demo.slug}>
                   <DemoCard demo={demo} priority />
@@ -112,7 +112,7 @@ export default async function DemosPage({ searchParams }: { searchParams: Promis
           {data.items.length === 0 ? (
             <EmptyState title="No demos match" description="Try a different search or clear the filters." action={<ButtonLink href="/demos" variant="secondary">Clear filters</ButtonLink>} />
           ) : (
-            <ul className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+            <ul className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
               {data.items.map((demo) => (
                 <li key={demo.slug}>
                   <DemoCard demo={demo} />

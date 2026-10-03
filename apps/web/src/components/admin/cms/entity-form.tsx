@@ -31,7 +31,7 @@ function ItemsEditor({ field, rows, onChange }: { field: Extract<FieldDef, { kin
       <legend className="mb-1.5 text-sm font-medium">{field.label}</legend>
       {rows.map((row, index) => (
         <div key={index} className="space-y-3 rounded-xl border border-border bg-surface p-4">
-          <div className="grid gap-3 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             {field.fields.map((sub) => {
               const cell = row[sub.name];
               const wide = sub.kind === 'textarea' || sub.kind === 'image' ? 'sm:col-span-2' : '';
@@ -95,7 +95,7 @@ export function EntityForm({ fields, values, onChange, relationOptions = {}, dis
   const set = (name: string, value: FormValues[string]) => onChange({ ...values, [name]: value });
 
   return (
-    <div className="grid gap-5 sm:grid-cols-2">
+    <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
       {fields.map((field) => {
         const span = field.half ? '' : 'sm:col-span-2';
         if (field.kind === 'heading') {

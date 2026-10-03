@@ -29,7 +29,7 @@ export default async function DashboardPage() {
     <>
       <PageHeader title={`Welcome back${admin ? `, ${admin.name.split(' ')[0]}` : ''}`} description={`Manage the ${settings.companyName} website.`} />
 
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <Card className="p-5">
           <ShieldCheck className="size-5 text-accent" aria-hidden />
           <p className="mt-3 text-sm text-muted">Last sign-in</p>
@@ -55,7 +55,7 @@ export default async function DashboardPage() {
         <section className="mt-8" aria-labelledby="crm-heading">
           <div className="mb-4 flex items-center justify-between gap-3">
             <h2 id="crm-heading" className="text-lg font-semibold">Leads</h2>
-            <span className="flex gap-4 text-sm font-medium text-primary">
+            <span className="flex gap-4 text-sm font-medium text-primary [&_a]:py-2">
               {summary && <Link href="/admin/analytics">Analytics</Link>}
               {can(perms, 'inquiries.view') && <Link href="/admin/inquiries">Inquiries{inquiries?.unread ? ` (${inquiries.unread})` : ''}</Link>}
               <Link href="/admin/leads">All leads</Link>
@@ -85,7 +85,7 @@ export default async function DashboardPage() {
             <Link href="/admin/leads?followUp=today" className="rounded-full border border-border px-3 py-1 text-muted">Today: <strong>{stats.followUps.today}</strong></Link>
             <Link href="/admin/leads?followUp=upcoming" className="rounded-full border border-border px-3 py-1 text-muted">Upcoming: <strong>{stats.followUps.upcoming}</strong></Link>
           </div>
-          <div className="mt-6 grid gap-6 xl:grid-cols-2">
+          <div className="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-2">
             <div>
               <h3 className="mb-3 text-sm font-medium text-muted">Recent leads</h3>
               {stats.recent.length === 0 ? <p className="text-sm text-muted">No leads yet.</p> : <ul className="space-y-3">{stats.recent.map((lead) => <li key={lead.id}><LeadRowCard lead={lead} /></li>)}</ul>}

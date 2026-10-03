@@ -36,7 +36,7 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
         <div aria-hidden className="absolute inset-x-0 top-0 -z-10 h-80 bg-[radial-gradient(50%_80%_at_50%_0%,var(--primary-soft),transparent)]" />
         <div className="mx-auto w-full max-w-7xl px-5 py-14 sm:px-8 sm:py-20">
           <Breadcrumbs items={[{ name: 'Services', href: '/services' }, { name: service.title }]} />
-          <div className="grid gap-10 lg:grid-cols-[1.4fr_1fr] lg:items-end">
+          <div className="grid grid-cols-1 gap-10 lg:grid-cols-[1.4fr_1fr] lg:items-end">
             <div className="min-w-0">
               <span className="grid size-14 place-items-center rounded-2xl bg-primary-soft text-primary">
                 <Icon className="size-7" aria-hidden />
@@ -68,7 +68,7 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
 
       {service.features.length > 0 && (
         <Section tone="surface" eyebrow="Capabilities" title="What’s included">
-          <ul className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <ul className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             {service.features.map((feature) => (
               <li key={feature.title}>
                 <Card className="h-full p-6">

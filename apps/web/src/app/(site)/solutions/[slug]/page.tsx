@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { AlertCircle, ArrowRight } from 'lucide-react';
 import { CaseStudiesSection, InsightsSection } from '@/components/site/editorial';
@@ -33,7 +32,7 @@ export default async function SolutionDetailPage({ params }: { params: Promise<{
         <div aria-hidden className="absolute inset-x-0 top-0 -z-10 h-80 bg-[radial-gradient(50%_80%_at_50%_0%,var(--accent-soft),transparent)]" />
         <div className="mx-auto w-full max-w-7xl px-5 py-14 sm:px-8 sm:py-20">
           <Breadcrumbs items={[{ name: 'Solutions', href: '/solutions' }, { name: solution.name }]} />
-          <div className="grid gap-10 lg:grid-cols-[1.4fr_1fr] lg:items-center">
+          <div className="grid grid-cols-1 gap-10 lg:grid-cols-[1.4fr_1fr] lg:items-center">
             <div className="min-w-0">
               <span className="grid size-14 place-items-center rounded-2xl bg-accent-soft text-accent">
                 <Icon className="size-7" aria-hidden />
@@ -60,7 +59,7 @@ export default async function SolutionDetailPage({ params }: { params: Promise<{
 
       {solution.problems.length > 0 && (
         <Section tone="surface" eyebrow="The challenge" title="Problems we solve">
-          <ul className="grid gap-4 md:grid-cols-3">
+          <ul className="grid grid-cols-1 gap-4 md:grid-cols-3">
             {solution.problems.map((problem) => (
               <li key={problem}>
                 <Card className="flex h-full gap-3 p-5">
@@ -74,7 +73,7 @@ export default async function SolutionDetailPage({ params }: { params: Promise<{
       )}
 
       <Section eyebrow="Our approach" title="How we help">
-        <div className="grid gap-10 lg:grid-cols-[1.4fr_1fr]">
+        <div className="grid grid-cols-1 gap-10 lg:grid-cols-[1.4fr_1fr]">
           <p className="whitespace-pre-line text-pretty text-lg text-muted">{solution.approach}</p>
           {solution.benefits.length > 0 && (
             <Card className="h-fit p-6">

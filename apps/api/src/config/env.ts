@@ -16,21 +16,31 @@ const schema = z.object({
   /** Private client documents. Never served statically; downloads go through an authorized endpoint. */
   PRIVATE_UPLOAD_DIR: z.string().default('./private-uploads'),
   WEB_ORIGIN: z.string().url().default('http://localhost:3000'),
-  /** Optional: POST target for the transactional mail transport (provider-agnostic). */
-  MAIL_WEBHOOK_URL: z.string().url().optional(),
-  MAIL_FROM: z.string().max(200).default('Valorian <no-reply@localhost>'),
+  /** SMTP (Brevo: smtp-relay.brevo.com, port 587). Email is disabled, and logged as skipped, until SMTP_HOST is set. */
+  SMTP_HOST: z.string().optional(),
+  SMTP_PORT: z.coerce.number().int().positive().default(587),
+  SMTP_USER: z.string().optional(),
+  SMTP_PASSWORD: z.string().optional(),
+  SMTP_SECURE: z.enum(['true', 'false']).optional(),
+  EMAIL_FROM: z.string().max(200).default('Valorian Studio <no-reply@valorian.com>'),
+  /** Where new lead and contact notifications go when the CRM settings do not name a recipient. */
+  EMAIL_TO: z.string().email().optional(),
+  /** Older name for EMAIL_TO; still honored. */
+  NOTIFY_EMAIL: z.string().email().optional(),
   /** Optional: receives a sanitized JSON report for unexpected server errors (Sentry-style integration point). */
   ERROR_WEBHOOK_URL: z.string().url().optional(),
   APP_VERSION: z.string().max(40).default('dev'),
 });
 
-const parsed = schema.safeParse(process.env);
+const parsed = schema.safeParse(Object.fromEntries(Object.entries(process.env).map(([key, value]) => [key, value === '' ? undefined : value])));
 if (!parsed.success) {
   const issues = parsed.error.issues.map((i) => `${i.path.join('.')}: ${i.message}`).join('\n');
   throw new Error(`Invalid environment configuration:\n${issues}`);
 }
 
 export const env = parsed.data;
+
+if (env.SMTP_HOST && (!env.SMTP_USER || !env.SMTP_PASSWORD)) throw new Error('SMTP_HOST is set but SMTP_USER or SMTP_PASSWORD is missing');
 
 if (env.NODE_ENV === 'production') {
   const problems: string[] = [];

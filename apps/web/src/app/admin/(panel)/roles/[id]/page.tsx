@@ -20,7 +20,7 @@ export default async function RolePage({ params }: { params: Promise<{ id: strin
 
   return (
     <>
-      <Link href="/admin/roles" className="mb-4 inline-flex items-center gap-1 text-sm text-muted hover:text-foreground">
+      <Link href="/admin/roles" className="mb-3 inline-flex items-center gap-1 py-2 text-sm text-muted transition-colors hover:text-foreground">
         <ChevronLeft className="size-4" aria-hidden /> Roles
       </Link>
       <PageHeader title={role.name} description="Edit the role and choose its permissions." actions={role.isSystem ? <Badge>Built-in</Badge> : undefined} />

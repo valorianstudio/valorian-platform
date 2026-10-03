@@ -93,7 +93,7 @@ export function SettingsForm({ initial }: { initial: SiteSettings }) {
               label: 'General',
               content: (
                 <>
-                  <div className="grid gap-5 sm:grid-cols-2">
+                  <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
                     {text('brandName', 'Brand name', { hint: 'Shown as the logo text.' })}
                     {text('companyName', 'Company name')}
                   </div>
@@ -121,7 +121,7 @@ export function SettingsForm({ initial }: { initial: SiteSettings }) {
               label: 'Contact',
               content: (
                 <>
-                  <div className="grid gap-5 sm:grid-cols-2">
+                  <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
                     {text('primaryEmail', 'Primary email', { type: 'email' })}
                     {text('secondaryEmail', 'Secondary email', { type: 'email' })}
                     {text('phone', 'Phone', { type: 'tel', autoComplete: 'tel' })}
@@ -135,7 +135,7 @@ export function SettingsForm({ initial }: { initial: SiteSettings }) {
               id: 'social',
               label: 'Social',
               content: (
-                <div className="grid gap-5 sm:grid-cols-2">
+                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
                   {text('linkedinUrl', 'LinkedIn', { type: 'url' })}
                   {text('githubUrl', 'GitHub', { type: 'url' })}
                   {text('twitterUrl', 'X / Twitter', { type: 'url' })}

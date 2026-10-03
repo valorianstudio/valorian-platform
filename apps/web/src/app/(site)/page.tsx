@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { CapabilitySection, CtaBand, DemoSection, ProcessSection, TechSection, WhySection } from '@/components/site/blocks';
 import { CaseStudiesSection, InsightsSection, TestimonialsSection } from '@/components/site/editorial';
+import { CapabilityBar } from '@/components/site/home/capability-bar';
 import { Hero } from '@/components/site/home/hero';
 import { buildMetadata, findSection, getHome } from '@/lib/cms';
 import type { CtaContent, HeroContent, HomeData, IntroContent } from '@/lib/cms-types';
@@ -47,7 +48,10 @@ export default async function HomePage() {
   return (
     <>
       {home.sections.map((section) => (
-        <div key={section.key}>{renderSection(section.key, home)}</div>
+        <div key={section.key}>
+          {renderSection(section.key, home)}
+          {section.key === 'hero' && <CapabilityBar />}
+        </div>
       ))}
     </>
   );

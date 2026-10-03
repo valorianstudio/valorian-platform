@@ -22,7 +22,7 @@ export function Breadcrumbs({ items, base = SITE_URL }: { items: Crumb[]; base?:
             <li key={crumb.name} className="flex items-center gap-1.5">
               {index > 0 && <ChevronRight className="size-3.5" aria-hidden />}
               {crumb.href && index < trail.length - 1 ? (
-                <Link href={crumb.href} className="hover:text-foreground">
+                <Link href={crumb.href} className="inline-block py-1.5 transition-colors hover:text-foreground">
                   {crumb.name}
                 </Link>
               ) : (

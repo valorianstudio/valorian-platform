@@ -48,7 +48,7 @@ const config: NextConfig = {
   compress: true,
   experimental: { authInterrupts: true },
   images: {
-    localPatterns: [{ pathname: '/api/media/**' }],
+    localPatterns: [{ pathname: '/api/media/**' }, { pathname: '/brand/**' }, { pathname: '/branding/**' }],
     formats: ['image/avif', 'image/webp'],
     minimumCacheTTL: 60 * 60 * 24 * 30,
   },

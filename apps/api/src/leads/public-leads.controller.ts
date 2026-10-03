@@ -1,6 +1,7 @@
 import { Body, Controller, Get, Header, HttpCode, Post } from '@nestjs/common';
 import { ZodBodyPipe } from '../cms/zod-body.pipe';
 import { AnalyticsService } from '../analytics/analytics.service';
+import { NotificationsService } from '../mail/notifications.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { publicInquirySchema, publicLeadSchema } from './lead-schemas';
 import type { PublicInquiryInput, PublicLeadInput } from './lead-schemas';
@@ -12,6 +13,7 @@ export class PublicLeadsController {
     private readonly leads: LeadsService,
     private readonly prisma: PrismaService,
     private readonly analytics: AnalyticsService,
+    private readonly notifications: NotificationsService,
   ) {}
 
   @Get('leads/config')
@@ -52,6 +54,7 @@ export class PublicLeadsController {
         },
       });
     }
+    if (!duplicate) void this.notifications.inquiryCreated({ name: body.name, email: body.email, phone: body.phone ?? body.whatsapp, company: body.companyName, message: body.message, type: body.type });
     if (!duplicate) void this.analytics.record({ type: 'CONTACT_FORM_SUBMIT', sessionId: body.sessionId, path: body.sourceUrl, metadata: { cta: body.type.toLowerCase() } });
     return { ok: true };
   }

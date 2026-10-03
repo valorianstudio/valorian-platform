@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { LoginForm } from '@/components/admin/login-form';
 import { Wordmark } from '@/components/site/wordmark';
-import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { Card } from '@/components/ui/card';
 import { getCurrentAdmin, getSiteSettings } from '@/lib/server-api';
 
@@ -14,9 +13,6 @@ export default async function AdminLoginPage() {
 
   return (
     <main className="relative grid min-h-screen place-items-center px-5 py-12">
-      <div className="absolute right-4 top-4">
-        <ThemeToggle />
-      </div>
       <div className="w-full max-w-sm">
         <div className="mb-8 flex justify-center">
           <Wordmark name={settings.brandName} />

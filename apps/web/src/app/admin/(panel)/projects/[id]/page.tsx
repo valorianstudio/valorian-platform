@@ -41,7 +41,7 @@ export default async function AdminProjectPage({ params }: { params: Promise<{ i
 
   return (
     <>
-      <Link href="/admin/projects" className="mb-4 inline-flex items-center gap-1 text-sm text-muted hover:text-foreground">
+      <Link href="/admin/projects" className="mb-3 inline-flex items-center gap-1 py-2 text-sm text-muted transition-colors hover:text-foreground">
         <ChevronLeft className="size-4" aria-hidden /> Projects
       </Link>
       <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">

@@ -80,7 +80,7 @@ export function UserActions({ user, viewerId, viewerIsSuper, canManage }: { user
         <h2 className="text-lg font-semibold">Details</h2>
         <form onSubmit={onSaveDetails} className="mt-5 space-y-5">
           <FormAlert error={confirming ? null : error} />
-          <div className="grid gap-5 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
             <Field label="Name">{(props) => <Input {...props} name="name" defaultValue={user.name} disabled={locked} required />}</Field>
             <Field label="Email">{(props) => <Input {...props} name="email" type="email" defaultValue={user.email} disabled={locked} required />}</Field>
           </div>

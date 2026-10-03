@@ -76,7 +76,7 @@ export function ClientEditor({ org, canManage }: { org: OrgData; canManage: bool
       <form onSubmit={onSubmit} className="mt-5 space-y-5">
         <FormAlert error={error} />
         <fieldset disabled={!canManage || busy} className="space-y-5">
-          <div className="grid gap-5 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
             <Field label="Company name">{(props) => <Input {...props} name="companyName" defaultValue={org.companyName} required maxLength={120} />}</Field>
             <Field label="Industry">{(props) => <Input {...props} name="industry" defaultValue={org.industry ?? ''} maxLength={80} />}</Field>
             <Field label="Website">{(props) => <Input {...props} name="website" defaultValue={org.website ?? ''} placeholder="https://" />}</Field>

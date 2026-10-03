@@ -1,9 +1,9 @@
-import { Injectable } from '@nestjs/common';
-import { SiteSetting } from '@prisma/client';
-import { PrismaService } from '../prisma/prisma.service';
-import { UpdateSiteSettingsDto } from './dto/update-site-settings.dto';
+import { Injectable } from "@nestjs/common";
+import { SiteSetting } from "@prisma/client";
+import { PrismaService } from "../prisma/prisma.service";
+import { UpdateSiteSettingsDto } from "./dto/update-site-settings.dto";
 
-const SETTINGS_ID = 'site';
+const SETTINGS_ID = "site";
 
 @Injectable()
 export class SiteSettingsService {
@@ -15,22 +15,29 @@ export class SiteSettingsService {
       update: {},
       create: {
         id: SETTINGS_ID,
-        brandName: 'Valorian',
-        companyName: 'Valorian Studio',
-        tagline: 'Software Engineering & Digital Product Studio',
-        description: 'We design and engineer custom software, web applications, SaaS platforms, mobile apps and AI-powered solutions.',
-        primaryEmail: 'hello@valorian.studio',
+        brandName: "Valorian",
+        companyName: "Valorian Studio",
+        tagline: "Software Engineering & Digital Product Studio",
+        description:
+          "We design and engineer custom software, web applications, SaaS platforms, mobile apps and AI-powered solutions.",
+        primaryEmail: "hello.valorianstudio@gmail.com",
       },
     });
   }
 
   async update(dto: UpdateSiteSettingsDto): Promise<SiteSetting> {
     await this.get();
-    return this.prisma.siteSetting.update({ where: { id: SETTINGS_ID }, data: dto });
+    return this.prisma.siteSetting.update({
+      where: { id: SETTINGS_ID },
+      data: dto,
+    });
   }
 
   async updateFooter(copyrightText: string | null): Promise<SiteSetting> {
     await this.get();
-    return this.prisma.siteSetting.update({ where: { id: SETTINGS_ID }, data: { copyrightText } });
+    return this.prisma.siteSetting.update({
+      where: { id: SETTINGS_ID },
+      data: { copyrightText },
+    });
   }
 }

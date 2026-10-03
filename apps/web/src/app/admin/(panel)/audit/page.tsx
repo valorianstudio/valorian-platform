@@ -54,7 +54,7 @@ export default async function AuditPage({ searchParams }: { searchParams: Promis
     <>
       <PageHeader title="Audit log" description="A permanent record of who changed what. Entries cannot be edited or deleted." />
 
-      <form method="get" className="mb-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <form method="get" className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <Input name="q" defaultValue={values.q} placeholder="Search summary, entity or person" aria-label="Search" className="lg:col-span-2" />
         <Select name="user" defaultValue={values.user} aria-label="User">
           <option value="">All users</option>

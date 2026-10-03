@@ -63,7 +63,7 @@ export default async function CaseStudiesPage({ searchParams }: { searchParams: 
             action={<ButtonLink href={industry ? '/case-studies' : '/demos'} variant="secondary">{industry ? 'Show all' : 'Explore demos'}</ButtonLink>}
           />
         ) : (
-          <ul className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+          <ul className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
             {data.items.map((item) => (
               <li key={item.slug}>
                 <CaseCardView item={item} />

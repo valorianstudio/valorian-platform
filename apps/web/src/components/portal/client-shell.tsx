@@ -8,7 +8,6 @@ import { FolderKanban, LayoutDashboard, LogOut, Menu, User, Users, X } from 'luc
 import type { LucideIcon } from 'lucide-react';
 import { Wordmark } from '@/components/site/wordmark';
 import { Badge } from '@/components/ui/badge';
-import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { apiRequest } from '@/lib/client-api';
 import { cn } from '@/lib/cn';
 import type { ClientSession } from '@/lib/portal';
@@ -103,7 +102,6 @@ export function ClientShell({ client, brandName, children }: { client: ClientSes
           <div className="ml-auto flex items-center gap-2">
             <Badge className="hidden sm:inline-flex">{client.role === 'OWNER' ? 'Owner' : 'Member'}</Badge>
             <span className="hidden max-w-40 truncate text-sm text-muted sm:block">{client.name}</span>
-            <ThemeToggle />
             <button type="button" onClick={signOut} disabled={signingOut} className="inline-flex h-10 items-center gap-2 rounded-lg px-3 text-sm text-muted hover:bg-surface-strong hover:text-foreground">
               <LogOut className="size-4" aria-hidden /> <span className="hidden sm:inline">{signingOut ? 'Signing out…' : 'Sign out'}</span>
             </button>

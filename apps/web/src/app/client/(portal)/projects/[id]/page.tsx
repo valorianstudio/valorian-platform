@@ -29,7 +29,7 @@ export default async function ClientProjectPage({ params }: { params: Promise<{ 
 
   return (
     <>
-      <Link href="/client/projects" className="mb-4 inline-flex items-center gap-1 text-sm text-muted hover:text-foreground">
+      <Link href="/client/projects" className="mb-3 inline-flex items-center gap-1 py-2 text-sm text-muted transition-colors hover:text-foreground">
         <ChevronLeft className="size-4" aria-hidden /> Projects
       </Link>
       <div className="mb-8">
@@ -50,7 +50,7 @@ export default async function ClientProjectPage({ params }: { params: Promise<{ 
                 <Card className="p-5 sm:p-6">
                   <ProgressBar value={project.progressPercentage} />
                   {project.description && <p className="mt-5 whitespace-pre-wrap text-sm leading-relaxed text-muted">{project.description}</p>}
-                  <dl className="mt-5 grid gap-4 text-sm sm:grid-cols-3">
+                  <dl className="mt-5 grid grid-cols-1 gap-4 text-sm sm:grid-cols-3">
                     {[
                       ['Start date', formatDate(project.startDate)],
                       ['Estimated finish', formatDate(project.estimatedEndDate)],
@@ -113,7 +113,7 @@ export default async function ClientProjectPage({ params }: { params: Promise<{ 
               project.files.length === 0 ? (
                 <Card className="p-6 text-sm text-muted">No shared files available.</Card>
               ) : (
-                <ul className="grid gap-3 sm:grid-cols-2">
+                <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   {project.files.map((file) => (
                     <li key={file.id}>
                       <Card className="flex items-center gap-3 p-4">

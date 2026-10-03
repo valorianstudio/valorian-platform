@@ -30,5 +30,15 @@ services:
         generateValue: true
       - key: ERROR_WEBHOOK_URL
         sync: false
-      - key: MAIL_WEBHOOK_URL
+      - key: SMTP_HOST
+        value: smtp-relay.brevo.com
+      - key: SMTP_PORT
+        value: '587'
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASSWORD
+        sync: false
+      - key: EMAIL_FROM
+        value: Valorian Studio <no-reply@valorian.com>
+      - key: EMAIL_TO
         sync: false

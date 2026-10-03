@@ -88,7 +88,7 @@ export function ClientCreate({ prefill, defaultOpen = false, leadId }: { prefill
           <form onSubmit={onSubmit} className="space-y-4">
             <FormAlert error={error} />
             <Field label="Company name">{(props) => <Input {...props} name="companyName" defaultValue={prefill?.companyName} required maxLength={120} />}</Field>
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <Field label="Industry">{(props) => <Input {...props} name="industry" maxLength={80} />}</Field>
               <Field label="Website">{(props) => <Input {...props} name="website" placeholder="https://" />}</Field>
               <Field label="Company email">{(props) => <Input {...props} name="contactEmail" type="email" defaultValue={prefill?.contactEmail} required />}</Field>
@@ -96,7 +96,7 @@ export function ClientCreate({ prefill, defaultOpen = false, leadId }: { prefill
             </div>
             <fieldset className="space-y-4 rounded-xl border border-border p-4">
               <legend className="px-1 text-sm font-medium">Portal owner</legend>
-              <div className="grid gap-4 sm:grid-cols-2">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <Field label="Name">{(props) => <Input {...props} name="ownerName" defaultValue={prefill?.ownerName} required maxLength={80} />}</Field>
                 <Field label="Sign-in email">{(props) => <Input {...props} name="ownerEmail" type="email" defaultValue={prefill?.contactEmail} required autoComplete="off" />}</Field>
                 <Field label="Phone">{(props) => <Input {...props} name="ownerPhone" defaultValue={prefill?.contactPhone} maxLength={30} />}</Field>

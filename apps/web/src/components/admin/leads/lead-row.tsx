@@ -10,7 +10,7 @@ export function LeadRowCard({ lead }: { lead: LeadRow }) {
 
   return (
     <Card className="transition-colors hover:border-primary/40">
-      <Link href={`/admin/leads/${lead.id}`} className="grid gap-3 p-4 lg:grid-cols-[1.4fr_1.4fr_1fr_auto] lg:items-center lg:gap-5">
+      <Link href={`/admin/leads/${lead.id}`} className="grid grid-cols-1 gap-3 p-4 lg:grid-cols-[1.4fr_1.4fr_1fr_auto] lg:items-center lg:gap-5">
         <div className="min-w-0">
           <p className="font-mono text-xs text-muted">{lead.referenceCode}</p>
           <p className="truncate font-medium">{lead.name}</p>

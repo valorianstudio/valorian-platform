@@ -58,7 +58,7 @@ export function ArticleEditor({ article, lookups }: { article: ArticleFull | nul
   if (!article) {
     return (
       <div>
-        <Link href="/admin/insights" className="mb-4 inline-flex items-center gap-1 text-sm text-muted hover:text-foreground">
+        <Link href="/admin/insights" className="mb-3 inline-flex items-center gap-1 py-2 text-sm text-muted transition-colors hover:text-foreground">
           <ArrowLeft className="size-4" aria-hidden /> Back to insights
         </Link>
         <FieldsTab

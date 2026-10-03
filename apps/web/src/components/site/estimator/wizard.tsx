@@ -16,10 +16,10 @@ import { LeadForm } from '../lead-form';
 
 const STEPS = ['Project', 'Industry', 'Features', 'Complexity', 'Integrations', 'Scale'] as const;
 const STEP_KEYS = ['project', 'industry', 'features', 'complexity', 'integrations', 'scale'] as const;
-const SYMBOLS = { BDT: '৳', USD: '$' } as const;
+const USD = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
 
-function money(amount: number, currency: EstimateResult['currency']): string {
-  return `${SYMBOLS[currency]}${amount.toLocaleString('en-US')}`;
+function money(amount: number): string {
+  return USD.format(amount);
 }
 
 function Choice({
@@ -44,8 +44,8 @@ function Choice({
   return (
     <label
       className={cn(
-        'relative flex h-full cursor-pointer gap-3 rounded-xl border bg-background p-4 transition-colors has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-ring',
-        checked ? 'border-primary bg-primary-soft/50' : 'border-border hover:border-primary/40',
+        'relative flex h-full cursor-pointer gap-3.5 rounded-2xl border bg-card p-4 shadow-[var(--shadow-card)] transition-[border-color,background-color,box-shadow,transform] duration-200 hover:-translate-y-px has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-ring',
+        checked ? 'border-primary bg-cream' : 'border-border hover:border-border-strong',
         disabled && 'cursor-default opacity-90',
       )}
     >
@@ -135,16 +135,16 @@ export function EstimatorWizard({ config, company, whatsappNumber, responseNote 
     return (
       <div className="space-y-6 animate-fade-up">
         <Card className="overflow-hidden">
-          <div className="bg-gradient-to-br from-primary-soft to-accent-soft px-6 py-8 sm:px-10 sm:py-10">
+          <div className="bg-cream px-6 py-8 sm:px-10 sm:py-10">
             <p className="text-sm font-medium text-primary">Estimated project investment</p>
-            <p className="mt-2 text-balance text-4xl font-semibold tracking-tight sm:text-5xl">
-              {money(result.min, result.currency)} – {money(result.max, result.currency)}
+            <p className="display mt-2 text-balance text-4xl sm:text-5xl">
+              {money(result.min)} – {money(result.max)}
             </p>
             <p className="mt-4 inline-flex items-center gap-2 text-muted">
               <Clock className="size-4" aria-hidden /> Estimated timeline: {result.weeks.min}–{result.weeks.max} weeks
             </p>
           </div>
-          <dl className="grid gap-6 p-6 sm:grid-cols-2 sm:p-10">
+          <dl className="grid grid-cols-1 gap-6 p-6 sm:grid-cols-2 sm:p-10">
             {[
               ['Project type', result.projectType],
               ['Platform', { WEBSITE: 'Website', MOBILE: 'Mobile App', BOTH: 'Website + Mobile' }[result.platform]],
@@ -230,7 +230,7 @@ export function EstimatorWizard({ config, company, whatsappNumber, responseNote 
           <fieldset>
             <legend className="mb-1 text-2xl font-semibold tracking-tight">What do you want to build?</legend>
             <p className="mb-6 text-muted">Choose the closest match. You can refine everything else next.</p>
-            <div className="grid gap-3 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               {config.projectTypes.map((type) => (
                 <Choice
                   key={type.slug}
@@ -254,7 +254,7 @@ export function EstimatorWizard({ config, company, whatsappNumber, responseNote 
           <fieldset>
             <legend className="mb-1 text-2xl font-semibold tracking-tight">Which industry or use case?</legend>
             <p className="mb-6 text-muted">Optional. We highlight features that suit your industry.</p>
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
               <Choice type="radio" name="industry" checked={industry === ''} onChange={() => setIndustry('')} title="Other / not sure" />
               {config.industries.map((item) => (
                 <Choice key={item.slug} type="radio" name="industry" checked={industry === item.slug} onChange={() => setIndustry(item.slug)} title={item.name} />
@@ -280,7 +280,7 @@ export function EstimatorWizard({ config, company, whatsappNumber, responseNote 
                       type="button"
                       aria-pressed={category === c.id}
                       onClick={() => setCategory(c.id)}
-                      className={cn('shrink-0 rounded-full border px-3.5 py-1.5 text-sm transition-colors', category === c.id ? 'border-primary bg-primary-soft text-primary' : 'border-border text-muted hover:text-foreground')}
+                      className={cn('shrink-0 rounded-full border px-3.5 py-1.5 text-sm transition-colors', category === c.id ? 'border-primary bg-primary text-primary-foreground' : 'border-border text-muted hover:border-border-strong hover:text-foreground')}
                     >
                       {c.name}
                     </button>
@@ -291,7 +291,7 @@ export function EstimatorWizard({ config, company, whatsappNumber, responseNote 
             {visibleFeatures.length === 0 ? (
               <p className="rounded-xl border border-dashed border-border px-5 py-8 text-center text-muted">No features match your search.</p>
             ) : (
-              <div className="grid gap-3 sm:grid-cols-2">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 {visibleFeatures.map((f) => (
                   <Choice
                     key={f.id}
@@ -320,7 +320,7 @@ export function EstimatorWizard({ config, company, whatsappNumber, responseNote 
           <fieldset>
             <legend className="mb-1 text-2xl font-semibold tracking-tight">How complex is the project?</legend>
             <p className="mb-6 text-muted">This shapes both cost and timeline.</p>
-            <div className="grid gap-3 sm:grid-cols-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
               {config.complexities.map((c) => (
                 <Choice key={c.slug} type="radio" name="complexity" checked={complexity === c.slug} onChange={() => setComplexity(c.slug)} title={c.name} description={c.description} />
               ))}
@@ -335,7 +335,7 @@ export function EstimatorWizard({ config, company, whatsappNumber, responseNote 
             {integrations.length === 0 ? (
               <p className="rounded-xl border border-dashed border-border px-5 py-8 text-center text-muted">No integrations available for this project type.</p>
             ) : (
-              <div className="grid gap-3 sm:grid-cols-2">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 {integrations.map((i) => (
                   <Choice key={i.id} type="checkbox" name="integrations" checked={integrationIds.has(i.id)} onChange={() => toggle(integrationIds, i.id, setIntegrationIds)} title={i.name} description={i.description} />
                 ))}
@@ -349,7 +349,7 @@ export function EstimatorWizard({ config, company, whatsappNumber, responseNote 
             <fieldset>
               <legend className="mb-1 text-2xl font-semibold tracking-tight">Expected users</legend>
               <p className="mb-4 text-muted">Larger audiences need more robust infrastructure.</p>
-              <div className="grid gap-3 sm:grid-cols-2">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 {config.scales.map((s) => (
                   <Choice key={s.key} type="radio" name="scale" checked={scale === s.key} onChange={() => setScale(s.key)} title={s.label} description={s.description} />
                 ))}
@@ -357,7 +357,7 @@ export function EstimatorWizard({ config, company, whatsappNumber, responseNote 
             </fieldset>
             <fieldset>
               <legend className="mb-4 text-2xl font-semibold tracking-tight">Timeline</legend>
-              <div className="grid gap-3 sm:grid-cols-3">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                 {config.urgencies.map((u) => (
                   <Choice key={u.key} type="radio" name="urgency" checked={urgency === u.key} onChange={() => setUrgency(u.key)} title={u.label} description={u.description} />
                 ))}

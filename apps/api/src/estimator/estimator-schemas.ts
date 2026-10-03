@@ -92,7 +92,6 @@ export const pricingRuleSchema = z.object({
 
 export const estimatorSettingsSchema = z.object({
   enabled: z.boolean(),
-  currency: z.enum(['BDT', 'USD']),
   rangeLowPercent: z.number().int().min(0).max(50),
   rangeHighPercent: z.number().int().min(0).max(100),
   bothDiscountPercent: z.number().int().min(0).max(90),

@@ -53,7 +53,7 @@ export default async function ClientsPage({ searchParams }: { searchParams: Prom
     <>
       <PageHeader title="Clients" description="Companies with access to the client portal." actions={can(admin?.permissions, 'clients.manage') ? <ClientCreate prefill={prefill} defaultOpen={Boolean(prefill)} leadId={prefill ? fromLead : undefined} /> : undefined} />
 
-      <form method="get" className="mb-6 grid gap-3 sm:grid-cols-[1fr_10rem_auto]">
+      <form method="get" className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-[1fr_10rem_auto]">
         <Input name="q" defaultValue={values.q} placeholder="Search company or email" aria-label="Search clients" />
         <Select name="active" defaultValue={values.active} aria-label="Status">
           <option value="">Any status</option>

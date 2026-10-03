@@ -13,40 +13,56 @@ export const DEMO_LABELS: Record<DemoCardData['statusLabel'], string> = {
 export function PlatformIndicators({ platforms }: { platforms: DemoCardData['platforms'] }) {
   const types = new Set(platforms.map((p) => p.type));
   return (
-    <ul className="flex items-center gap-1.5 text-muted" aria-label="Available platforms">
+    <ul className="flex items-center gap-1.5 text-primary" aria-label="Available platforms">
       {types.has('WEBSITE') && (
-        <li className="inline-flex items-center gap-1 rounded-md bg-surface-strong px-2 py-1 text-xs font-medium">
-          <Globe className="size-3.5" aria-hidden /> Web
+        <li className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background px-2.5 py-1 text-xs font-semibold">
+          <Globe className="size-3.5 text-accent" aria-hidden /> Web
         </li>
       )}
       {types.has('MOBILE') && (
-        <li className="inline-flex items-center gap-1 rounded-md bg-surface-strong px-2 py-1 text-xs font-medium">
-          <Smartphone className="size-3.5" aria-hidden /> Mobile
+        <li className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background px-2.5 py-1 text-xs font-semibold">
+          <Smartphone className="size-3.5 text-accent" aria-hidden /> Mobile
         </li>
       )}
     </ul>
   );
 }
 
-export function DemoVisual({ demo, className = 'h-44' }: { demo: Pick<DemoCardData, 'slug' | 'name' | 'thumbnailUrl' | 'coverImageUrl'>; className?: string }) {
+/** Product preview: the web screenshot in a browser frame, with a phone overlapping when a mobile screen exists. */
+export function DemoVisual({ demo, className = 'aspect-[16/10]' }: { demo: Pick<DemoCardData, 'slug' | 'name' | 'thumbnailUrl' | 'coverImageUrl'> & { screenshots?: { url: string }[] }; className?: string }) {
   const image = demo.thumbnailUrl ?? demo.coverImageUrl;
-  const tone = demo.slug.length % 2 === 0;
+  const phone = demo.screenshots?.[0]?.url;
+  const warm = demo.slug.length % 2 === 0;
   return (
-    <div aria-hidden={image ? undefined : true} className={`relative overflow-hidden border-b border-border ${tone ? 'bg-primary-soft' : 'bg-accent-soft'} ${className}`}>
-      {image ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={image} alt="" loading="lazy" decoding="async" width={640} height={352} className="size-full object-cover transition-transform duration-300 group-hover:scale-[1.02]" />
-      ) : (
-        <div className="absolute inset-x-6 top-6 bottom-0 space-y-3 rounded-t-xl border border-b-0 border-border bg-background p-4 shadow-sm">
-          <div className="flex items-center gap-2">
-            <span className={`grid size-7 place-items-center rounded-md text-xs font-semibold text-primary-foreground ${tone ? 'bg-primary' : 'bg-accent'}`}>{demo.name.charAt(0)}</span>
-            <span className="h-2.5 w-24 rounded bg-surface-strong" />
+    <div aria-hidden={image ? undefined : true} className={`relative overflow-hidden ${warm ? 'bg-[linear-gradient(135deg,#fbe0c3,#f3d3b6)]' : 'bg-[linear-gradient(135deg,#dfe5e5,#cfd8d9)]'} ${className}`}>
+      <div className="absolute inset-x-[8%] bottom-0 top-[11%] overflow-hidden rounded-t-xl border border-b-0 border-[rgb(52_70_72/0.2)] bg-card shadow-[var(--shadow-float)]">
+        <div className="flex items-center gap-1.5 border-b border-border bg-surface px-3 py-2">
+          <span className="size-2 rounded-full bg-[#e8a99a]" />
+          <span className="size-2 rounded-full bg-[#ecd08b]" />
+          <span className="size-2 rounded-full bg-[#a8c3a0]" />
+          <span className="ml-2 h-3.5 flex-1 rounded-full bg-background" />
+        </div>
+        {image ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={image} alt="" loading="lazy" decoding="async" width={800} height={500} className="img-zoom size-full object-cover object-top" />
+        ) : (
+          <div className="space-y-3 p-4">
+            <div className="flex items-center gap-2">
+              <span className="grid size-7 place-items-center rounded-md bg-primary text-xs font-semibold text-primary-foreground">{demo.name.charAt(0)}</span>
+              <span className="h-2.5 w-24 rounded-full bg-surface-strong" />
+            </div>
+            <div className="flex h-20 items-end gap-1.5">
+              {[40, 65, 50, 80, 60, 90, 70].map((height, i) => (
+                <span key={i} className={`flex-1 rounded-t ${i === 5 ? 'bg-coral' : 'bg-primary'}`} style={{ height: `${height}%`, opacity: i === 5 ? 1 : 0.25 + i * 0.07 }} />
+              ))}
+            </div>
           </div>
-          <div className="flex items-end gap-1.5">
-            {[40, 65, 50, 80, 60, 90, 70].map((height, i) => (
-              <span key={i} className={`w-full rounded-sm ${tone ? 'bg-primary' : 'bg-accent'}`} style={{ height: `${height * 0.55}px`, opacity: 0.3 + i * 0.1 }} />
-            ))}
-          </div>
+        )}
+      </div>
+      {phone && (
+        <div className="absolute -bottom-3 right-[5%] w-[22%] min-w-[4.5rem] rounded-[1.1rem] border-[4px] border-slate bg-slate shadow-[var(--shadow-float)] transition-transform duration-500 ease-out group-hover:-translate-y-1.5">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={phone} alt="" loading="lazy" decoding="async" width={240} height={480} className="aspect-[9/18] w-full rounded-[0.8rem] object-cover object-top" />
         </div>
       )}
     </div>
@@ -54,24 +70,33 @@ export function DemoVisual({ demo, className = 'h-44' }: { demo: Pick<DemoCardDa
 }
 
 export function DemoCard({ demo, priority = false }: { demo: DemoCardData; priority?: boolean }) {
+  const stack = [...new Set(demo.platforms.flatMap((p) => p.technologies?.map((t) => t.name) ?? []))].slice(0, 5);
+  const label = demo.category ?? demo.industry;
   return (
-    <Link
-      href={`/demos/${demo.slug}`}
-      className="group flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-background transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5"
-    >
+    <Link href={`/demos/${demo.slug}`} className="card-lift group flex h-full flex-col overflow-hidden">
       <DemoVisual demo={demo} />
-      <div className="flex flex-1 flex-col p-5 sm:p-6">
-        <div className="flex flex-wrap items-center gap-2">
-          {demo.industry && <Badge tone="primary">{demo.industry.name}</Badge>}
-          {demo.badge && <Badge>{demo.badge}</Badge>}
-          {demo.featured && priority && <Badge tone="accent">Featured</Badge>}
+      <div className="flex flex-1 flex-col p-6 sm:p-7">
+        <div className="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-accent">
+          {label && <span>{label.name}</span>}
+          {demo.industry && demo.category && demo.industry.name !== demo.category.name && <span className="text-muted">/ {demo.industry.name}</span>}
+          {demo.badge && <Badge className="ml-auto normal-case tracking-normal">{demo.badge}</Badge>}
+          {demo.featured && priority && <Badge tone="accent" className="normal-case tracking-normal">Featured</Badge>}
         </div>
-        <h3 className="mt-3 text-lg font-semibold">{demo.name}</h3>
-        <p className="mt-2 flex-1 text-muted">{demo.shortDescription}</p>
-        <div className="mt-5 flex items-center justify-between gap-3">
+        <h3 className="display mt-3 text-2xl text-primary">{demo.name}</h3>
+        <p className="mt-2.5 flex-1 leading-relaxed text-muted">{demo.shortDescription}</p>
+        {stack.length > 0 && (
+          <ul className="mt-5 flex flex-wrap gap-1.5" aria-label="Technology stack">
+            {stack.map((name) => (
+              <li key={name} className="rounded-full bg-primary-soft px-2.5 py-1 text-[11px] font-semibold text-primary">
+                {name}
+              </li>
+            ))}
+          </ul>
+        )}
+        <div className="mt-6 flex items-center justify-between gap-3 border-t border-border pt-5">
           <PlatformIndicators platforms={demo.platforms} />
-          <span className="inline-flex items-center gap-1 text-sm font-medium text-primary">
-            View demo <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" aria-hidden />
+          <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary">
+            View demo <ArrowRight className="size-4 transition-transform duration-200 group-hover:translate-x-1" aria-hidden />
           </span>
         </div>
       </div>

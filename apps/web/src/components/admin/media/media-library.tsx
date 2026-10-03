@@ -114,7 +114,7 @@ export function MediaLibrary({ initial }: { initial: MediaPage }) {
 
   return (
     <div>
-      <div role="search" className="mb-5 grid gap-3 sm:grid-cols-[1fr_11rem_auto]">
+      <div role="search" className="mb-5 grid grid-cols-1 gap-3 sm:grid-cols-[1fr_11rem_auto]">
         <div className="relative">
           <Search className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted" aria-hidden />
           <Input aria-label="Search media" placeholder="Search by name, title or alt text…" className="pl-10" value={query} onChange={(e) => setQuery(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && load(1, query, type)} />
@@ -178,7 +178,7 @@ export function MediaLibrary({ initial }: { initial: MediaPage }) {
 
       <dialog ref={dialog} onClose={() => setSelected(null)} onClick={(e) => e.target === dialog.current && setSelected(null)} aria-label="Media details" className="m-auto max-h-[92vh] w-[calc(100%-1.5rem)] max-w-3xl overflow-y-auto rounded-2xl border border-border bg-background p-0 text-foreground shadow-2xl backdrop:bg-foreground/50">
         {selected && (
-          <div className="grid gap-5 p-5 sm:p-6 md:grid-cols-[1fr_1fr]">
+          <div className="grid grid-cols-1 gap-5 p-5 sm:p-6 md:grid-cols-[1fr_1fr]">
             <div className="min-w-0">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={selected.url} alt={selected.altText ?? ''} className="max-h-[50vh] w-full rounded-xl border border-border bg-surface object-contain" />

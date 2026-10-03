@@ -3,6 +3,8 @@ import { Prisma } from '@prisma/client';
 import * as argon2 from 'argon2';
 import type { AdminProfile } from '../admin-users/admin-users.service';
 import { AuditRequestMeta, AuditService } from '../audit/audit.service';
+import { EmailService } from '../mail/email.service';
+import { NotificationsService } from '../mail/notifications.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { generateTemporaryPassword, validatePassword } from '../rbac/password-policy';
 import { SecuritySettingsService } from '../rbac/security-settings.service';
@@ -37,6 +39,8 @@ export class ClientsService {
     private readonly prisma: PrismaService,
     private readonly audit: AuditService,
     private readonly security: SecuritySettingsService,
+    private readonly email: EmailService,
+    private readonly notifications: NotificationsService,
   ) {}
 
   async list(query: { q?: string; active?: string; page?: string }) {
@@ -116,6 +120,7 @@ export class ClientsService {
       await this.prisma.clientOrganization.delete({ where: { id: org.id } });
       throw error;
     }
+    if (owner && this.email.enabled) void this.notifications.clientInvited({ name: input.owner?.name ?? '', email: owner.email, companyName: org.companyName, temporaryPassword: owner.temporaryPassword });
     await this.audit.log({ actor: actorOf(admin), action: 'CREATE', module: 'clients', entityType: 'ClientOrganization', entityId: org.id, entityLabel: org.companyName, summary: `Created client ${org.companyName}${owner ? ` with portal user ${owner.email}` : ''}`, meta });
     return { id: org.id, owner };
   }
@@ -151,6 +156,7 @@ export class ClientsService {
     const org = await this.prisma.clientOrganization.findUnique({ where: { id: orgId }, select: { companyName: true } });
     if (!org) throw new NotFoundException('Client not found.');
     const user = await this.makeUser(orgId, input);
+    if (this.email.enabled) void this.notifications.clientInvited({ name: input.name, email: user.email, companyName: org.companyName, temporaryPassword: user.temporaryPassword });
     await this.audit.log({ actor: actorOf(admin), action: 'CREATE', module: 'clients', entityType: 'ClientUser', entityId: user.id, entityLabel: user.email, summary: `Gave ${user.email} portal access for ${org.companyName} as ${input.role.toLowerCase()}`, meta });
     return user;
   }

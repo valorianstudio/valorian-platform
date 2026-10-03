@@ -76,7 +76,7 @@ export function InquiryManager({ initial, archivedView }: { initial: InquiryRow[
 
   return (
     <div>
-      <div className="mb-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-[2fr_1fr_1fr_auto]">
+      <div className="mb-5 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-[2fr_1fr_1fr_auto]">
         <div className="relative sm:col-span-2 lg:col-span-1">
           <Search className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted" aria-hidden />
           <Input aria-label="Search inquiries" placeholder="Search inquiries…" className="pl-10" value={q} onChange={(e) => { setQ(e.target.value); setPage(1); }} />
@@ -124,14 +124,14 @@ export function InquiryManager({ initial, archivedView }: { initial: InquiryRow[
                   {open && (
                     <div className="space-y-5 border-t border-border p-4">
                       <p className="whitespace-pre-line break-words">{row.message}</p>
-                      <dl className="grid gap-3 text-sm sm:grid-cols-2">
+                      <dl className="grid grid-cols-1 gap-3 text-sm sm:grid-cols-2">
                         <div><dt className="text-muted">Email</dt><dd className="break-all font-medium">{row.email}</dd></div>
                         <div><dt className="text-muted">Phone</dt><dd className="font-medium">{row.phone ?? '—'}</dd></div>
                         <div><dt className="text-muted">Company</dt><dd className="font-medium">{row.companyName ?? '—'}</dd></div>
                         <div><dt className="text-muted">Country</dt><dd className="font-medium">{row.country ?? '—'}</dd></div>
                         <div><dt className="text-muted">Preferred contact</dt><dd className="font-medium">{CONTACT_LABEL[row.preferredContact] ?? row.preferredContact}</dd></div>
                       </dl>
-                      <div className="grid gap-3 sm:grid-cols-2">
+                      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                         <Select aria-label="Status" value={row.status} onChange={(e) => update(row, { status: e.target.value }, 'Status updated.')}>
                           {Object.entries(STATUS_LABEL).map(([value, label]) => (
                             <option key={value} value={value}>{label}</option>

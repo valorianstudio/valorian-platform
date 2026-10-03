@@ -18,6 +18,10 @@ export const caseCardSelect = {
   featured: true,
   publishedAt: true,
   industry: { select: { name: true, slug: true } },
+  challenge: true,
+  solution: true,
+  results: true,
+  technologies: { select: { name: true }, take: 5 },
 } satisfies Prisma.CaseStudySelect;
 export const articleCardSelect = {
   slug: true,

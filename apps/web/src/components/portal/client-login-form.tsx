@@ -38,7 +38,7 @@ export function ClientLoginForm() {
       <Button type="submit" loading={submitting} className="w-full">
         {submitting ? 'Signing in…' : 'Sign in'}
       </Button>
-      <button type="button" onClick={() => setForgot((v) => !v)} className="block w-full text-center text-sm text-muted hover:text-foreground">
+      <button type="button" onClick={() => setForgot((v) => !v)} className="block w-full py-2.5 text-center text-sm text-muted transition-colors hover:text-foreground">
         Forgot your password?
       </button>
       {forgot && <p className="rounded-lg bg-surface-strong p-3 text-sm text-muted">Contact your Valorian project lead and we will reset your access.</p>}

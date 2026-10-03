@@ -63,7 +63,7 @@ export default async function ContactPage({ searchParams }: { searchParams: Prom
     <>
       <PageHero eyebrow="Contact" title="Let's talk about your project" description="Share what you want to build and the problem it solves. The more detail you give, the more useful our reply." />
       <Section>
-        <div className="grid gap-10 lg:grid-cols-[1.6fr_1fr]">
+        <div className="grid grid-cols-1 gap-10 lg:grid-cols-[1.6fr_1fr]">
           <Card className="p-5 sm:p-8">
             <LeadForm context={context} company={settings.companyName} whatsappNumber={settings.whatsapp} responseNote={config?.responseNote} showInquiryTypes />
           </Card>

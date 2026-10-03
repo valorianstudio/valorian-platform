@@ -115,7 +115,7 @@ export function LeadDetail({ lead, currentAdminId, company }: { lead: LeadFull; 
   const [followUp, setFollowUp] = useState(lead.followUpAt?.slice(0, 10) ?? '');
   const [followUpNote, setFollowUpNote] = useState(lead.followUpNote ?? '');
   const [finalValue, setFinalValue] = useState(lead.finalProjectValue?.toString() ?? '');
-  const [finalCurrency, setFinalCurrency] = useState<'BDT' | 'USD'>(lead.finalCurrency ?? lead.currency ?? 'BDT');
+  const [finalCurrency, setFinalCurrency] = useState<'BDT' | 'USD'>(lead.finalCurrency ?? lead.currency ?? 'USD');
   const [summary, setSummary] = useState(lead.internalSummary ?? '');
 
   async function run(action: () => Promise<unknown>, success: string): Promise<boolean> {
@@ -154,7 +154,7 @@ export function LeadDetail({ lead, currentAdminId, company }: { lead: LeadFull; 
 
   return (
     <div>
-      <Link href="/admin/leads" className="mb-4 inline-flex items-center gap-1 text-sm text-muted hover:text-foreground">
+      <Link href="/admin/leads" className="mb-3 inline-flex items-center gap-1 py-2 text-sm text-muted transition-colors hover:text-foreground">
         <ArrowLeft className="size-4" aria-hidden /> All leads
       </Link>
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
@@ -173,10 +173,10 @@ export function LeadDetail({ lead, currentAdminId, company }: { lead: LeadFull; 
       </div>
       <FormAlert error={error} />
 
-      <div className="mt-4 grid gap-6 lg:grid-cols-[1.5fr_1fr]">
+      <div className="mt-4 grid grid-cols-1 gap-6 lg:grid-cols-[1.5fr_1fr]">
         <div className="min-w-0 space-y-6">
           <Section title="Client">
-            <dl className="grid gap-4 sm:grid-cols-2">
+            <dl className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <Info label="Name">{lead.name}</Info>
               <Info label="Company">{lead.companyName}</Info>
               <Info label="Email">{lead.email}</Info>
@@ -200,7 +200,7 @@ export function LeadDetail({ lead, currentAdminId, company }: { lead: LeadFull; 
           </Section>
 
           <Section title="Project">
-            <dl className="grid gap-4 sm:grid-cols-2">
+            <dl className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <Info label="Source">{SOURCE_LABEL[lead.source] ?? lead.source}</Info>
               <Info label="Source page">{lead.sourceUrl}</Info>
               <Info label="Demo">{lead.demo && <Link href={`/demos/${lead.demo.slug}`} target="_blank" className="text-primary">{lead.demo.name}</Link>}</Info>
@@ -323,7 +323,7 @@ export function LeadDetail({ lead, currentAdminId, company }: { lead: LeadFull; 
                 if (!title) return;
                 if (await run(() => apiRequest('POST', `/admin/leads/${lead.id}/activities`, { type: form.get('type'), title, detail: String(form.get('detail') ?? '') }), 'Activity logged.')) formElement.reset();
               }}
-              className="grid gap-3 sm:grid-cols-[10rem_1fr]"
+              className="grid grid-cols-1 gap-3 sm:grid-cols-[10rem_1fr]"
             >
               <Select name="type" aria-label="Activity type" defaultValue="CALL">
                 {ACTIVITY_TYPES.map(([value, label]) => (
@@ -410,7 +410,7 @@ export function LeadDetail({ lead, currentAdminId, company }: { lead: LeadFull; 
 
       <OutcomeDialog
         status={pendingStatus}
-        defaultCurrency={lead.finalCurrency ?? lead.currency ?? 'BDT'}
+        defaultCurrency={lead.finalCurrency ?? lead.currency ?? 'USD'}
         defaultValue={lead.finalProjectValue}
         busy={busy}
         onCancel={() => setPendingStatus(null)}

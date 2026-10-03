@@ -40,11 +40,11 @@ export default async function AuditEntryPage({ params }: { params: Promise<{ id:
 
   return (
     <>
-      <Link href="/admin/audit" className="mb-4 inline-flex items-center gap-1 text-sm text-muted hover:text-foreground">
+      <Link href="/admin/audit" className="mb-3 inline-flex items-center gap-1 py-2 text-sm text-muted transition-colors hover:text-foreground">
         <ChevronLeft className="size-4" aria-hidden /> Audit log
       </Link>
       <PageHeader title={entry.summary} description={formatDateTime(entry.createdAt)} actions={<Badge>{titleCase(entry.action)}</Badge>} />
-      <div className="grid gap-6 lg:grid-cols-[22rem_1fr]">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[22rem_1fr]">
         <Card className="h-fit p-6">
           <dl className="space-y-3 text-sm">
             {[
@@ -71,7 +71,7 @@ export default async function AuditEntryPage({ params }: { params: Promise<{ id:
               {changes.map(([field, change]) => (
                 <div key={field}>
                   <p className="mb-1.5 text-sm font-medium">{titleCase(field)}</p>
-                  <div className="grid gap-2 sm:grid-cols-2">
+                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                     <pre className="max-h-64 overflow-auto whitespace-pre-wrap break-words rounded-lg bg-danger-soft p-3 text-xs text-foreground">
                       <span className="mb-1 block font-sans font-medium text-danger">Before</span>
                       {show(change?.before)}

@@ -13,8 +13,7 @@ import { ApiError, apiRequest } from '@/lib/client-api';
 
 const FIELDS: FieldDef[] = [
   { kind: 'switch', name: 'enabled', label: 'Estimator enabled', description: 'When off, /estimate shows an unavailable message and calculations are refused.' },
-  { kind: 'select', name: 'currency', label: 'Currency', half: true, options: [{ value: 'BDT', label: 'BDT (৳)' }, { value: 'USD', label: 'USD ($)' }], hint: 'All prices you enter are in this currency. Changing it does not convert them.' },
-  { kind: 'number', name: 'roundingStep', label: 'Round range to nearest', half: true, hint: 'For example 1000 or 100.' },
+  { kind: 'number', name: 'roundingStep', label: 'Round range to nearest', half: true, hint: 'Prices are in USD. For example 50 or 100.' },
   { kind: 'number', name: 'rangeLowPercent', label: 'Range: lower bound (% below estimate)', half: true },
   { kind: 'number', name: 'rangeHighPercent', label: 'Range: upper bound (% above estimate)', half: true },
   { kind: 'number', name: 'bothDiscountPercent', label: 'Website + Mobile package discount (%)', half: true, hint: 'Applied when an item has no explicit combined price.' },

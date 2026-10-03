@@ -58,7 +58,7 @@ export function SecurityForm({ values }: { values: SecurityValues }) {
     <Card className="max-w-2xl p-6">
       <form onSubmit={onSubmit} className="space-y-5">
         <FormAlert error={error} />
-        <div className="grid gap-5 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
           {FIELDS.map((field) => (
             <Field key={field.key} label={field.label} hint={field.hint}>
               {(props) => <Input {...props} name={field.key} type="number" inputMode="numeric" min={field.min} max={field.max} defaultValue={values[field.key]} required />}

@@ -37,7 +37,7 @@ function PlatformPanel({ demo, platform }: { demo: DemoDetail; platform: Platfor
 
   return (
     <div className="space-y-12">
-      <div className="grid gap-8 lg:grid-cols-[1.3fr_1fr] lg:items-start">
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1.3fr_1fr] lg:items-start">
         <div className="min-w-0">
           <h3 className="text-2xl font-semibold tracking-tight">{platform.title ?? (mobile ? `${demo.name} mobile app` : `${demo.name} website`)}</h3>
           {platform.description && <p className="mt-3 max-w-2xl whitespace-pre-line text-pretty text-lg text-muted">{platform.description}</p>}
@@ -93,7 +93,7 @@ function PlatformPanel({ demo, platform }: { demo: DemoDetail; platform: Platfor
       {modules.length > 0 && (
         <div>
           <h4 className="mb-5 text-lg font-semibold">Modules</h4>
-          <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {modules.map((module) => {
               const Icon = getIcon(module.icon ?? 'layers');
               return (
@@ -117,7 +117,7 @@ function PlatformPanel({ demo, platform }: { demo: DemoDetail; platform: Platfor
       {features.length > 0 && (
         <div>
           <h4 className="mb-5 text-lg font-semibold">Features</h4>
-          <ul className="grid gap-x-8 gap-y-5 sm:grid-cols-2">
+          <ul className="grid grid-cols-1 gap-x-8 gap-y-5 sm:grid-cols-2">
             {features.map((feature) => (
               <li key={feature.id} className="flex gap-3">
                 <span className="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-accent-soft text-accent">
@@ -153,9 +153,9 @@ export default async function DemoDetailPage({ params, searchParams }: { params:
 
   return (
     <>
-      <section className="relative overflow-hidden border-b border-border">
-        <div aria-hidden className="absolute inset-x-0 top-0 -z-10 h-80 bg-[radial-gradient(50%_80%_at_50%_0%,var(--primary-soft),transparent)]" />
-        <div className="mx-auto grid w-full max-w-7xl gap-10 px-5 py-14 sm:px-8 sm:py-20 lg:grid-cols-[1.1fr_1fr] lg:items-center">
+      <section className="relative isolate -mt-16 overflow-hidden bg-[radial-gradient(60%_70%_at_90%_0%,rgb(251_224_195/0.85),transparent)] lg:-mt-[4.5rem]">
+        <div aria-hidden className="grain pointer-events-none absolute inset-0 -z-10" />
+        <div className="mx-auto grid grid-cols-1 w-full max-w-7xl gap-12 px-5 pb-16 pt-28 sm:px-8 sm:pb-24 sm:pt-36 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
           <div className="min-w-0">
             <Breadcrumbs items={[{ name: 'Demos', href: '/demos' }, { name: demo.name }]} />
             <div className="flex flex-wrap items-center gap-2">
@@ -164,12 +164,12 @@ export default async function DemoDetailPage({ params, searchParams }: { params:
               <Badge tone="accent">{DEMO_LABELS[demo.statusLabel]}</Badge>
               {demo.badge && <Badge>{demo.badge}</Badge>}
             </div>
-            <h1 className="mt-5 text-balance text-4xl font-semibold tracking-tight sm:text-5xl">{demo.name}</h1>
+            <h1 className="display mt-6 text-balance text-5xl leading-[1.04] text-primary sm:text-6xl">{demo.name}</h1>
             <p className="mt-4 max-w-xl text-pretty text-lg text-muted sm:text-xl">{demo.shortDescription}</p>
             <div className="mt-6">
               <PlatformIndicators platforms={demo.platforms} />
             </div>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               <ButtonLink href={ctaUrl} size="lg">
                 {ctaLabel} <ArrowRight className="size-4" aria-hidden />
               </ButtonLink>
@@ -183,23 +183,21 @@ export default async function DemoDetailPage({ params, searchParams }: { params:
               )}
             </div>
           </div>
-          <div className="overflow-hidden rounded-2xl border border-border shadow-xl shadow-primary/5">
-            {demo.coverImageUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={demo.coverImageUrl} alt={`${demo.name} preview`} width={960} height={600} fetchPriority="high" className="aspect-[16/10] w-full object-cover" />
-            ) : (
-              <DemoVisual demo={demo} className="aspect-[16/10] w-full border-b-0" />
-            )}
+          <div className="relative">
+            <DemoVisual
+              demo={{ ...demo, thumbnailUrl: demo.coverImageUrl ?? demo.thumbnailUrl ?? demo.screenshots.find((shot) => shot.platform === 'WEBSITE')?.url ?? null, screenshots: demo.screenshots.filter((shot) => shot.platform === 'MOBILE') }}
+              className="aspect-[16/11] w-full rounded-[1.75rem] shadow-[var(--shadow-lift)]"
+            />
           </div>
         </div>
       </section>
 
       {hasOverview && (
         <Section eyebrow="Overview" title={`About ${demo.name}`}>
-          <div className="grid gap-10 lg:grid-cols-[1.3fr_1fr]">
+          <div className="grid grid-cols-1 gap-10 lg:grid-cols-[1.3fr_1fr]">
             <div className="space-y-6">
               {demo.fullDescription && <p className="whitespace-pre-line text-pretty text-lg text-muted">{demo.fullDescription}</p>}
-              <div className="grid gap-4 sm:grid-cols-2">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 {demo.problem && (
                   <Card className="p-5">
                     <h3 className="text-sm font-medium text-danger">The problem</h3>
@@ -262,7 +260,7 @@ export default async function DemoDetailPage({ params, searchParams }: { params:
 
       {(benefits.length > 0 || useCases.length > 0) && (
         <Section>
-          <div className="grid gap-10 md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-10 md:grid-cols-2">
             {[
               ['Benefits', benefits],
               ['Use cases', useCases],
@@ -287,7 +285,7 @@ export default async function DemoDetailPage({ params, searchParams }: { params:
 
       {demo.related.length > 0 && (
         <Section tone="surface" eyebrow="Explore more" title="Related solutions">
-          <ul className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+          <ul className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
             {demo.related.map((item) => (
               <li key={item.slug}>
                 <DemoCard demo={item} />

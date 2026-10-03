@@ -86,7 +86,7 @@ export function ArticleView({ article, related, baseUrl, company, preview }: Pro
             <ul className="mx-auto mt-10 flex max-w-[44rem] flex-wrap gap-2" aria-label="Tags">
               {article.tags.map((tag) => (
                 <li key={tag.slug}>
-                  <Link href={`/insights?tag=${tag.slug}`} className="inline-flex rounded-full border border-border px-3 py-1 text-sm text-muted hover:text-foreground">
+                  <Link href={`/insights?tag=${tag.slug}`} className="inline-flex min-h-9 items-center rounded-full border border-border px-3.5 text-sm text-muted transition-colors hover:border-border-strong hover:text-foreground">
                     #{tag.name}
                   </Link>
                 </li>
@@ -101,7 +101,7 @@ export function ArticleView({ article, related, baseUrl, company, preview }: Pro
 
       {related.length > 0 && (
         <Section tone="surface" eyebrow="Keep reading" title="Related insights">
-          <ul className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+          <ul className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
             {related.map((item) => (
               <li key={item.slug}>
                 <ArticleCardView item={item} />

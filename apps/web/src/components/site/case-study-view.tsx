@@ -52,7 +52,7 @@ export function CaseStudyView({ study, related, baseUrl, company, preview }: Pro
       )}
       <section className="relative overflow-hidden border-b border-border">
         <div aria-hidden className="absolute inset-x-0 top-0 -z-10 h-80 bg-[radial-gradient(50%_80%_at_50%_0%,var(--primary-soft),transparent)]" />
-        <div className="mx-auto grid w-full max-w-7xl gap-10 px-5 py-12 sm:px-8 sm:py-16 lg:grid-cols-[1.1fr_1fr] lg:items-center">
+        <div className="mx-auto grid grid-cols-1 w-full max-w-7xl gap-10 px-5 py-12 sm:px-8 sm:py-16 lg:grid-cols-[1.1fr_1fr] lg:items-center">
           <div className="min-w-0">
             <Breadcrumbs items={[{ name: 'Case studies', href: '/case-studies' }, { name: study.title }]} base={baseUrl} />
             <div className="flex flex-wrap items-center gap-2">
@@ -88,7 +88,7 @@ export function CaseStudyView({ study, related, baseUrl, company, preview }: Pro
 
       {(study.services.length > 0 || study.technologies.length > 0) && (
         <section className="border-b border-border bg-surface">
-          <dl className="mx-auto grid w-full max-w-7xl gap-6 px-5 py-8 sm:px-8 md:grid-cols-2">
+          <dl className="mx-auto grid grid-cols-1 w-full max-w-7xl gap-6 px-5 py-8 sm:px-8 md:grid-cols-2">
             {study.services.length > 0 && (
               <div>
                 <dt className="mb-2 text-sm text-muted">Services</dt>
@@ -119,7 +119,7 @@ export function CaseStudyView({ study, related, baseUrl, company, preview }: Pro
 
       {sections.length > 0 && (
         <Section tone="surface">
-          <div className="grid gap-5 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
             {sections.map(([title, text]) => (
               <Card key={title} className="p-6">
                 <h2 className="text-lg font-semibold">{title}</h2>
@@ -140,7 +140,7 @@ export function CaseStudyView({ study, related, baseUrl, company, preview }: Pro
 
       {study.results.length > 0 && (
         <Section tone="surface" eyebrow="Outcomes" title="Results">
-          <dl className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <dl className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {study.results.map((result) => (
               <div key={result.label} className="border-t border-border pt-4">
                 <dd className="text-4xl font-semibold tracking-tight text-primary">{result.value}</dd>
@@ -172,7 +172,7 @@ export function CaseStudyView({ study, related, baseUrl, company, preview }: Pro
 
       {related.length > 0 && (
         <Section tone="surface" eyebrow="More work" title="Related case studies">
-          <ul className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+          <ul className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
             {related.map((item) => (
               <li key={item.slug}>
                 <CaseCardView item={item} />

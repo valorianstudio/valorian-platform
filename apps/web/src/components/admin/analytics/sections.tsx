@@ -45,7 +45,7 @@ export function AcquisitionSection({ data }: { data: AcquisitionData }) {
   return (
     <div className="space-y-6">
       {data.totalSessions === 0 && <Empty>Traffic sources will appear after visitors begin using the site.</Empty>}
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <Panel title="Channels" description="How sessions found the site. Unknown and unattributed traffic is shown separately, not guessed.">
           <BarList items={data.channels.map((c) => ({ label: label(CHANNEL_LABEL, c.channel), value: c.sessions, detail: c.leads ? `${c.leads} ${c.leads === 1 ? 'lead' : 'leads'}` : undefined }))} />
           {data.unattributedLeads > 0 && <p className="mt-4 text-xs text-muted">{data.unattributedLeads} {data.unattributedLeads === 1 ? 'lead has' : 'leads have'} no traffic attribution (for example, older leads or blocked analytics).</p>}
@@ -86,14 +86,14 @@ export function ContentSection({ data }: { data: ContentData }) {
   const total = interest.website + interest.mobile;
   return (
     <div className="space-y-6">
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <Panel title="Top pages"><DataTable rows={data.pages} rowKey={(r) => r.path} columns={[{ header: 'Page', cell: (r) => <code className="break-all text-xs">{r.path}</code> }, { header: 'Views', align: 'right', cell: (r) => formatNumber(r.views) }, { header: 'Sessions', align: 'right', cell: (r) => formatNumber(r.sessions) }]} /></Panel>
         <Panel title="Demo platform interest" description="Which platform tab visitors select on demo pages.">
           {total === 0 ? <Empty>No platform selections yet.</Empty> : <BarList items={[{ label: 'Website', value: interest.website, detail: formatPercent(rate(interest.website, total)) }, { label: 'Mobile app', value: interest.mobile, detail: formatPercent(rate(interest.mobile, total)) }]} tone="accent" />}
         </Panel>
       </div>
       <Panel title="Top demos" description="Leads are counted from submissions that came from the demo."><EntityTable rows={data.demos} showPlatform /></Panel>
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <Panel title="Top services"><EntityTable rows={data.services} /></Panel>
         <Panel title="Top industries" description="Leads come from demos in the industry."><EntityTable rows={data.solutions} /></Panel>
         <Panel title="Top case studies"><EntityTable rows={data.caseStudies} showLeads={false} /></Panel>
@@ -108,7 +108,7 @@ export function EstimatorSection({ data }: { data: EstimatorData }) {
   return (
     <div className="space-y-6">
       {started === 0 && data.funnel[3]?.count === 0 && <Empty>Estimator analytics will appear after visitors use the estimator.</Empty>}
-      <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1.4fr_1fr]">
         <Panel title="Estimator funnel" description="Distinct sessions reaching each step.">
           <Funnel stages={data.funnel} />
           <dl className="mt-5 grid grid-cols-2 gap-4 border-t border-border pt-4 text-sm">
@@ -130,7 +130,7 @@ export function EstimatorSection({ data }: { data: EstimatorData }) {
           )}
         </Panel>
       </div>
-      <div className="grid gap-6 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <Panel title="Project types"><BarList items={data.projectTypes.map((r) => ({ label: r.label, value: r.count }))} /></Panel>
         <Panel title="Platform"><BarList items={data.platforms.map((r) => ({ label: label(PLATFORM_LABEL, r.label), value: r.count }))} tone="accent" /></Panel>
         <Panel title="Complexity"><BarList items={data.complexity.map((r) => ({ label: r.label, value: r.count }))} /></Panel>
@@ -139,7 +139,7 @@ export function EstimatorSection({ data }: { data: EstimatorData }) {
         <Panel title="Most selected features" description="Excludes features included in every estimate."><BarList items={data.features.map((r) => ({ label: r.label, value: r.count }))} tone="accent" /></Panel>
         <Panel title="Most selected integrations"><BarList items={data.integrations.map((r) => ({ label: r.label, value: r.count }))} /></Panel>
       </div>
-      <div className="grid gap-6 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {([['Value by project type', data.valueByType], ['Value by industry', data.valueByIndustry], ['Value by lead source', data.valueBySource]] as const).map(([title, rows]) => (
           <Panel key={title} title={title} description="Average estimate.">
             <DataTable rows={[...rows]} rowKey={(r) => `${r.label}-${r.currency}`} columns={[{ header: 'Group', cell: (r) => label(CHANNEL_LABEL, r.label) }, { header: 'Count', align: 'right', cell: (r) => r.count }, { header: 'Average', align: 'right', cell: (r) => formatMoney(r.average, r.currency) }]} />
@@ -159,7 +159,7 @@ export function SalesSection({ data }: { data: SalesData }) {
         <StatCard label="Won" value={formatNumber(data.won.count)} hint={data.won.values.length ? `Total ${data.won.values.map((v) => formatMoney(v.total, v.currency)).join(' · ')}` : 'No won value recorded'} />
         <StatCard label="Lost" value={formatNumber(data.lost)} hint={data.averageDeal.length ? `Average deal ${data.averageDeal.map((v) => formatMoney(v.average, v.currency)).join(' · ')}` : undefined} />
       </div>
-      <div className="grid gap-6 lg:grid-cols-[1.3fr_1fr]">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1.3fr_1fr]">
         <Panel title="Lead pipeline" description="Leads created in this period, by their current stage.">
           <BarList items={data.stages.map((s) => ({ label: label(STAGE_LABEL, s.status), value: s.count }))} />
         </Panel>
@@ -171,7 +171,7 @@ export function SalesSection({ data }: { data: SalesData }) {
           </dl>
         </Panel>
       </div>
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <Panel title="Pipeline by stage" description="Active opportunities, midpoint of estimates.">
           <DataTable rows={data.pipeline.stages} rowKey={(r) => r.status} columns={[{ header: 'Stage', cell: (r) => label(STAGE_LABEL, r.status) }, { header: 'Leads', align: 'right', cell: (r) => r.count }, { header: 'Value', align: 'right', cell: (r) => <Money values={r.totals} /> }]} />
         </Panel>
@@ -184,7 +184,7 @@ export function SalesSection({ data }: { data: SalesData }) {
           </dl>
         </Panel>
       </div>
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <Panel title="Leads by source"><DataTable rows={data.bySource} rowKey={(r) => r.label} columns={[{ header: 'Source', cell: (r) => r.label.charAt(0) + r.label.slice(1).toLowerCase() }, { header: 'Leads', align: 'right', cell: (r) => r.leads }, { header: 'Won', align: 'right', cell: (r) => r.won }, { header: 'Lost', align: 'right', cell: (r) => r.lost }]} /></Panel>
         <Panel title="Leads by traffic channel" description="Unattributed means no analytics session was linked to the lead."><DataTable rows={data.byChannel} rowKey={(r) => r.label} columns={[{ header: 'Channel', cell: (r) => label(CHANNEL_LABEL, r.label) }, { header: 'Leads', align: 'right', cell: (r) => r.leads }, { header: 'Won', align: 'right', cell: (r) => r.won }]} /></Panel>
         <Panel title="Demo conversion" description="Lead rate = leads ÷ demo views. Small samples are not conclusive."><DataTable rows={data.demos} rowKey={(r) => r.id} columns={[{ header: 'Demo', cell: (r) => r.name }, { header: 'Views', align: 'right', cell: (r) => r.views }, { header: 'Est. clicks', align: 'right', cell: (r) => r.estimateClicks }, { header: 'Leads', align: 'right', cell: (r) => r.leads }, { header: 'Lead rate', align: 'right', cell: (r) => formatPercent(r.leadRate) }]} /></Panel>

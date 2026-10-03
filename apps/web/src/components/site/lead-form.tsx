@@ -41,7 +41,7 @@ const INQUIRY_TYPES = [
   { value: 'OTHER', label: 'Other' },
 ];
 const PROJECT_TYPES = ['Website', 'Web application', 'Mobile app', 'Website + mobile app', 'SaaS platform', 'System upgrade', 'Not sure yet'];
-const BUDGETS = ['Not sure yet', 'Under 100k BDT / $1,000', '100k–300k BDT / $1,000–3,000', '300k–1M BDT / $3,000–10,000', 'Over 1M BDT / $10,000+'];
+const BUDGETS = ['Not sure yet', 'Under $1,000', '$1,000 – $3,000', '$3,000 – $10,000', 'Over $10,000'];
 const TIMELINES = ['Flexible', 'Within 3 months', 'Within 1 month', 'As soon as possible'];
 
 type FieldErrors = Record<string, string>;
@@ -179,7 +179,7 @@ export function LeadForm({ context, company, whatsappNumber, responseNote, showI
         </Field>
       )}
 
-      <div className="grid gap-5 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
         <Field label="Name" error={errors.name}>
           {(props) => <Input {...props} name="name" autoComplete="name" required maxLength={100} />}
         </Field>

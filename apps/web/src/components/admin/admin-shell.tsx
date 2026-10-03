@@ -4,13 +4,12 @@ import { useState } from 'react';
 import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Building2, FolderKanban, BarChart3, BookOpen, Briefcase, Calculator, ChevronDown, Cpu, FileText, HelpCircle, Home, Image as ImageIcon, Inbox, LayoutDashboard, Layers, LogOut, Menu, MessageSquareQuote, Monitor, MousePointerClick, Lock, Navigation, Newspaper, ScrollText, ShieldCheck, PanelBottom, Search, Settings, Sparkles, Tags, User, Users, Workflow, X } from 'lucide-react';
+import { Building2, FolderKanban, BarChart3, Briefcase, Calculator, ChevronDown, Cpu, FileText, HelpCircle, Home, Image as ImageIcon, Inbox, LayoutDashboard, Layers, LogOut, Menu, MessageSquareQuote, Monitor, MousePointerClick, Lock, Navigation, Newspaper, ScrollText, ShieldCheck, PanelBottom, Search, Settings, Sparkles, Tags, User, Users, Workflow, X } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { Wordmark } from '@/components/site/wordmark';
 import { AccessProvider, useAccess } from './access';
 import { Badge } from '@/components/ui/badge';
 import { Dropdown, menuItemClass } from '@/components/ui/dropdown';
-import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { Tooltip } from '@/components/ui/tooltip';
 import { apiRequest } from '@/lib/client-api';
 import { cn } from '@/lib/cn';
@@ -198,7 +197,6 @@ export function AdminShell({ admin, brandName, children }: { admin: AdminProfile
             <Link href="/" target="_blank" className="hidden rounded-lg px-3 py-2 text-sm text-muted hover:text-foreground sm:block">
               View site
             </Link>
-            <ThemeToggle />
             <Dropdown
               label="Account menu"
               trigger={

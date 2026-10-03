@@ -93,7 +93,9 @@ export interface DemoCardData {
   featured: boolean;
   category: { name: string; slug: string } | null;
   industry: { name: string; slug: string } | null;
-  platforms: { type: PlatformType }[];
+  platforms: { type: PlatformType; technologies?: { name: string }[] }[];
+  /** First active mobile screenshot, used for the phone preview on cards. */
+  screenshots?: { url: string }[];
 }
 export interface DemoListData {
   items: DemoCardData[];
@@ -165,6 +167,10 @@ export interface CaseCard {
   featured: boolean;
   publishedAt: string | null;
   industry: { name: string; slug: string } | null;
+  challenge?: string | null;
+  solution?: string | null;
+  results?: { label: string; value: string; description?: string | null }[];
+  technologies?: { name: string }[];
 }
 export interface CaseDetail extends CaseCard, Seo {
   fullOverview: string;

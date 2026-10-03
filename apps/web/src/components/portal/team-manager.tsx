@@ -64,7 +64,7 @@ export function TeamManager({ members, selfId }: { members: Member[]; selfId: st
         <h2 className="mb-4 font-semibold">Add a team member</h2>
         <form onSubmit={add} className="space-y-4">
           <FormAlert error={error} />
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <Field label="Name">{(props) => <Input {...props} name="name" required maxLength={80} autoComplete="off" />}</Field>
             <Field label="Email">{(props) => <Input {...props} name="email" type="email" required autoComplete="off" />}</Field>
           </div>

@@ -20,7 +20,7 @@ export default async function ProfilePage() {
   return (
     <>
       <PageHeader title="Profile" description="Manage your account, password and sign-in security." />
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <div className="space-y-6">
           <ProfileForm admin={admin} />
           <Card className="p-6">

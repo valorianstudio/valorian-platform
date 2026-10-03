@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ArrowRight, ArrowUpRight, Clock, Quote, Star } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, Clock } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { ButtonLink } from '@/components/ui/button';
 import { Section } from '@/components/ui/section';
@@ -9,14 +9,14 @@ import type { ArticleCard, CaseCard, IntroContent, TestimonialItem } from '@/lib
 const dateFormat = new Intl.DateTimeFormat('en', { dateStyle: 'medium' });
 export const formatPublished = (value: string | null) => (value ? dateFormat.format(new Date(value)) : '');
 
-function Cover({ src, alt, slug }: { src: string | null; alt: string; slug: string }) {
-  const tone = slug.length % 2 === 0;
+function Cover({ src, alt, slug, className = 'aspect-[16/10]' }: { src: string | null; alt: string; slug: string; className?: string }) {
+  const warm = slug.length % 2 === 0;
   return (
-    <div className={`relative aspect-[16/9] overflow-hidden border-b border-border ${tone ? 'bg-primary-soft' : 'bg-accent-soft'}`}>
+    <div className={`relative overflow-hidden ${warm ? 'bg-[linear-gradient(135deg,#fbe0c3,#f3d3b6)]' : 'bg-[linear-gradient(135deg,#dfe5e5,#cfd8d9)]'} ${className}`}>
       {src ? (
-        <SmartImage src={src} alt={alt} width={640} height={360} sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" className="size-full object-cover transition-transform duration-300 group-hover:scale-[1.02]" />
+        <SmartImage src={src} alt={alt} width={800} height={500} sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" className="img-zoom size-full object-cover" />
       ) : (
-        <span aria-hidden className={`absolute inset-0 grid place-items-center text-5xl font-semibold ${tone ? 'text-primary/30' : 'text-accent/30'}`}>
+        <span aria-hidden className="display absolute inset-0 grid place-items-center text-6xl text-primary/25">
           {alt.charAt(0)}
         </span>
       )}
@@ -26,17 +26,17 @@ function Cover({ src, alt, slug }: { src: string | null; alt: string; slug: stri
 
 export function CaseCardView({ item }: { item: CaseCard }) {
   return (
-    <Link href={`/case-studies/${item.slug}`} className="group flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-background transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5">
+    <Link href={`/case-studies/${item.slug}`} className="card-lift group flex h-full flex-col overflow-hidden">
       <Cover src={item.coverImageUrl} alt={item.title} slug={item.slug} />
-      <div className="flex flex-1 flex-col p-5 sm:p-6">
-        <div className="flex flex-wrap items-center gap-2">
-          {item.industry && <Badge tone="primary">{item.industry.name}</Badge>}
-          {item.clientName && <span className="text-sm text-muted">{item.clientName}</span>}
+      <div className="flex flex-1 flex-col p-6">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs font-semibold uppercase tracking-[0.12em] text-accent">
+          {item.industry && <span>{item.industry.name}</span>}
+          {item.clientName && <span className="font-medium normal-case tracking-normal text-muted">{item.clientName}</span>}
         </div>
-        <h3 className="mt-3 text-lg font-semibold">{item.title}</h3>
+        <h3 className="display mt-3 text-xl text-primary">{item.title}</h3>
         <p className="mt-2 flex-1 text-muted">{item.shortDescription}</p>
-        <span className="mt-5 inline-flex items-center gap-1 text-sm font-medium text-primary">
-          Read case study <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" aria-hidden />
+        <span className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-primary">
+          Read case study <ArrowRight className="size-4 transition-transform duration-200 group-hover:translate-x-1" aria-hidden />
         </span>
       </div>
     </Link>
@@ -45,14 +45,14 @@ export function CaseCardView({ item }: { item: CaseCard }) {
 
 export function ArticleCardView({ item }: { item: ArticleCard }) {
   return (
-    <Link href={`/insights/${item.slug}`} className="group flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-background transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5">
+    <Link href={`/insights/${item.slug}`} className="card-lift group flex h-full flex-col overflow-hidden">
       <Cover src={item.featuredImageUrl} alt={item.featuredImageAlt ?? item.title} slug={item.slug} />
-      <div className="flex flex-1 flex-col p-5 sm:p-6">
-        <div className="flex flex-wrap items-center gap-2 text-sm text-muted">
-          {item.category && <Badge tone="primary">{item.category.name}</Badge>}
+      <div className="flex flex-1 flex-col p-6">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted">
+          {item.category && <span className="font-semibold uppercase tracking-[0.12em] text-accent">{item.category.name}</span>}
           {item.publishedAt && <time dateTime={item.publishedAt}>{formatPublished(item.publishedAt)}</time>}
         </div>
-        <h3 className="mt-3 text-lg font-semibold">{item.title}</h3>
+        <h3 className="display mt-3 text-xl text-primary">{item.title}</h3>
         <p className="mt-2 line-clamp-3 flex-1 text-muted">{item.excerpt}</p>
         {item.readingTime && (
           <p className="mt-4 flex items-center gap-1.5 text-sm text-muted">
@@ -64,20 +64,63 @@ export function ArticleCardView({ item }: { item: ArticleCard }) {
   );
 }
 
+function Outcome({ label, children }: { label: string; children: string }) {
+  return (
+    <div>
+      <dt className="text-[11px] font-semibold uppercase tracking-[0.14em] text-accent">{label}</dt>
+      <dd className="mt-1 line-clamp-4 leading-relaxed text-muted">{children}</dd>
+    </div>
+  );
+}
+
+/** Large image-led case study row; layout alternates left and right. Challenge, solution and outcome appear only when recorded. */
+function FeatureCase({ item, flip }: { item: CaseCard; flip: boolean }) {
+  const result = item.results?.[0];
+  return (
+    <Link href={`/case-studies/${item.slug}`} className="card-lift group grid grid-cols-1 overflow-hidden lg:grid-cols-2">
+      <div className={`relative min-h-64 overflow-hidden ${flip ? 'lg:order-2' : ''}`}>
+        <Cover src={item.coverImageUrl} alt={item.title} slug={item.slug} className="absolute inset-0 size-full" />
+        {item.industry && <Badge className="absolute left-4 top-4 bg-card/90 text-primary backdrop-blur-sm">{item.industry.name}</Badge>}
+      </div>
+      <div className="flex flex-col justify-center p-7 sm:p-10 lg:p-12">
+        {item.clientName && <p className="text-sm font-medium text-muted">{item.clientName}</p>}
+        <h3 className="display mt-2 text-3xl leading-tight text-primary">{item.title}</h3>
+        <dl className="mt-6 space-y-4">
+          <Outcome label="Challenge">{item.challenge || item.shortDescription}</Outcome>
+          {item.solution && <Outcome label="Solution">{item.solution}</Outcome>}
+          {result && <Outcome label="Outcome">{`${result.value} ${result.label}`}</Outcome>}
+        </dl>
+        {item.technologies && item.technologies.length > 0 && (
+          <ul className="mt-6 flex flex-wrap gap-1.5" aria-label="Technology">
+            {item.technologies.map((tech) => (
+              <li key={tech.name} className="rounded-full bg-primary-soft px-2.5 py-1 text-[11px] font-semibold text-primary">
+                {tech.name}
+              </li>
+            ))}
+          </ul>
+        )}
+        <span className="mt-7 inline-flex items-center gap-1.5 text-sm font-semibold text-primary">
+          Read case study <ArrowRight className="size-4 transition-transform duration-200 group-hover:translate-x-1" aria-hidden />
+        </span>
+      </div>
+    </Link>
+  );
+}
+
 export function CaseStudiesSection({ intro, items, tone = 'default' }: { intro: IntroContent; items: CaseCard[]; tone?: 'default' | 'surface' }) {
   if (items.length === 0) return null;
   return (
     <Section tone={tone} eyebrow={intro.eyebrow ?? undefined} title={intro.title} description={intro.subtitle ?? undefined}>
-      <ul className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-        {items.map((item) => (
-          <li key={item.slug}>
-            <CaseCardView item={item} />
+      <ul className="space-y-6 lg:space-y-8">
+        {items.slice(0, 3).map((item, index) => (
+          <li key={item.slug} data-reveal>
+            <FeatureCase item={item} flip={index % 2 === 1} />
           </li>
         ))}
       </ul>
-      <div className="mt-10">
+      <div data-reveal className="mt-12">
         <ButtonLink href="/case-studies" variant="secondary">
-          All case studies <ArrowUpRight className="size-4" aria-hidden />
+          All case studies <ArrowUpRight className="size-4 transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" aria-hidden />
         </ButtonLink>
       </div>
     </Section>
@@ -88,57 +131,66 @@ export function InsightsSection({ intro, items, tone = 'default' }: { intro: Int
   if (items.length === 0) return null;
   return (
     <Section tone={tone} eyebrow={intro.eyebrow ?? undefined} title={intro.title} description={intro.subtitle ?? undefined}>
-      <ul className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-        {items.map((item) => (
-          <li key={item.slug}>
+      <ul className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {items.map((item, index) => (
+          <li key={item.slug} data-reveal style={{ ['--i' as string]: index % 3 }}>
             <ArticleCardView item={item} />
           </li>
         ))}
       </ul>
-      <div className="mt-10">
+      <div data-reveal className="mt-12">
         <ButtonLink href="/insights" variant="secondary">
-          All insights <ArrowUpRight className="size-4" aria-hidden />
+          All insights <ArrowUpRight className="size-4 transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" aria-hidden />
         </ButtonLink>
       </div>
     </Section>
   );
 }
 
+function Author({ item }: { item: TestimonialItem }) {
+  return (
+    <figcaption className="mt-8 flex items-center gap-4">
+      {item.imageUrl ? (
+        <SmartImage src={item.imageUrl} alt="" width={48} height={48} className="size-12 rounded-full object-cover" />
+      ) : (
+        <span aria-hidden className="display grid size-12 place-items-center rounded-full bg-cream text-lg text-primary">
+          {item.clientName.charAt(0)}
+        </span>
+      )}
+      <span className="min-w-0 text-sm">
+        <span className="block font-semibold text-primary">{item.clientName}</span>
+        <span className="block text-muted">{[item.position, item.companyName].filter(Boolean).join(', ')}</span>
+      </span>
+      {item.companyLogoUrl && <SmartImage src={item.companyLogoUrl} alt={item.companyName ?? ''} width={80} height={32} className="ml-auto h-8 w-auto max-w-20 object-contain opacity-80" />}
+    </figcaption>
+  );
+}
+
+/** Quiet, quote-led layout: one large statement, any others set smaller beside it. Hidden when there are none. */
 export function TestimonialsSection({ intro, items, tone = 'surface' }: { intro?: IntroContent; items: TestimonialItem[]; tone?: 'default' | 'surface' }) {
   if (items.length === 0) return null;
+  const [lead, ...rest] = items;
   return (
     <Section tone={tone} eyebrow={intro?.eyebrow ?? 'Client feedback'} title={intro?.title ?? 'What clients say'} description={intro?.subtitle ?? undefined}>
-      <ul className={`grid gap-6 ${items.length === 1 ? 'max-w-3xl' : items.length === 2 ? 'md:grid-cols-2' : 'md:grid-cols-2 lg:grid-cols-3'}`}>
-        {items.map((item) => (
-          <li key={item.id}>
-            <figure className="flex h-full flex-col rounded-2xl border border-border bg-background p-6">
-              <Quote className="size-6 text-primary/40" aria-hidden />
-              {item.rating !== null && (
-                <p className="mt-3 flex gap-0.5" role="img" aria-label={`${item.rating} out of 5`}>
-                  {Array.from({ length: 5 }, (_, i) => (
-                    <Star key={i} className={`size-4 ${i < (item.rating ?? 0) ? 'fill-current text-primary' : 'text-border'}`} aria-hidden />
-                  ))}
-                </p>
-              )}
-              <blockquote className="mt-3 flex-1 text-pretty text-lg">{item.quote}</blockquote>
-              <figcaption className="mt-6 flex items-center gap-3 border-t border-border pt-4">
-                {item.imageUrl ? (
-                  <SmartImage src={item.imageUrl} alt="" width={44} height={44} className="size-11 rounded-full object-cover" />
-                ) : (
-                  <span aria-hidden className="grid size-11 place-items-center rounded-full bg-primary-soft font-semibold text-primary">
-                    {item.clientName.charAt(0)}
-                  </span>
-                )}
-                <span className="min-w-0 text-sm">
-                  <span className="block font-medium">{item.clientName}</span>
-                  <span className="block text-muted">{[item.position, item.companyName].filter(Boolean).join(', ')}</span>
-                </span>
-                {item.companyLogoUrl && <SmartImage src={item.companyLogoUrl} alt={item.companyName ?? ''} width={80} height={32} className="ml-auto h-8 w-auto max-w-20 object-contain opacity-80" />}
-              </figcaption>
-            </figure>
-          </li>
-        ))}
-      </ul>
+      <div className={rest.length > 0 ? 'grid gap-10 lg:grid-cols-[1.4fr_1fr] lg:gap-16' : 'max-w-4xl'}>
+        <figure data-reveal>
+          <span aria-hidden className="display block h-12 text-7xl leading-none text-coral">“</span>
+          <blockquote className="display text-pretty text-2xl leading-snug text-primary sm:text-4xl sm:leading-[1.2]">{lead.quote}</blockquote>
+          <Author item={lead} />
+        </figure>
+        {rest.length > 0 && (
+          <ul className="space-y-6">
+            {rest.slice(0, 3).map((item, index) => (
+              <li key={item.id} data-reveal style={{ ['--i' as string]: index + 1 }}>
+                <figure className="rounded-2xl border border-border bg-card p-6">
+                  <blockquote className="text-pretty leading-relaxed text-primary">“{item.quote}”</blockquote>
+                  <Author item={item} />
+                </figure>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     </Section>
   );
 }

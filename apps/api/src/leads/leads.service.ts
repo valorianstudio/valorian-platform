@@ -2,6 +2,7 @@ import { BadRequestException, ConflictException, Injectable, Logger, NotFoundExc
 import { ActivityType, LeadPriority, LeadSettings, LeadSource, LeadStatus, Prisma } from '@prisma/client';
 import { AnalyticsService } from '../analytics/analytics.service';
 import { env } from '../config/env';
+import { NotificationsService } from '../mail/notifications.service';
 import { PrismaService } from '../prisma/prisma.service';
 import type { LeadUpdateInput, PublicLeadInput, StatusChangeInput } from './lead-schemas';
 
@@ -63,6 +64,7 @@ export class LeadsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly analytics: AnalyticsService,
+    private readonly notifications: NotificationsService,
   ) {}
 
   /* ---------- settings ---------- */
@@ -135,6 +137,23 @@ export class LeadsService {
 
     void this.analytics.record({ type: 'LEAD_CREATED', sessionId: input.sessionId, path: input.sourceUrl, estimatorSubmissionId: submission?.id, leadId: lead.id, demoId: demo?.id, serviceId: service?.id, platform: submission?.platform ?? input.platform, entityName: demo?.name ?? service?.title ?? null, metadata: { cta: (submission ? 'ESTIMATOR' : input.source).toLowerCase() } });
     if (!submission) void this.analytics.record({ type: 'CONTACT_FORM_SUBMIT', sessionId: input.sessionId, path: input.sourceUrl, leadId: lead.id, demoId: demo?.id, serviceId: service?.id });
+    void this.getSettings().then((settings) =>
+      this.notifications.leadCreated({
+        id: lead.id,
+        reference: lead.referenceCode,
+        name: input.name,
+        email: input.email,
+        phone: input.phone ?? input.whatsapp,
+        company: input.companyName,
+        source: submission ? 'Estimator' : input.source,
+        projectType: submission?.projectTypeName ?? input.projectType,
+        estimate: submission ? `${submission.currency} ${submission.minAmount.toLocaleString('en')} – ${submission.maxAmount.toLocaleString('en')}` : null,
+        timeline: input.expectedTimeline,
+        budget: input.budgetRange,
+        message: input.message,
+        responseNote: settings.responseNote,
+      }),
+    );
     void this.notify(lead.referenceCode, input, submission ? `${submission.currency} ${submission.minAmount}–${submission.maxAmount}` : null);
     return { reference: lead.referenceCode };
   }

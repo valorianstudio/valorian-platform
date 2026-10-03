@@ -57,7 +57,7 @@ export default async function AboutPage() {
           case 'purpose':
             return (
               <Section key="purpose" tone="surface">
-                <div className="grid gap-5 md:grid-cols-2">
+                <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
                   {[
                     [c.missionTitle, c.mission],
                     [c.visionTitle, c.vision],
@@ -73,7 +73,7 @@ export default async function AboutPage() {
           case 'values':
             return (
               <Section key="values" title={c.title}>
-                <ul className="grid gap-4 md:grid-cols-3">
+                <ul className="grid grid-cols-1 gap-4 md:grid-cols-3">
                   {c.items.map((item) => (
                     <li key={item.title}>
                       <Card className="h-full p-6">
@@ -88,7 +88,7 @@ export default async function AboutPage() {
           case 'philosophy':
             return (
               <Section key="philosophy" tone="surface" eyebrow="Philosophy" title={c.title}>
-                <div className="grid gap-10 lg:grid-cols-[1.3fr_1fr]">
+                <div className="grid grid-cols-1 gap-10 lg:grid-cols-[1.3fr_1fr]">
                   <Paragraphs text={c.body} />
                   {c.points.length > 0 && (
                     <Card className="h-fit p-6">

@@ -4,6 +4,9 @@ import { AnalyticsService } from '../analytics/analytics.service';
 import { PrismaService } from '../prisma/prisma.service';
 import type { CalculateInput } from './estimator-schemas';
 
+/** Estimates are always quoted in US dollars. Stored submissions keep whatever currency they were created with. */
+const PUBLIC_CURRENCY: EstimatorCurrency = 'USD';
+
 type Platform = FeaturePlatform;
 interface Priced {
   websitePrice: number | null;
@@ -68,7 +71,7 @@ export class EstimatorService {
     const presetType = types.find((t) => t.slug === query.type) ?? (demoType ? types.find((t) => t.platform === demoType) : undefined);
 
     return {
-      currency: settings.currency,
+      currency: PUBLIC_CURRENCY,
       disclaimer: settings.disclaimer,
       enabled: settings.enabled,
       projectTypes: types,
@@ -150,7 +153,7 @@ export class EstimatorService {
         complexity: complexity.name,
         scale: scale.label,
         urgency: urgency.label,
-        currency: settings.currency,
+        currency: PUBLIC_CURRENCY,
         minAmount: min,
         maxAmount: max,
         weeksMin,
@@ -180,7 +183,7 @@ export class EstimatorService {
 
     return {
       id: submission.id,
-      currency: settings.currency as EstimatorCurrency,
+      currency: PUBLIC_CURRENCY,
       disclaimer: settings.disclaimer,
       min,
       max,

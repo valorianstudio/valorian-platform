@@ -108,7 +108,7 @@ export function CaseStudyEditor({ study, lookups }: { study: CaseStudyFull | nul
   if (!study) {
     return (
       <div>
-        <Link href="/admin/case-studies" className="mb-4 inline-flex items-center gap-1 text-sm text-muted hover:text-foreground">
+        <Link href="/admin/case-studies" className="mb-3 inline-flex items-center gap-1 py-2 text-sm text-muted transition-colors hover:text-foreground">
           <ArrowLeft className="size-4" aria-hidden /> Back to case studies
         </Link>
         <FieldsTab

@@ -65,7 +65,7 @@ export default async function ProjectsPage({ searchParams }: { searchParams: Pro
         }
       />
 
-      <form method="get" className="mb-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-[1fr_11rem_12rem_9rem_auto]">
+      <form method="get" className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-[1fr_11rem_12rem_9rem_auto]">
         <Input name="q" defaultValue={values.q} placeholder="Search project, code or client" aria-label="Search projects" />
         <Select name="status" defaultValue={values.status} aria-label="Status">
           <option value="">Any status</option>

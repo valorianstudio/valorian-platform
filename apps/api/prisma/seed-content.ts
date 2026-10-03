@@ -363,15 +363,15 @@ const CTAS = [
 ] as const;
 
 const cta = {
-  headline: 'Have a product in mind? Let’s build it properly.',
-  description: 'Tell us about your project and we’ll come back with a clear, honest plan.',
-  primaryLabel: 'Start a Project',
+  headline: 'Have an idea worth building?',
+  description: 'Let’s turn it into a product people enjoy using.',
+  primaryLabel: 'Discuss Your Project',
   primaryUrl: '/contact',
 };
 
 const SECTIONS: Record<'HOME' | 'ABOUT' | 'SERVICES' | 'SOLUTIONS', [string, Record<string, unknown>][]> = {
   HOME: [
-    ['hero', { eyebrow: 'Software Engineering & Digital Product Studio', headline: 'Engineering digital products', highlight: 'built to scale.', description: 'Valorian Studio designs and builds custom software, web applications, SaaS platforms, mobile apps and AI-powered solutions for businesses that plan to grow.', primaryLabel: 'Start a Project', primaryUrl: '/contact', secondaryLabel: 'Explore Our Work', secondaryUrl: '/demos' }],
+    ['hero', { eyebrow: 'Software Engineering & Digital Product Studio', headline: 'We build digital products', highlight: 'people enjoy using.', description: 'Valorian Studio designs and engineers websites, web applications, SaaS platforms, mobile applications and AI-powered software for modern businesses.', primaryLabel: 'Start a Project', primaryUrl: '/contact', secondaryLabel: 'Explore Our Work', secondaryUrl: '/demos' }],
     ['capabilities', { eyebrow: 'What we build', title: 'Software for every stage of your business', subtitle: 'From first release to platform scale, one team covering product, design and engineering.' }],
     ['why', { eyebrow: 'Why Valorian', title: 'Engineering rigor, with product sense', subtitle: 'The principles behind every product we build.' }],
     ['featuredWork', { eyebrow: 'Featured work', title: 'Product experiences that speak for themselves', subtitle: 'A preview of the kind of products we deliver. Interactive live demos are coming soon.' }],

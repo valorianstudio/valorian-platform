@@ -9,7 +9,10 @@
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "db:migrate": "prisma migrate dev",
     "db:deploy": "prisma migrate deploy",
-    "db:seed": "tsx prisma/seed.ts"
+    "db:seed": "tsx prisma/seed.ts",
+    "db:brand": "tsx prisma/apply-brand-copy.ts",
+    "email:test": "tsx scripts/email-test.ts",
+    "db:usd-pricing": "tsx prisma/usd-pricing.ts"
   },
   "dependencies": {
     "@fastify/cookie": "^11.0.2",
@@ -24,6 +27,7 @@
     "argon2": "^0.45.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.15.1",
+    "nodemailer": "^10.0.13",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
     "zod": "^4.6.5"
@@ -31,9 +35,9 @@
   "devDependencies": {
     "@nestjs/cli": "^11.0.24",
     "@types/node": "^22.0.0",
+    "@types/nodemailer": "^8.0.2",
     "prisma": "^6.19.3",
     "tsx": "^4.19.0",
     "typescript": "^5.7.0"
   }
 }
-

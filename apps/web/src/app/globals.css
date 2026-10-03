@@ -1,85 +1,163 @@
 @import 'tailwindcss';
 
-@custom-variant dark (&:where(.dark, .dark *));
-
+/*
+ * Valorian design system: one calm, warm brand theme.
+ * Cream #FBE0C3 / paper #F8F4EE / white #FFFDFC, coral #FFBB98, blue-gray #7D8E95, slate #344648.
+ * `accent` is a deepened coral used for text and thin lines (readable on cream); `coral` is the bright fill.
+ */
 :root {
-  --background: #ffffff;
-  --foreground: #0b1220;
-  --surface: #f6f8fb;
-  --surface-strong: #eef2f7;
-  --muted: #5b6678;
-  --border: #e3e8ef;
-  --primary: #2f6fed;
-  --primary-foreground: #ffffff;
-  --primary-soft: #e8f0ff;
-  --accent: #10a37f;
-  --accent-soft: #dff7ef;
-  --danger: #d92d3a;
-  --danger-soft: #fdecee;
-  --ring: #2f6fed;
-}
+  color-scheme: light;
 
-.dark {
-  --background: #080d1a;
-  --foreground: #eef2fa;
-  --surface: #0e1527;
-  --surface-strong: #152038;
-  --muted: #98a4ba;
-  --border: #1f2b44;
-  --primary: #5b93ff;
-  --primary-foreground: #06101f;
-  --primary-soft: #14233f;
-  --accent: #34d3a5;
-  --accent-soft: #0e2a26;
-  --danger: #ff6b76;
-  --danger-soft: #331519;
-  --ring: #5b93ff;
+  --background: #f8f4ee;
+  --foreground: #283638;
+  --card: #fffdfc;
+  --surface: #f2ebe0;
+  --surface-strong: #e9dfd0;
+  --muted: #5d6c70;
+  --border: rgb(52 70 72 / 0.14);
+  --border-strong: rgb(52 70 72 / 0.28);
+
+  --primary: #344648;
+  --primary-foreground: #fffdfc;
+  --primary-soft: #e4eaea;
+  --accent: #a4512c;
+  --accent-soft: #fbe0c3;
+  --coral: #ffbb98;
+  --cream: #fbe0c3;
+  --slate: #344648;
+  --blue-gray: #7d8e95;
+  --danger: #b3382f;
+  --danger-soft: #f7ddd8;
+  --ring: #344648;
+
+  --shadow-card: 0 1px 2px rgb(52 70 72 / 0.05), 0 10px 28px -16px rgb(52 70 72 / 0.18);
+  --shadow-lift: 0 2px 4px rgb(52 70 72 / 0.06), 0 22px 44px -18px rgb(52 70 72 / 0.3);
+  --shadow-float: 0 30px 60px -24px rgb(52 70 72 / 0.38), 0 8px 20px -10px rgb(52 70 72 / 0.18);
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --t-fast: 180ms;
+  --t-base: 240ms;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-card: var(--card);
   --color-surface: var(--surface);
   --color-surface-strong: var(--surface-strong);
   --color-muted: var(--muted);
   --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
   --color-primary-soft: var(--primary-soft);
   --color-accent: var(--accent);
   --color-accent-soft: var(--accent-soft);
+  --color-coral: var(--coral);
+  --color-cream: var(--cream);
+  --color-slate: var(--slate);
+  --color-blue-gray: var(--blue-gray);
   --color-danger: var(--danger);
   --color-danger-soft: var(--danger-soft);
   --color-ring: var(--ring);
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-mono), ui-monospace, monospace;
-  --animate-fade-up: fade-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
-  --animate-float: float 7s ease-in-out infinite;
+  --font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  --animate-fade-up: fade-up 0.9s var(--ease-out) both;
+  --animate-fade-in: fade-in 0.5s ease-out both;
+  --animate-float-slow: float-slow 9s ease-in-out infinite;
 }
 
 @keyframes fade-up {
-  from { opacity: 0; transform: translateY(12px); }
+  from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
 }
-
-@keyframes float {
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes float-slow {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-8px); }
 }
+@keyframes mask-up {
+  from { transform: translateY(105%); }
+  to { transform: translateY(0); }
+}
 
 @layer base {
-  html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 5.5rem;
+    -webkit-text-size-adjust: 100%;
+    background: var(--background);
+  }
   body {
     background: var(--background);
     color: var(--foreground);
     font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.65;
     -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
     overflow-x: hidden;
   }
-  :focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; border-radius: 6px; }
-  ::selection { background: var(--primary-soft); }
+  h1, h2, h3 { letter-spacing: -0.02em; }
+  :focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; border-radius: 8px; }
+  ::selection { background: var(--coral); color: var(--slate); }
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: var(--background); }
+  ::-webkit-scrollbar-thumb { background: rgb(52 70 72 / 0.28); border-radius: 999px; border: 2px solid var(--background); }
+  ::-webkit-scrollbar-thumb:hover { background: rgb(52 70 72 / 0.45); }
+}
+
+@layer components {
+  /* Headings on the public site: Inter, semibold, tightened tracking. */
+  .display {
+    font-weight: 600;
+    letter-spacing: -0.03em;
+  }
+
+  /* Scroll reveal. Content is only hidden while JS is running (the `js` class), so it never depends on it. */
+  .js [data-reveal] {
+    opacity: 0;
+    transform: translateY(22px);
+    transition: opacity 0.9s var(--ease-out), transform 0.9s var(--ease-out);
+    transition-delay: calc(var(--i, 0) * 90ms);
+    will-change: opacity, transform;
+  }
+  .js [data-reveal].in { opacity: 1; transform: none; will-change: auto; }
+
+  /* Headline line mask: each line slides up from behind its own overflow. */
+  .mask-line { display: block; overflow: hidden; padding-bottom: 0.1em; margin-bottom: -0.1em; }
+  .mask-line > span { display: block; animation: mask-up 1s var(--ease-out) both; animation-delay: calc(var(--d, 0) * 1ms); }
+
+  /* Cards: warm white surface, hairline border, restrained lift. */
+  .card-lift {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 1.25rem;
+    box-shadow: var(--shadow-card);
+    transition: transform var(--t-base) var(--ease-out), box-shadow var(--t-base) var(--ease-out), border-color var(--t-base), background-color var(--t-base);
+  }
+  .card-lift:hover { transform: translateY(-3px); box-shadow: var(--shadow-lift); border-color: var(--border-strong); }
+  .card-lift:active { transform: translateY(-1px); }
+
+  .img-zoom { transition: transform 0.6s var(--ease-out); }
+  .group:hover .img-zoom { transform: scale(1.02); }
+
+  .grain {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .2 0 0 0 0 .27 0 0 0 0 .28 0 0 0 .5 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    opacity: 0.07;
+  }
+
+  .tl-line { transform-origin: left; transition: transform 1.2s var(--ease-out); transition-delay: calc(var(--i, 0) * 90ms + 200ms); }
+  .tl-line-v { transform-origin: top; transition: transform 1.2s var(--ease-out); transition-delay: calc(var(--i, 0) * 90ms + 200ms); }
+  .js [data-reveal]:not(.in) .tl-line { transform: scaleX(0); }
+  .js [data-reveal]:not(.in) .tl-line-v { transform: scaleY(0); }
 }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+  .js [data-reveal] { opacity: 1; transform: none; }
+  .mask-line > span { animation: none; }
 }

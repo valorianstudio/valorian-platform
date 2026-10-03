@@ -17,7 +17,7 @@ export default async function NewProjectPage({ searchParams }: { searchParams: P
 
   return (
     <>
-      <Link href="/admin/projects" className="mb-4 inline-flex items-center gap-1 text-sm text-muted hover:text-foreground">
+      <Link href="/admin/projects" className="mb-3 inline-flex items-center gap-1 py-2 text-sm text-muted transition-colors hover:text-foreground">
         <ChevronLeft className="size-4" aria-hidden /> Projects
       </Link>
       <PageHeader title="New project" description="Assign a client and set the starting point. You can add milestones, files and updates next." />

@@ -12,13 +12,18 @@ interface SectionProps {
 
 export function Section({ id, eyebrow, title, description, tone = 'default', children }: SectionProps) {
   return (
-    <section id={id} className={cn('py-16 sm:py-20 lg:py-24', tone === 'surface' && 'border-y border-border bg-surface')}>
+    <section id={id} className={cn('relative py-20 sm:py-24 lg:py-32', tone === 'surface' && 'bg-surface')}>
       <div className="mx-auto w-full max-w-7xl px-5 sm:px-8">
         {(eyebrow || title) && (
-          <div className="mb-10 max-w-2xl sm:mb-14">
-            {eyebrow && <p className="mb-3 text-sm font-medium text-primary">{eyebrow}</p>}
-            {title && <h2 className="text-balance text-3xl font-semibold tracking-tight sm:text-4xl">{title}</h2>}
-            {description && <p className="mt-4 text-pretty text-lg text-muted">{description}</p>}
+          <div data-reveal className="mb-12 max-w-2xl sm:mb-16">
+            {eyebrow && (
+              <p className="mb-4 inline-flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.16em] text-accent">
+                <span aria-hidden className="h-px w-8 bg-accent/60" />
+                {eyebrow}
+              </p>
+            )}
+            {title && <h2 className="display text-balance text-3xl sm:text-4xl lg:text-5xl lg:leading-[1.08]">{title}</h2>}
+            {description && <p className="mt-5 text-pretty text-lg leading-relaxed text-muted">{description}</p>}
           </div>
         )}
         {children}

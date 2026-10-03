@@ -109,7 +109,7 @@ export function MilestonesPanel({ projectId, milestones, canManage }: { projectI
           <FormAlert error={error} />
           <Field label="Title">{(props) => <Input {...props} name="title" defaultValue={current?.title} required maxLength={120} />}</Field>
           <Field label="Description">{(props) => <Textarea {...props} name="description" defaultValue={current?.description ?? ''} maxLength={1000} className="min-h-20" />}</Field>
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <Field label="Status">
               {(props) => (
                 <Select {...props} name="status" defaultValue={current?.status ?? 'PENDING'}>

@@ -27,7 +27,7 @@ export default async function SolutionsPage() {
         {data.solutions.length === 0 ? (
           <p className="text-muted">Solutions will be listed here soon.</p>
         ) : (
-          <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {data.solutions.map((solution) => {
               const Icon = getIcon(solution.icon);
               return (

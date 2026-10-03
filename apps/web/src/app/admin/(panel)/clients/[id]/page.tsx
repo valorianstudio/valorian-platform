@@ -30,7 +30,7 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
 
   return (
     <>
-      <Link href="/admin/clients" className="mb-4 inline-flex items-center gap-1 text-sm text-muted hover:text-foreground">
+      <Link href="/admin/clients" className="mb-3 inline-flex items-center gap-1 py-2 text-sm text-muted transition-colors hover:text-foreground">
         <ChevronLeft className="size-4" aria-hidden /> Clients
       </Link>
       <PageHeader
@@ -47,7 +47,7 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
           </div>
         }
       />
-      <div className="grid gap-6 lg:grid-cols-[1fr_22rem]">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_22rem]">
         <div className="space-y-6">
           <ClientEditor org={org} canManage={canManage} />
           <ClientUsers orgId={org.id} users={org.users} canManage={canManage} />

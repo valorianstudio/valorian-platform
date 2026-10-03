@@ -3,7 +3,6 @@ import { redirect } from 'next/navigation';
 import { ClientLoginForm } from '@/components/portal/client-login-form';
 import { Wordmark } from '@/components/site/wordmark';
 import { Card } from '@/components/ui/card';
-import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { getCurrentClient, getSiteSettings } from '@/lib/server-api';
 
 export const metadata: Metadata = { title: 'Sign in' };
@@ -14,9 +13,6 @@ export default async function ClientLoginPage() {
 
   return (
     <main className="relative grid min-h-screen place-items-center px-5 py-12">
-      <div className="absolute right-4 top-4">
-        <ThemeToggle />
-      </div>
       <div className="w-full max-w-sm">
         <div className="mb-8 flex justify-center">
           <Wordmark name={settings.brandName} />

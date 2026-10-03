@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Check, Link2, Share2 } from 'lucide-react';
 
-const linkClass = 'inline-flex h-10 items-center gap-2 rounded-lg border border-border px-3 text-sm font-medium text-muted transition-colors hover:text-foreground';
+const linkClass = 'inline-flex h-10 min-w-10 items-center justify-center gap-2 rounded-full border border-border px-3 text-sm font-medium text-muted transition-colors hover:text-foreground';
 
 /** Plain share links plus Web Share / copy. No third-party scripts. `url` must be absolute. */
 export function ShareButtons({ title, url }: { title: string; url: string }) {

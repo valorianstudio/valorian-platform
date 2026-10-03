@@ -15,7 +15,7 @@ interface Props {
 /** Plain GET form: filters live in the URL, so views are shareable and need no client JS. */
 export function LeadFilters({ values, demos, services }: Props) {
   return (
-    <form method="get" action="/admin/leads" role="search" aria-label="Filter leads" className="mb-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+    <form method="get" action="/admin/leads" role="search" aria-label="Filter leads" className="mb-5 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
       <div className="relative sm:col-span-2 lg:col-span-4">
         <Search className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted" aria-hidden />
         <Input name="q" aria-label="Search leads" placeholder="Search by reference, name, email, company or phone…" defaultValue={values.q} className="pl-10" />

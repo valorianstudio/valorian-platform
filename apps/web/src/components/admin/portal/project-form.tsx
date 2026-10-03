@@ -115,7 +115,7 @@ export function ProjectForm({ initial, clients, leads = [], presetClient, preset
               )}
             </Field>
           )}
-          <div className="grid gap-5 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
             <Field label="Project name" className="sm:col-span-2">
               {(props) => <Input {...props} name="name" key={selectedLead?.id ?? 'none'} defaultValue={initial?.name ?? (selectedLead ? `${selectedLead.companyName ?? selectedLead.name}${selectedLead.projectType ? ` ${selectedLead.projectType}` : ''}` : lead ? '' : '')} required maxLength={120} />}
             </Field>
@@ -151,7 +151,7 @@ export function ProjectForm({ initial, clients, leads = [], presetClient, preset
             </Field>
           </div>
           <Field label="Description" hint="Shown to the client.">{(props) => <Textarea {...props} name="description" defaultValue={initial?.description ?? ''} maxLength={4000} />}</Field>
-          <div className="grid gap-5 rounded-xl border border-border p-4 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-5 rounded-xl border border-border p-4 sm:grid-cols-2">
             <p className="text-sm text-muted sm:col-span-2">Internal only. Never visible in the client portal.</p>
             <Field label="Final project value">{(props) => <Input {...props} name="finalValue" type="number" min={0} key={selectedLead?.id ?? 'none'} defaultValue={initial?.finalValue ?? selectedLead?.finalProjectValue ?? ''} />}</Field>
             <Field label="Currency">

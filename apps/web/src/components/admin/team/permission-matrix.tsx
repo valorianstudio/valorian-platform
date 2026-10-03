@@ -74,7 +74,7 @@ export function PermissionMatrix({ role, catalogue }: { role: RoleData; catalogu
       <FormAlert error={error} />
       <Card className="space-y-5 p-6">
         <h2 className="text-lg font-semibold">Details</h2>
-        <div className="grid gap-5 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
           <Field label="Name" hint={role.isSystem ? 'Built-in roles cannot be renamed.' : undefined}>
             {(props) => <Input {...props} name="name" defaultValue={role.name} disabled={role.isSystem} required minLength={2} maxLength={60} />}
           </Field>
@@ -89,7 +89,7 @@ export function PermissionMatrix({ role, catalogue }: { role: RoleData; catalogu
       <div>
         <h2 className="mb-1 text-lg font-semibold">Permissions</h2>
         {readOnly ? <p className="mb-4 text-sm text-muted">Super Admin always has every permission and cannot be edited.</p> : <p className="mb-4 text-sm text-muted">Pick what this role can do in each area. Role and security management stay with Super Admins.</p>}
-        <div className="grid gap-4 lg:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
           {groups.map(([module, items]) => {
             const editable = items.filter((p) => !p.superOnly);
             const keys = editable.map((p) => p.key);

@@ -104,7 +104,7 @@ export function DemoManager({ initial, categories, industries }: { initial: Demo
 
   return (
     <div>
-      <div className="mb-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mb-5 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <div className="relative sm:col-span-2 lg:col-span-4">
           <Search className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted" aria-hidden />
           <Input aria-label="Search demos" placeholder="Search demos…" className="pl-10" value={filters.q} onChange={(e) => set('q', e.target.value)} />
