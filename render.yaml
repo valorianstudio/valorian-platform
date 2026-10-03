@@ -6,7 +6,7 @@ services:
     runtime: node
     plan: starter
     rootDir: .
-    buildCommand: npm ci && npm run build -w @valorian/api
+    buildCommand: npm install --include=dev && npm run build -w @valorian/api
     # Migrations run as their own step before the new version starts; a failed migration stops the deploy.
     preDeployCommand: npm run db:deploy -w @valorian/api
     startCommand: npm run start -w @valorian/api
@@ -18,6 +18,8 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
+      - key: NPM_CONFIG_PRODUCTION
+        value: 'false'
       - key: UPLOAD_DIR
         value: /data/uploads
       - key: PRIVATE_UPLOAD_DIR
