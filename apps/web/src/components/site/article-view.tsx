@@ -3,7 +3,7 @@ import { Clock } from 'lucide-react';
 import { CtaBand } from '@/components/site/blocks';
 import { ArticleCardView, formatPublished } from '@/components/site/editorial';
 import { Breadcrumbs, JsonLd } from '@/components/site/seo';
-import { ShareButtons } from '@/components/site/share-buttons';
+import { LazyShareButtons as ShareButtons } from '@/components/site/lazy';
 import { Badge } from '@/components/ui/badge';
 import { Section } from '@/components/ui/section';
 import { SmartImage } from '@/components/ui/smart-image';

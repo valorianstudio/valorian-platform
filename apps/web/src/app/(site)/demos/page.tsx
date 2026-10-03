@@ -1,3 +1,4 @@
+import { ApiUnavailable } from '@/components/ui/api-unavailable';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Search, X } from 'lucide-react';
@@ -38,7 +39,7 @@ export default async function DemosPage({ searchParams }: { searchParams: Promis
   };
 
   const data = await getDemoList(query({}));
-  if (!data) throw new Error('Demo content is unavailable.');
+  if (!data) return <ApiUnavailable what="Demos" />;
   const href = (overrides: Record<string, string>) => `/demos${query(overrides) ? `?${query(overrides)}` : ''}`;
   const active = [
     filters.q && { label: `“${filters.q}”`, clear: href({ q: '', page: '1' }) },

@@ -1,3 +1,4 @@
+import { ApiUnavailable } from '@/components/ui/api-unavailable';
 import type { Metadata } from 'next';
 import { CheckList, CtaBand, FaqSection } from '@/components/site/blocks';
 import { PageHero } from '@/components/site/page-hero';
@@ -39,7 +40,7 @@ function Paragraphs({ text }: { text: string }) {
 
 export default async function AboutPage() {
   const about = await getAbout();
-  if (!about) throw new Error('About content is unavailable.');
+  if (!about) return <ApiUnavailable what="About" />;
 
   return (
     <>

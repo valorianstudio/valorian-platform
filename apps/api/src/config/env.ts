@@ -29,6 +29,14 @@ const schema = z.object({
   NOTIFY_EMAIL: z.string().email().optional(),
   /** Optional: receives a sanitized JSON report for unexpected server errors (Sentry-style integration point). */
   ERROR_WEBHOOK_URL: z.string().url().optional(),
+  /** Cloudinary (image hosting). Uploads are stored there, never on the API's disk. All three are required together. */
+  CLOUDINARY_CLOUD_NAME: z.string().min(1).optional(),
+  CLOUDINARY_API_KEY: z.string().min(1).optional(),
+  CLOUDINARY_API_SECRET: z.string().min(1).optional(),
+  /** Root folder inside the Cloudinary account; each upload purpose gets a sub-folder. */
+  CLOUDINARY_FOLDER: z.string().regex(/^[a-z0-9_-]+$/i, 'letters, numbers, - and _ only').default('valorian'),
+  /** Per-request budget. Requests that run longer are answered with 504 instead of hanging. */
+  REQUEST_TIMEOUT_MS: z.coerce.number().int().min(1000).max(120_000).default(25_000),
   APP_VERSION: z.string().max(40).default('dev'),
 });
 
@@ -39,6 +47,9 @@ if (!parsed.success) {
 }
 
 export const env = parsed.data;
+
+const cloudinaryVars = [env.CLOUDINARY_CLOUD_NAME, env.CLOUDINARY_API_KEY, env.CLOUDINARY_API_SECRET];
+if (cloudinaryVars.some(Boolean) && !cloudinaryVars.every(Boolean)) throw new Error('Cloudinary is partly configured: set CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET together');
 
 if (env.SMTP_HOST && (!env.SMTP_USER || !env.SMTP_PASSWORD)) throw new Error('SMTP_HOST is set but SMTP_USER or SMTP_PASSWORD is missing');
 
@@ -52,3 +63,4 @@ if (env.NODE_ENV === 'production') {
 }
 
 export const isProduction = env.NODE_ENV === 'production';
+export const cloudinaryEnabled = cloudinaryVars.every(Boolean);

@@ -2,6 +2,7 @@ import type { NextConfig } from 'next';
 
 const apiUrl = process.env.API_URL ?? 'http://localhost:4000';
 const isProduction = process.env.NODE_ENV === 'production';
+const cloudinaryName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
 
 if (isProduction && !process.env.API_URL) throw new Error('API_URL must be set for production builds (the URL the Next.js server uses to reach the API).');
 if (isProduction && !process.env.NEXT_PUBLIC_SITE_URL) throw new Error('NEXT_PUBLIC_SITE_URL must be set for production builds (for example https://valorian.com).');
@@ -49,7 +50,10 @@ const config: NextConfig = {
   experimental: { authInterrupts: true },
   images: {
     localPatterns: [{ pathname: '/api/media/**' }, { pathname: '/brand/**' }, { pathname: '/branding/**' }],
+    // Uploaded media lives on Cloudinary. Only that host (and, when set, only this account's folder) may be optimised.
+    remotePatterns: [{ protocol: 'https', hostname: 'res.cloudinary.com', pathname: cloudinaryName ? `/${cloudinaryName}/image/upload/**` : '/**' }],
     formats: ['image/avif', 'image/webp'],
+    qualities: [60, 75, 90],
     minimumCacheTTL: 60 * 60 * 24 * 30,
   },
   async rewrites() {

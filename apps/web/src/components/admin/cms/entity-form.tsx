@@ -6,7 +6,7 @@ import { Field, Input, Select, Switch, Textarea } from '@/components/ui/field';
 import { cn } from '@/lib/cn';
 import { blankItem } from './field-defs';
 import type { FieldDef, FormValues, ItemValue, RelationOptions } from './field-defs';
-import { ImageInput } from './image-input';
+import { ImageInput, folderForField } from './image-input';
 import { MarkdownField } from './markdown-field';
 
 interface EntityFormProps {
@@ -45,7 +45,7 @@ function ItemsEditor({ field, rows, onChange }: { field: Extract<FieldDef, { kin
               if (sub.kind === 'image') {
                 return (
                   <div key={sub.name} className={wide}>
-                    <ImageInput label={sub.label} value={String(cell ?? '')} onChange={(url) => update(index, sub.name, url)} />
+                    <ImageInput label={sub.label} folder={folderForField(sub.name)} value={String(cell ?? '')} onChange={(url) => update(index, sub.name, url)} />
                   </div>
                 );
               }
@@ -152,7 +152,7 @@ export function EntityForm({ fields, values, onChange, relationOptions = {}, dis
                 )}
               </Field>
             )}
-            {field.kind === 'image' && <ImageInput label={field.label} hint={field.hint} value={String(value ?? '')} onChange={(url) => set(field.name, url)} disabled={disabled} />}
+            {field.kind === 'image' && <ImageInput label={field.label} folder={folderForField(field.name)} hint={field.hint} value={String(value ?? '')} onChange={(url) => set(field.name, url)} disabled={disabled} />}
             {field.kind === 'markdown' && <MarkdownField label={field.label} hint={field.hint} rows={field.rows} value={String(value ?? '')} onChange={(text) => set(field.name, text)} disabled={disabled} />}
             {field.kind === 'date' && (
               <Field label={field.label} hint={field.hint}>

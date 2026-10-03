@@ -1,3 +1,5 @@
+import { ApiUnavailable } from '@/components/ui/api-unavailable';
+import { SectionBoundary } from '@/components/ui/error-boundary';
 import type { Metadata } from 'next';
 import { CapabilitySection, CtaBand, DemoSection, ProcessSection, TechSection, WhySection } from '@/components/site/blocks';
 import { CaseStudiesSection, InsightsSection, TestimonialsSection } from '@/components/site/editorial';
@@ -9,7 +11,7 @@ import { getSiteSettings } from '@/lib/server-api';
 
 export async function generateMetadata(): Promise<Metadata> {
   const [home, settings] = await Promise.all([getHome(), getSiteSettings()]);
-  return buildMetadata(home?.seo, { title: `${settings.companyName} | ${settings.tagline}`, description: settings.description, path: '/' });
+  return buildMetadata(home?.seo, { title: `${settings.companyName} | Software Development Company`, description: settings.description, path: '/' });
 }
 
 function renderSection(key: string, home: HomeData) {
@@ -43,15 +45,16 @@ function renderSection(key: string, home: HomeData) {
 
 export default async function HomePage() {
   const home = await getHome();
-  if (!home) throw new Error('Homepage content is unavailable.');
+  if (!home) return <ApiUnavailable what="The homepage" />;
 
   return (
     <>
       {home.sections.map((section) => (
-        <div key={section.key}>
+        // One failing block (for example a bad image URL in a testimonial) must never take the whole homepage down.
+        <SectionBoundary key={section.key}>
           {renderSection(section.key, home)}
           {section.key === 'hero' && <CapabilityBar />}
-        </div>
+        </SectionBoundary>
       ))}
     </>
   );

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { KeyboardEvent } from 'react';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { SmartImage } from '@/components/ui/smart-image';
 import { cn } from '@/lib/cn';
 
 interface Shot {
@@ -56,8 +57,7 @@ export function Gallery({ shots, variant }: { shots: Shot[]; variant: 'web' | 'p
                   phone ? 'aspect-[9/19.5] rounded-[1.75rem] border-4 border-foreground/80' : 'aspect-[16/10] rounded-xl',
                 )}
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={shot.url} alt={shot.altText} loading="lazy" decoding="async" width={phone ? 360 : 960} height={phone ? 780 : 600} className="size-full object-cover object-top" />
+                <SmartImage src={shot.url} alt={shot.altText} width={phone ? 360 : 960} height={phone ? 780 : 600} sizes={phone ? '176px' : '(min-width: 640px) 45vw, 100vw'} retry={false} className="size-full object-cover object-top" />
               </button>
               {shot.caption && <figcaption className="mt-2 text-sm text-muted">{shot.caption}</figcaption>}
             </figure>
@@ -87,8 +87,7 @@ export function Gallery({ shots, variant }: { shots: Shot[]; variant: 'web' | 'p
               </button>
             </div>
             <div className="flex min-h-0 flex-1 items-center justify-center overflow-auto bg-surface p-3">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={current.url} alt={current.altText} className="max-h-[75vh] w-auto max-w-full rounded-lg object-contain" />
+              <SmartImage src={current.url} alt={current.altText} width={1600} height={1000} sizes="(min-width: 1024px) 960px, 100vw" className="h-auto max-h-[75vh] w-auto max-w-full rounded-lg object-contain" />
             </div>
             {shots.length > 1 && (
               <div className="flex items-center justify-between border-t border-border px-4 py-3">

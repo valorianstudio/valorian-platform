@@ -14,7 +14,7 @@ function Cover({ src, alt, slug, className = 'aspect-[16/10]' }: { src: string |
   return (
     <div className={`relative overflow-hidden ${warm ? 'bg-[linear-gradient(135deg,#fbe0c3,#f3d3b6)]' : 'bg-[linear-gradient(135deg,#dfe5e5,#cfd8d9)]'} ${className}`}>
       {src ? (
-        <SmartImage src={src} alt={alt} width={800} height={500} sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" className="img-zoom size-full object-cover" />
+        <SmartImage src={src} alt={alt} width={800} height={500} sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" retry={false} className="img-zoom size-full object-cover" />
       ) : (
         <span aria-hidden className="display absolute inset-0 grid place-items-center text-6xl text-primary/25">
           {alt.charAt(0)}

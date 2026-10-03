@@ -7,6 +7,7 @@ import { CheckList, CtaBand, DemoSection, ServiceGrid, TechList } from '@/compon
 import { ButtonLink } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Section } from '@/components/ui/section';
+import { SmartImage } from '@/components/ui/smart-image';
 import { buildMetadata, getSolution } from '@/lib/cms';
 import { getIcon } from '@/lib/icons';
 
@@ -46,8 +47,7 @@ export default async function SolutionDetailPage({ params }: { params: Promise<{
               </div>
             </div>
             {solution.coverImageUrl && (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={solution.coverImageUrl} alt="" width={720} height={480} fetchPriority="high" className="w-full rounded-2xl border border-border object-cover" />
+              <SmartImage src={solution.coverImageUrl} alt={`${solution.name} overview`} width={720} height={480} sizes="(min-width: 1024px) 520px, 100vw" priority className="h-auto w-full rounded-2xl border border-border object-cover" />
             )}
           </div>
         </div>

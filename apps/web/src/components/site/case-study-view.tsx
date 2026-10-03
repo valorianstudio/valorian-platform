@@ -1,9 +1,9 @@
 import { ArrowRight, Play } from 'lucide-react';
 import { CheckList, CtaBand, DemoSection, ServiceGrid, TechList } from '@/components/site/blocks';
-import { Gallery } from '@/components/site/demos/gallery';
+import { LazyGallery as Gallery } from '@/components/site/lazy';
 import { CaseCardView, TestimonialsSection } from '@/components/site/editorial';
 import { Breadcrumbs, JsonLd } from '@/components/site/seo';
-import { ShareButtons } from '@/components/site/share-buttons';
+import { LazyShareButtons as ShareButtons } from '@/components/site/lazy';
 import { Badge } from '@/components/ui/badge';
 import { ButtonLink } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';

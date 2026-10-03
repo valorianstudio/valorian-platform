@@ -12,6 +12,7 @@ import { isProduction } from '../config/env';
 import { reportError } from './error-reporter';
 
 interface ErrorBody {
+  success: false;
   statusCode: number;
   message: string;
   errors?: string[];
@@ -45,17 +46,17 @@ export class AllExceptionsFilter implements ExceptionFilter {
       // Framework-level client errors (rate limit, malformed body) carry their own status code.
       const code = (exception as { statusCode?: unknown } | null)?.statusCode;
       if (typeof code === 'number' && code >= 400 && code < 500) {
-        return { statusCode: code, message: code === 429 ? 'Too many requests. Please wait a moment and try again.' : 'The request could not be processed.' };
+        return { success: false, statusCode: code, message: code === 429 ? 'Too many requests. Please wait a moment and try again.' : 'The request could not be processed.' };
       }
-      return { statusCode: HttpStatus.INTERNAL_SERVER_ERROR, message: 'Something went wrong. Please try again.' };
+      return { success: false, statusCode: HttpStatus.INTERNAL_SERVER_ERROR, message: 'Something went wrong. Please try again.' };
     }
     const statusCode = exception.getStatus();
     const response = exception.getResponse();
-    if (typeof response === 'string') return { statusCode, message: response };
+    if (typeof response === 'string') return { success: false, statusCode, message: response };
     const { message, errors, code } = response as { message?: string | string[]; errors?: string[]; code?: string };
-    if (code) return { statusCode, message: typeof message === 'string' ? message : exception.message, code };
-    if (Array.isArray(message)) return { statusCode, message: 'Validation failed', errors: message };
-    if (Array.isArray(errors)) return { statusCode, message: message ?? exception.message, errors };
-    return { statusCode, message: message ?? exception.message };
+    if (code) return { success: false, statusCode, message: typeof message === 'string' ? message : exception.message, code };
+    if (Array.isArray(message)) return { success: false, statusCode, message: 'Validation failed', errors: message };
+    if (Array.isArray(errors)) return { success: false, statusCode, message: message ?? exception.message, errors };
+    return { success: false, statusCode, message: message ?? exception.message };
   }
 }

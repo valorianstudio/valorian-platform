@@ -50,7 +50,7 @@ async function bootstrap(): Promise<void> {
   fastify.addHook('onRequest', async (request, reply) => {
     const isSubmission = request.method === 'POST' && /^\/api\/(leads|inquiries)(\?|$)/.test(request.url);
     const isSensitive = request.method !== 'GET' && /^\/api\/(admin\/profile\/password|client-auth\/(password|forgot-password)|auth\/2fa)/.test(request.url);
-    const isUpload = request.method === 'POST' && /^\/api\/admin\/(media|projects\/[^/]+\/files)(\?|$)/.test(request.url);
+    const isUpload = (request.method === 'POST' || request.method === 'PUT') && /^\/api\/admin\/(media(\/[^/?]+)?|projects\/[^/]+\/files)(\?|$)/.test(request.url);
     const limiter = isSensitive
       ? sensitiveLimit
       : isUpload
@@ -65,6 +65,26 @@ async function bootstrap(): Promise<void> {
             ? collectLimit
             : generalLimit;
     await limiter.call(fastify, request, reply);
+  });
+
+  // Request budget: a handler that hangs (slow database, stalled upstream) is answered with a clean 504 instead of an open socket.
+  fastify.addHook('onRequest', (request, reply, done) => {
+    const isUploadRoute = request.method !== 'GET' && /^\/api\/admin\/(media|projects\/[^/]+\/files)/.test(request.url);
+    const timer = setTimeout(() => {
+      if (!reply.sent) void reply.code(504).send({ statusCode: 504, success: false, message: 'The server took too long to respond. Please try again.' });
+    }, isUploadRoute ? Math.max(env.REQUEST_TIMEOUT_MS, 60_000) : env.REQUEST_TIMEOUT_MS);
+    reply.raw.on('close', () => clearTimeout(timer));
+    done();
+  });
+
+  // Consistent envelope: every JSON success is { success: true, data }, every failure is { success: false, message } (see AllExceptionsFilter).
+  fastify.addHook('onSend', async (request, reply, payload) => {
+    const path = request.url.split('?')[0];
+    const isJson = String(reply.getHeader('content-type') ?? '').includes('application/json');
+    if (!isJson || typeof payload !== 'string' || payload.length === 0 || reply.statusCode >= 400 || reply.statusCode === 204) return payload;
+    if (path === '/' || path === '/api/health') return payload;
+    void reply.removeHeader('content-length');
+    return `{"success":true,"data":${payload}}`;
   });
 
   fastify.addHook('onSend', async (request, reply) => {

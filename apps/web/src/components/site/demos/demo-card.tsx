@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { ArrowRight, Globe, Smartphone } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { SmartImage } from '@/components/ui/smart-image';
 import type { DemoCardData } from '@/lib/cms-types';
 
 export const DEMO_LABELS: Record<DemoCardData['statusLabel'], string> = {
@@ -43,8 +44,7 @@ export function DemoVisual({ demo, className = 'aspect-[16/10]' }: { demo: Pick<
           <span className="ml-2 h-3.5 flex-1 rounded-full bg-background" />
         </div>
         {image ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={image} alt="" loading="lazy" decoding="async" width={800} height={500} className="img-zoom size-full object-cover object-top" />
+          <SmartImage src={image} alt={`${demo.name} screenshot`} width={800} height={500} sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 90vw" retry={false} className="img-zoom size-full object-cover object-top" />
         ) : (
           <div className="space-y-3 p-4">
             <div className="flex items-center gap-2">
@@ -61,8 +61,7 @@ export function DemoVisual({ demo, className = 'aspect-[16/10]' }: { demo: Pick<
       </div>
       {phone && (
         <div className="absolute -bottom-3 right-[5%] w-[22%] min-w-[4.5rem] rounded-[1.1rem] border-[4px] border-slate bg-slate shadow-[var(--shadow-float)] transition-transform duration-500 ease-out group-hover:-translate-y-1.5">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={phone} alt="" loading="lazy" decoding="async" width={240} height={480} className="aspect-[9/18] w-full rounded-[0.8rem] object-cover object-top" />
+          <SmartImage src={phone} alt={`${demo.name} mobile screenshot`} width={240} height={480} sizes="120px" retry={false} className="aspect-[9/18] w-full rounded-[0.8rem] object-cover object-top" />
         </div>
       )}
     </div>

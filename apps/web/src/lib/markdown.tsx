@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { SmartImage } from '@/components/ui/smart-image';
 
 /**
  * Small, safe Markdown renderer. It builds React elements directly (never raw HTML),
@@ -55,10 +56,7 @@ function renderInline(text: string, keyPrefix: string): ReactNode[] {
 
 function MarkdownImage({ alt, url, size }: { alt: string; url: string; size?: string }) {
   const dims = /^(\d{2,5})x(\d{2,5})$/.exec(size ?? '');
-  return (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img src={url} alt={alt} loading="lazy" decoding="async" width={dims ? Number(dims[1]) : undefined} height={dims ? Number(dims[2]) : undefined} />
-  );
+  return <SmartImage src={url} alt={alt} width={dims ? Number(dims[1]) : 1200} height={dims ? Number(dims[2]) : 675} sizes="(min-width: 768px) 720px, 100vw" className="h-auto max-w-full" />;
 }
 
 export function renderMarkdown(source: string): ReactNode[] {

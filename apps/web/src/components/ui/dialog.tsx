@@ -8,12 +8,14 @@ interface ConfirmDialogProps {
   title: string;
   description: string;
   confirmLabel?: string;
+  /** "danger" for destructive actions (default), "primary" for neutral confirmations such as replacing a file. */
+  tone?: 'danger' | 'primary';
   busy?: boolean;
   onConfirm: () => void;
   onCancel: () => void;
 }
 
-export function ConfirmDialog({ open, title, description, confirmLabel = 'Delete', busy, onConfirm, onCancel }: ConfirmDialogProps) {
+export function ConfirmDialog({ open, title, description, confirmLabel = 'Delete', tone = 'danger', busy, onConfirm, onCancel }: ConfirmDialogProps) {
   const ref = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
@@ -45,7 +47,7 @@ export function ConfirmDialog({ open, title, description, confirmLabel = 'Delete
           <Button variant="secondary" onClick={onCancel} disabled={busy}>
             Cancel
           </Button>
-          <Button variant="danger" onClick={onConfirm} loading={busy}>
+          <Button variant={tone === 'danger' ? 'danger' : 'primary'} onClick={onConfirm} loading={busy}>
             {confirmLabel}
           </Button>
         </div>

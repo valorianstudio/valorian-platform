@@ -1,9 +1,11 @@
 import type { Metadata } from 'next';
+import { Suspense } from 'react';
 import Link from 'next/link';
 import { ArrowRight, ExternalLink, ShieldCheck, Wrench } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { PageHeader } from '@/components/ui/page-header';
+import { Skeleton } from '@/components/ui/skeleton';
 import { LeadRowCard } from '@/components/admin/leads/lead-row';
 import { Money } from '@/components/admin/analytics/widgets';
 import type { SummaryData } from '@/components/admin/analytics/types';
@@ -15,15 +17,80 @@ export const metadata: Metadata = { title: 'Dashboard' };
 
 const dateFormat = new Intl.DateTimeFormat('en', { dateStyle: 'medium', timeStyle: 'short' });
 
-export default async function DashboardPage() {
-  const admin = await getCurrentAdmin();
-  const perms = admin?.permissions ?? [];
-  const [settings, stats, inquiries, summary] = await Promise.all([
-    getSiteSettings(),
+/** Streams in after the welcome cards: three API calls that should never delay the first paint of the dashboard. */
+async function LeadsOverview({ perms }: { perms: string[] }) {
+  const [stats, inquiries, summary] = await Promise.all([
     can(perms, 'leads.view') ? getAdminJson<LeadStats>('/admin/leads/stats') : null,
     can(perms, 'inquiries.view') ? getAdminJson<{ unread: number }>('/admin/inquiries') : null,
     can(perms, 'analytics.view') ? getAdminJson<SummaryData>('/admin/analytics/summary') : null,
   ]);
+  if (!stats) return null;
+  return (
+    <section className="mt-8" aria-labelledby="crm-heading">
+      <div className="mb-4 flex items-center justify-between gap-3">
+        <h2 id="crm-heading" className="text-lg font-semibold">Leads</h2>
+        <span className="flex gap-4 text-sm font-medium text-primary [&_a]:py-2">
+          {summary && <Link href="/admin/analytics">Analytics</Link>}
+          {can(perms, 'inquiries.view') && <Link href="/admin/inquiries">Inquiries{inquiries?.unread ? ` (${inquiries.unread})` : ''}</Link>}
+          <Link href="/admin/leads">All leads</Link>
+        </span>
+      </div>
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
+        {(summary ? [
+          ['New leads', <>{summary?.newLeads ?? stats.byStatus.NEW ?? 0}</>, '/admin/leads?status=NEW'],
+          ['Pipeline value', <Money key="p" values={summary?.pipeline ?? []} />, '/admin/analytics?tab=sales'],
+          ['Won value (30 days)', <Money key="w" values={(summary?.won ?? []).map((v) => ({ currency: v.currency, total: v.total }))} />, '/admin/leads?status=WON'],
+          ['Estimates generated (30 days)', <>{summary?.estimatorCompletions ?? 0}</>, '/admin/analytics?tab=estimator'],
+          ['Overdue follow-ups', <>{summary?.overdue ?? 0}</>, '/admin/leads?followUp=overdue'],
+          ['Top demo (30 days)', <span key="d" className="text-lg sm:text-xl">{summary?.topDemo ? `${summary.topDemo.name} · ${summary.topDemo.views}` : '—'}</span>, '/admin/analytics?tab=content'],
+        ] : [
+          ['New leads', <>{stats.byStatus.NEW ?? 0}</>, '/admin/leads?status=NEW'],
+          ['Overdue follow-ups', <>{stats.followUps.overdue}</>, '/admin/leads?followUp=overdue'],
+          ['Won', <>{stats.byStatus.WON ?? 0}</>, '/admin/leads?status=WON'],
+        ]).map(([label, value, href]) => (
+          <Link key={label as string} href={href as string} className="rounded-xl border border-border bg-background p-4 transition-colors hover:border-primary/40">
+            <p className="text-sm text-muted">{label}</p>
+            <p className="mt-1 break-words text-2xl font-semibold tabular-nums">{value}</p>
+          </Link>
+        ))}
+      </div>
+      <div className="mt-3 flex flex-wrap gap-2 text-sm">
+        <Link href="/admin/leads?followUp=overdue" className={`rounded-full border px-3 py-1 ${stats.followUps.overdue ? 'border-danger/40 bg-danger-soft text-danger' : 'border-border text-muted'}`}>Overdue follow-ups: <strong>{stats.followUps.overdue}</strong></Link>
+        <Link href="/admin/leads?followUp=today" className="rounded-full border border-border px-3 py-1 text-muted">Today: <strong>{stats.followUps.today}</strong></Link>
+        <Link href="/admin/leads?followUp=upcoming" className="rounded-full border border-border px-3 py-1 text-muted">Upcoming: <strong>{stats.followUps.upcoming}</strong></Link>
+      </div>
+      <div className="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-2">
+        <div>
+          <h3 className="mb-3 text-sm font-medium text-muted">Recent leads</h3>
+          {stats.recent.length === 0 ? <p className="text-sm text-muted">No leads yet.</p> : <ul className="space-y-3">{stats.recent.map((lead) => <li key={lead.id}><LeadRowCard lead={lead} /></li>)}</ul>}
+        </div>
+        <div>
+          <h3 className="mb-3 text-sm font-medium text-muted">Next follow-ups</h3>
+          {stats.upcomingFollowUps.length === 0 ? <p className="text-sm text-muted">No follow-ups scheduled.</p> : <ul className="space-y-3">{stats.upcomingFollowUps.map((lead) => <li key={lead.id}><LeadRowCard lead={lead} /></li>)}</ul>}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function LeadsSkeleton() {
+  return (
+    <div role="status" aria-label="Loading leads overview" className="mt-8 space-y-4">
+      <Skeleton className="h-6 w-24" />
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
+        {[0, 1, 2].map((i) => (
+          <Skeleton key={i} className="h-24 rounded-xl" />
+        ))}
+      </div>
+      <Skeleton className="h-48 rounded-xl" />
+    </div>
+  );
+}
+
+export default async function DashboardPage() {
+  const admin = await getCurrentAdmin();
+  const perms = admin?.permissions ?? [];
+  const settings = await getSiteSettings();
 
   return (
     <>
@@ -51,52 +118,9 @@ export default async function DashboardPage() {
         </Card>
       </div>
 
-      {stats && (
-        <section className="mt-8" aria-labelledby="crm-heading">
-          <div className="mb-4 flex items-center justify-between gap-3">
-            <h2 id="crm-heading" className="text-lg font-semibold">Leads</h2>
-            <span className="flex gap-4 text-sm font-medium text-primary [&_a]:py-2">
-              {summary && <Link href="/admin/analytics">Analytics</Link>}
-              {can(perms, 'inquiries.view') && <Link href="/admin/inquiries">Inquiries{inquiries?.unread ? ` (${inquiries.unread})` : ''}</Link>}
-              <Link href="/admin/leads">All leads</Link>
-            </span>
-          </div>
-          <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
-            {(summary ? [
-              ['New leads', <>{summary?.newLeads ?? stats.byStatus.NEW ?? 0}</>, '/admin/leads?status=NEW'],
-              ['Pipeline value', <Money key="p" values={summary?.pipeline ?? []} />, '/admin/analytics?tab=sales'],
-              ['Won value (30 days)', <Money key="w" values={(summary?.won ?? []).map((v) => ({ currency: v.currency, total: v.total }))} />, '/admin/leads?status=WON'],
-              ['Estimates generated (30 days)', <>{summary?.estimatorCompletions ?? 0}</>, '/admin/analytics?tab=estimator'],
-              ['Overdue follow-ups', <>{summary?.overdue ?? 0}</>, '/admin/leads?followUp=overdue'],
-              ['Top demo (30 days)', <span key="d" className="text-lg sm:text-xl">{summary?.topDemo ? `${summary.topDemo.name} · ${summary.topDemo.views}` : '—'}</span>, '/admin/analytics?tab=content'],
-            ] : [
-              ['New leads', <>{stats.byStatus.NEW ?? 0}</>, '/admin/leads?status=NEW'],
-              ['Overdue follow-ups', <>{stats.followUps.overdue}</>, '/admin/leads?followUp=overdue'],
-              ['Won', <>{stats.byStatus.WON ?? 0}</>, '/admin/leads?status=WON'],
-            ]).map(([label, value, href]) => (
-              <Link key={label as string} href={href as string} className="rounded-xl border border-border bg-background p-4 transition-colors hover:border-primary/40">
-                <p className="text-sm text-muted">{label}</p>
-                <p className="mt-1 break-words text-2xl font-semibold tabular-nums">{value}</p>
-              </Link>
-            ))}
-          </div>
-          <div className="mt-3 flex flex-wrap gap-2 text-sm">
-            <Link href="/admin/leads?followUp=overdue" className={`rounded-full border px-3 py-1 ${stats.followUps.overdue ? 'border-danger/40 bg-danger-soft text-danger' : 'border-border text-muted'}`}>Overdue follow-ups: <strong>{stats.followUps.overdue}</strong></Link>
-            <Link href="/admin/leads?followUp=today" className="rounded-full border border-border px-3 py-1 text-muted">Today: <strong>{stats.followUps.today}</strong></Link>
-            <Link href="/admin/leads?followUp=upcoming" className="rounded-full border border-border px-3 py-1 text-muted">Upcoming: <strong>{stats.followUps.upcoming}</strong></Link>
-          </div>
-          <div className="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-2">
-            <div>
-              <h3 className="mb-3 text-sm font-medium text-muted">Recent leads</h3>
-              {stats.recent.length === 0 ? <p className="text-sm text-muted">No leads yet.</p> : <ul className="space-y-3">{stats.recent.map((lead) => <li key={lead.id}><LeadRowCard lead={lead} /></li>)}</ul>}
-            </div>
-            <div>
-              <h3 className="mb-3 text-sm font-medium text-muted">Next follow-ups</h3>
-              {stats.upcomingFollowUps.length === 0 ? <p className="text-sm text-muted">No follow-ups scheduled.</p> : <ul className="space-y-3">{stats.upcomingFollowUps.map((lead) => <li key={lead.id}><LeadRowCard lead={lead} /></li>)}</ul>}
-            </div>
-          </div>
-        </section>
-      )}
+      <Suspense fallback={<LeadsSkeleton />}>
+        <LeadsOverview perms={perms} />
+      </Suspense>
 
       {can(perms, 'settings.view') && (
       <Card className="mt-6 flex flex-col gap-4 p-6 sm:flex-row sm:items-center sm:justify-between">

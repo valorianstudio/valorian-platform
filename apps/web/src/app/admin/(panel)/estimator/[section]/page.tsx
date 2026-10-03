@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { ResourcePage } from '@/components/admin/cms/resource-page';
 import { EstimatorSettingsForm } from '@/components/admin/estimator/settings-form';
 import { ErrorState } from '@/components/ui/states';
+import { unwrap } from '@/lib/api-response';
 import { authedFetch } from '@/lib/server-api';
 
 export const metadata: Metadata = { title: 'Estimator' };
@@ -22,7 +23,7 @@ export default async function Page({ params }: { params: Promise<{ section: stri
   if (section === 'settings') {
     const response = await authedFetch('/admin/estimator/settings');
     if (!response?.ok) return <ErrorState title="Could not load settings" description="Reload the page to try again." />;
-    return <EstimatorSettingsForm initial={(await response.json()) as Record<string, unknown>} />;
+    return <EstimatorSettingsForm initial={unwrap(await response.json()) as Record<string, unknown>} />;
   }
   const configKey = Object.hasOwn(RESOURCES, section) ? RESOURCES[section] : undefined;
   if (!configKey) notFound();

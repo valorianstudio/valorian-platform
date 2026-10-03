@@ -845,11 +845,18 @@ model Media {
   title            String?
   caption          String?
   storageProvider  String   @default("local")
+  /// Cloudinary public_id (null for files stored by the legacy local provider). Needed to delete or replace the asset.
+  publicId         String?  @unique
+  /// Upload purpose / Cloudinary folder, e.g. "valorian/projects".
+  folder           String?
+  /// Provider details: format, version, asset id.
+  metadata         Json?
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
   @@index([createdAt])
   @@index([mimeType])
+  @@index([storageProvider])
 }
 
 model SeoSettings {

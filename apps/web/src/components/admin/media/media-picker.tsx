@@ -3,9 +3,12 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Search, Upload, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { FallbackImage } from '@/components/ui/fallback-image';
 import { Input } from '@/components/ui/field';
 import { useToast } from '@/components/ui/toast';
-import { ApiError, apiGet, uploadImage } from '@/lib/client-api';
+import { ApiError, apiGet } from '@/lib/client-api';
+import type { MediaFolder } from '@/lib/client-api';
+import { useMediaUpload } from './use-media-upload';
 
 export interface MediaItem {
   id: string;
@@ -19,6 +22,9 @@ export interface MediaItem {
   altText: string | null;
   title: string | null;
   caption: string | null;
+  storageProvider: string;
+  publicId: string | null;
+  folder: string | null;
   createdAt: string;
 }
 
@@ -37,11 +43,14 @@ interface MediaPickerProps {
   open: boolean;
   onClose: () => void;
   onSelect: (media: MediaItem) => void;
+  /** Cloudinary folder for files uploaded from inside the picker. */
+  folder?: MediaFolder;
 }
 
 /** Modal media chooser shared by every editor. Uploading here also adds to the library. */
-export function MediaPicker({ open, onClose, onSelect }: MediaPickerProps) {
+export function MediaPicker({ open, onClose, onSelect, folder = 'general' }: MediaPickerProps) {
   const toast = useToast();
+  const upload = useMediaUpload();
   const dialog = useRef<HTMLDialogElement>(null);
   const file = useRef<HTMLInputElement>(null);
   const [query, setQuery] = useState('');
@@ -81,11 +90,10 @@ export function MediaPicker({ open, onClose, onSelect }: MediaPickerProps) {
     if (!files?.length) return;
     setUploading(true);
     try {
-      for (const selected of Array.from(files)) await uploadImage(selected);
-      toast.success(files.length > 1 ? 'Images uploaded.' : 'Image uploaded.');
+      for (const selected of Array.from(files)) await upload({ file: selected, folder });
       await load(1, query);
-    } catch (error) {
-      toast.error(error instanceof ApiError ? error.message : 'Upload failed.');
+    } catch {
+      // the upload hook already showed the error
     } finally {
       setUploading(false);
       if (file.current) file.current.value = '';
@@ -131,8 +139,7 @@ export function MediaPicker({ open, onClose, onSelect }: MediaPickerProps) {
                     onClick={() => onSelect(item)}
                     className="group block w-full overflow-hidden rounded-xl border border-border bg-surface text-left transition-colors hover:border-primary"
                   >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={item.url} alt={item.altText ?? ''} loading="lazy" decoding="async" width={240} height={180} className="aspect-[4/3] w-full object-cover" />
+                    <FallbackImage src={item.url} alt={item.altText ?? ''} width={240} height={180} sizes="200px" retry={false} className="aspect-[4/3] w-full object-cover" />
                     <span className="block truncate px-2.5 py-2 text-xs text-muted">{item.originalFilename}</span>
                   </button>
                 </li>

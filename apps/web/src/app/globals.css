@@ -65,6 +65,8 @@
   --animate-fade-up: fade-up 0.9s var(--ease-out) both;
   --animate-fade-in: fade-in 0.5s ease-out both;
   --animate-float-slow: float-slow 9s ease-in-out infinite;
+  --animate-pulse-soft: pulse-soft 1.8s ease-in-out infinite;
+  --animate-loading-bar: loading-bar 1.3s ease-in-out infinite;
 }
 
 @keyframes fade-up {
@@ -78,6 +80,25 @@
 @keyframes float-slow {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-8px); }
+}
+@keyframes pulse-soft {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.55; transform: scale(0.97); }
+}
+@keyframes loading-bar {
+  0% { transform: translateX(-120%); }
+  100% { transform: translateX(320%); }
+}
+@keyframes splash-out {
+  to { opacity: 0; visibility: hidden; }
+}
+@keyframes splash-logo {
+  from { opacity: 0; transform: translateY(8px) scale(0.96); filter: blur(6px); }
+  to { opacity: 1; transform: none; filter: none; }
+}
+@keyframes splash-line {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
 }
 @keyframes mask-up {
   from { transform: translateY(105%); }
@@ -160,4 +181,22 @@
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
   .js [data-reveal] { opacity: 1; transform: none; }
   .mask-line > span { animation: none; }
+}
+
+/* First-visit splash: a short branded intro, shown once per browser session. It never blocks input and does not exist without JS. */
+.splash { display: none; }
+html[data-splash] .splash {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  place-items: center;
+  background: var(--background);
+  pointer-events: none;
+  animation: splash-out 0.45s ease 1s forwards;
+}
+.splash-logo { animation: splash-logo 0.7s var(--ease-out) both; }
+.splash-line { transform-origin: left; animation: splash-line 0.9s var(--ease-out) 0.1s both; }
+@media (prefers-reduced-motion: reduce) {
+  html[data-splash] .splash { display: none; }
 }

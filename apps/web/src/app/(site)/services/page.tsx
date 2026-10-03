@@ -1,3 +1,4 @@
+import { ApiUnavailable } from '@/components/ui/api-unavailable';
 import type { Metadata } from 'next';
 import { CtaBand, FaqSection, ProcessSection, ServiceGrid } from '@/components/site/blocks';
 import { PageHero } from '@/components/site/page-hero';
@@ -13,7 +14,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function ServicesPage() {
   const data = await getServices();
-  if (!data) throw new Error('Services content is unavailable.');
+  if (!data) return <ApiUnavailable what="Services" />;
   const hero = findSection<PageHeroContent>(data.sections, 'hero');
   const cta = findSection<CtaContent>(data.sections, 'cta');
 

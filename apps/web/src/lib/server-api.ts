@@ -2,6 +2,7 @@ import "server-only";
 import { cookies } from "next/headers";
 import type { AdminPage } from "./cms-types";
 import type { ClientSession } from "./portal";
+import { unwrap } from "./api-response";
 import type { AdminProfile, SiteSettings } from "./types";
 
 const API_URL = process.env.API_URL ?? "http://localhost:4000";
@@ -40,7 +41,7 @@ export async function getSiteSettings(): Promise<SiteSettings> {
       next: { revalidate: 60, tags: [SETTINGS_TAG] },
     });
     if (!response.ok) return defaultSettings;
-    return (await response.json()) as SiteSettings;
+    return unwrap(await response.json()) as SiteSettings;
   } catch {
     return defaultSettings;
   }
@@ -61,35 +62,35 @@ export async function authedFetch(path: string): Promise<Response | null> {
 
 export async function getCurrentAdmin(): Promise<AdminProfile | null> {
   const response = await authedFetch("/auth/me");
-  return response?.ok ? ((await response.json()) as AdminProfile) : null;
+  return response?.ok ? (unwrap(await response.json()) as AdminProfile) : null;
 }
 
 export async function getAdminSettings(): Promise<SiteSettings | null> {
   const response = await authedFetch("/admin/settings");
-  return response?.ok ? ((await response.json()) as SiteSettings) : null;
+  return response?.ok ? (unwrap(await response.json()) as SiteSettings) : null;
 }
 
 export async function getAdminList<T>(resource: string): Promise<T[]> {
   const response = await authedFetch(`/admin/cms/${resource}`);
-  return response?.ok ? ((await response.json()) as T[]) : [];
+  return response?.ok ? (unwrap(await response.json()) as T[]) : [];
 }
 
 export async function getAdminPage(key: string): Promise<AdminPage | null> {
   const response = await authedFetch(`/admin/pages/${key}`);
-  return response?.ok ? ((await response.json()) as AdminPage) : null;
+  return response?.ok ? (unwrap(await response.json()) as AdminPage) : null;
 }
 
 export async function getAdminDemos<T>(): Promise<T[]> {
   const response = await authedFetch("/admin/demos");
-  return response?.ok ? ((await response.json()) as T[]) : [];
+  return response?.ok ? (unwrap(await response.json()) as T[]) : [];
 }
 
 export async function getAdminJson<T>(path: string): Promise<T | null> {
   const response = await authedFetch(path);
-  return response?.ok ? ((await response.json()) as T) : null;
+  return response?.ok ? (unwrap(await response.json()) as T) : null;
 }
 
 export async function getCurrentClient(): Promise<ClientSession | null> {
   const response = await authedFetch("/client-auth/me");
-  return response?.ok ? ((await response.json()) as ClientSession) : null;
+  return response?.ok ? (unwrap(await response.json()) as ClientSession) : null;
 }

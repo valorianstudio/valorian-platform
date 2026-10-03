@@ -1,43 +1,28 @@
+import { Suspense } from 'react';
 import { Wrench } from 'lucide-react';
-import { SiteFooter } from '@/components/site/site-footer';
+import { AnalyticsGate, FooterLoader, FooterSkeleton, SiteSchema } from '@/components/site/site-chrome';
 import { SiteHeader } from '@/components/site/site-header';
-import { AnalyticsTracker } from '@/components/site/analytics-tracker';
-import { JsonLd } from '@/components/site/seo';
-import { getAnalyticsConfig, getNavigation, getSeoConfig, getServices, getSolutions } from '@/lib/cms';
-import { SITE_URL } from '@/lib/site';
+import { Splash } from '@/components/site/splash';
+import { getNavigation } from '@/lib/cms';
 import { getSiteSettings } from '@/lib/server-api';
 
 export const dynamic = 'force-dynamic';
 
 export default async function SiteLayout({ children }: { children: React.ReactNode }) {
-  const [settings, navigation, seo, analytics, services, solutions] = await Promise.all([getSiteSettings(), getNavigation(), getSeoConfig(), getAnalyticsConfig(), getServices(), getSolutions()]);
-  const base = seo?.canonicalBaseUrl || SITE_URL;
-  const absolute = (url: string | null) => (url ? (url.startsWith('/') ? `${base}${url}` : url) : undefined);
-  const sameAs = [settings.linkedinUrl, settings.githubUrl, settings.twitterUrl, settings.facebookUrl, settings.instagramUrl].filter(Boolean);
+  // Only what the header and maintenance gate need blocks the first byte. Footer, structured data and analytics stream in behind Suspense.
+  const [settings, navigation] = await Promise.all([getSiteSettings(), getNavigation()]);
   const headerItems = navigation.items.filter((item) => item.location === 'HEADER');
 
   return (
     <>
+      <Splash />
       <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground">
         Skip to content
       </a>
-      <JsonLd
-        data={[
-          {
-            '@context': 'https://schema.org',
-            '@type': 'Organization',
-            name: seo?.siteName || settings.companyName,
-            url: base,
-            description: settings.description,
-            logo: absolute(settings.logoLightUrl),
-            email: settings.primaryEmail,
-            telephone: settings.phone ?? undefined,
-            sameAs: sameAs.length ? sameAs : undefined,
-          },
-          { '@context': 'https://schema.org', '@type': 'WebSite', name: seo?.siteName || settings.companyName, url: base },
-        ]}
-      />
-      {analytics.enabled && <AnalyticsTracker />}
+      <Suspense fallback={null}>
+        <SiteSchema />
+        <AnalyticsGate />
+      </Suspense>
       <SiteHeader brandName={settings.brandName} items={headerItems} cta={navigation.cta} />
       <main id="main" className="min-h-[70vh] pt-16 lg:pt-[4.5rem]">
         {settings.maintenanceMode ? (
@@ -58,12 +43,9 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
           children
         )}
       </main>
-      <SiteFooter
-        settings={settings}
-        items={navigation.items}
-        services={(services?.services ?? []).slice(0, 6).map((item) => ({ label: item.title, href: `/services/${item.slug}` }))}
-        solutions={(solutions?.solutions ?? []).slice(0, 6).map((item) => ({ label: item.name, href: `/solutions/${item.slug}` }))}
-      />
+      <Suspense fallback={<FooterSkeleton />}>
+        <FooterLoader />
+      </Suspense>
     </>
   );
 }

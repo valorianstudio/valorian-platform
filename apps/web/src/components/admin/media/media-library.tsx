@@ -1,27 +1,48 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Copy, Search, Trash2, Upload, X } from 'lucide-react';
+import { Copy, RefreshCw, Search, Trash2, Upload, X } from 'lucide-react';
 import { FormAlert } from '@/components/admin/form-alert';
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/dialog';
+import { FallbackImage } from '@/components/ui/fallback-image';
 import { Field, Input, Select, Textarea } from '@/components/ui/field';
 import { EmptyState } from '@/components/ui/states';
 import { useToast } from '@/components/ui/toast';
 import { refreshContent } from '@/lib/actions';
-import { ApiError, apiGet, apiRequest, uploadImage } from '@/lib/client-api';
+import { ApiError, apiGet, apiRequest, validateImageFile } from '@/lib/client-api';
+import type { MediaFolder } from '@/lib/client-api';
+import { useMediaUpload } from './use-media-upload';
 import { formatBytes } from './media-picker';
 import type { MediaItem, MediaPage } from './media-picker';
 
+const FOLDERS: [MediaFolder, string][] = [
+  ['general', 'General'],
+  ['profile', 'Profile images'],
+  ['projects', 'Project images'],
+  ['portfolio', 'Portfolio screenshots'],
+  ['certificates', 'Certificates'],
+  ['blog', 'Blog images'],
+  ['services', 'Service images'],
+  ['testimonials', 'Testimonials'],
+  ['demos', 'Demos'],
+  ['case-studies', 'Case studies'],
+];
+
 export function MediaLibrary({ initial }: { initial: MediaPage }) {
   const toast = useToast();
+  const upload = useMediaUpload();
   const file = useRef<HTMLInputElement>(null);
+  const replaceInput = useRef<HTMLInputElement>(null);
   const dialog = useRef<HTMLDialogElement>(null);
   const [data, setData] = useState(initial);
   const [query, setQuery] = useState('');
   const [type, setType] = useState('');
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [folder, setFolder] = useState<MediaFolder>('general');
+  const [replacing, setReplacing] = useState<{ item: MediaItem; file: File } | null>(null);
+  const [replaceBusy, setReplaceBusy] = useState(false);
   const [selected, setSelected] = useState<MediaItem | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<ApiError | null>(null);
@@ -57,18 +78,39 @@ export function MediaLibrary({ initial }: { initial: MediaPage }) {
     let uploaded = 0;
     try {
       for (const f of Array.from(files)) {
-        await uploadImage(f);
+        await upload({ file: f, folder });
         uploaded += 1;
       }
-    } catch (e) {
-      toast.error(e instanceof ApiError ? e.message : 'Upload failed.');
+    } catch {
+      // the upload hook already showed the error; keep going with what succeeded
     } finally {
       setUploading(false);
       if (file.current) file.current.value = '';
-      if (uploaded > 0) {
-        toast.success(`${uploaded} ${uploaded === 1 ? 'image' : 'images'} uploaded.`);
-        await load(1, query, type);
-      }
+      if (uploaded > 0) await load(1, query, type);
+    }
+  }
+
+  function chooseReplacement(item: MediaItem, selected: File | undefined) {
+    if (replaceInput.current) replaceInput.current.value = '';
+    if (!selected) return;
+    const problem = validateImageFile(selected);
+    if (problem) toast.warning(problem);
+    else setReplacing({ item, file: selected });
+  }
+
+  async function confirmReplace() {
+    if (!replacing) return;
+    setReplaceBusy(true);
+    try {
+      const updated = await upload({ file: replacing.file, replaceId: replacing.item.id });
+      await load(data.page, query, type);
+      setSelected((current) => (current && current.id === replacing.item.id ? { ...current, url: updated.url, size: updated.size, width: updated.width, height: updated.height, publicId: updated.publicId, originalFilename: updated.originalFilename } : current));
+      await refreshContent();
+    } catch {
+      // the upload hook already showed the error
+    } finally {
+      setReplaceBusy(false);
+      setReplacing(null);
     }
   }
 
@@ -138,6 +180,14 @@ export function MediaLibrary({ initial }: { initial: MediaPage }) {
           <Upload className="size-4" aria-hidden /> Upload
         </Button>
       </div>
+      <div className="mb-4 flex flex-wrap items-center gap-2 text-sm">
+        <label htmlFor="media-folder" className="text-muted">Upload to</label>
+        <Select id="media-folder" aria-label="Upload folder" className="w-44" value={folder} onChange={(e) => setFolder(e.target.value as MediaFolder)}>
+          {FOLDERS.map(([value, label]) => (
+            <option key={value} value={value}>{label}</option>
+          ))}
+        </Select>
+      </div>
       <p className="mb-4 text-sm text-muted" aria-live="polite">
         {data.total} {data.total === 1 ? 'file' : 'files'} · PNG, JPEG, WebP or GIF up to 5 MB
       </p>
@@ -156,8 +206,7 @@ export function MediaLibrary({ initial }: { initial: MediaPage }) {
                 }}
                 className="block w-full overflow-hidden rounded-xl border border-border bg-surface text-left transition-colors hover:border-primary"
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={item.url} alt={item.altText ?? ''} loading="lazy" decoding="async" width={240} height={180} className="aspect-[4/3] w-full object-cover" />
+                <FallbackImage src={item.url} alt={item.altText ?? ''} width={240} height={180} sizes="(min-width: 1280px) 16vw, (min-width: 640px) 25vw, 45vw" retry={false} className="aspect-[4/3] w-full object-cover" />
                 <span className="block truncate px-2.5 pt-2 text-xs font-medium">{item.originalFilename}</span>
                 <span className="block px-2.5 pb-2 text-xs text-muted">{item.altText ? formatBytes(item.size) : `${formatBytes(item.size)} · no alt text`}</span>
               </button>
@@ -180,11 +229,11 @@ export function MediaLibrary({ initial }: { initial: MediaPage }) {
         {selected && (
           <div className="grid grid-cols-1 gap-5 p-5 sm:p-6 md:grid-cols-[1fr_1fr]">
             <div className="min-w-0">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={selected.url} alt={selected.altText ?? ''} className="max-h-[50vh] w-full rounded-xl border border-border bg-surface object-contain" />
+              <FallbackImage src={selected.url} alt={selected.altText ?? ''} width={800} height={600} sizes="(min-width: 768px) 360px, 90vw" className="h-auto max-h-[50vh] w-full rounded-xl border border-border bg-surface object-contain" />
               <dl className="mt-4 space-y-1 text-sm text-muted">
                 <div className="flex justify-between gap-3"><dt>File</dt><dd className="truncate text-foreground">{selected.originalFilename}</dd></div>
                 <div className="flex justify-between gap-3"><dt>Type</dt><dd className="text-foreground">{selected.mimeType}</dd></div>
+                <div className="flex justify-between gap-3"><dt>Storage</dt><dd className="text-foreground">{selected.storageProvider === 'cloudinary' ? 'Cloudinary' : 'Local (legacy)'}</dd></div>
                 <div className="flex justify-between gap-3"><dt>Size</dt><dd className="text-foreground">{formatBytes(selected.size)}{selected.width ? ` · ${selected.width}×${selected.height}` : ''}</dd></div>
               </dl>
             </div>
@@ -219,6 +268,10 @@ export function MediaLibrary({ initial }: { initial: MediaPage }) {
                 >
                   <Copy className="size-4" aria-hidden /> Copy URL
                 </Button>
+                <input ref={replaceInput} type="file" accept="image/png,image/jpeg,image/webp,image/gif" className="sr-only" tabIndex={-1} onChange={(e) => chooseReplacement(selected, e.target.files?.[0])} />
+                <Button variant="secondary" onClick={() => replaceInput.current?.click()}>
+                  <RefreshCw className="size-4" aria-hidden /> Replace image
+                </Button>
                 <Button variant="ghost" className="text-danger" onClick={() => setDeleting({ item: selected, message: null })}>
                   <Trash2 className="size-4" aria-hidden /> Delete
                 </Button>
@@ -227,6 +280,17 @@ export function MediaLibrary({ initial }: { initial: MediaPage }) {
           </div>
         )}
       </dialog>
+
+      <ConfirmDialog
+        open={replacing !== null}
+        tone="primary"
+        title="Replace this image?"
+        description={`“${replacing?.item.originalFilename ?? ''}” will be swapped for “${replacing?.file.name ?? ''}” everywhere it is used on the website. The old file is deleted from storage.`}
+        confirmLabel="Replace"
+        busy={replaceBusy}
+        onConfirm={() => void confirmReplace()}
+        onCancel={() => !replaceBusy && setReplacing(null)}
+      />
 
       <ConfirmDialog
         open={deleting !== null}

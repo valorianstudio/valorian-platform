@@ -3,6 +3,7 @@ import { ArrowRight, ArrowUpRight, Check, ChevronDown } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { ButtonLink } from '@/components/ui/button';
 import { Section } from '@/components/ui/section';
+import { SmartImage } from '@/components/ui/smart-image';
 import { isExternal } from '@/lib/cms';
 import type { CtaContent, DemoCardData, FaqItem, IntroContent, ProcessStepItem, ServiceCard, TechnologyCard, ValueItem } from '@/lib/cms-types';
 import { DemoCard } from './demos/demo-card';
@@ -209,8 +210,7 @@ export function TechList({ technologies }: { technologies: TechnologyCard[] }) {
       {technologies.map((tech) => (
         <li key={tech.id} className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3.5 py-1.5 text-sm font-medium text-primary transition-colors duration-200 hover:border-border-strong">
           {tech.logoUrl && /^https?:/i.test(tech.logoUrl) && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={tech.logoUrl} alt="" width={16} height={16} loading="lazy" className="size-4 object-contain" />
+            <SmartImage src={tech.logoUrl} alt="" width={16} height={16} sizes="16px" className="size-4 object-contain" />
           )}
           {tech.name}
         </li>
@@ -244,8 +244,7 @@ export function TechSection({ intro, technologies }: { intro: IntroContent; tech
               {(items ?? []).map((tech) => (
                 <li key={tech.id} className="inline-flex items-center gap-2.5 text-[15px] font-medium text-primary">
                   {tech.logoUrl && /^https?:/i.test(tech.logoUrl) ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={tech.logoUrl} alt="" width={20} height={20} loading="lazy" className="size-5 object-contain" />
+                    <SmartImage src={tech.logoUrl} alt="" width={20} height={20} sizes="20px" className="size-5 object-contain" />
                   ) : (
                     <span aria-hidden className="grid size-6 place-items-center rounded-md bg-primary text-[9px] font-semibold text-primary-foreground">
                       {monogram(tech.name)}

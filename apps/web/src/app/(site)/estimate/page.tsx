@@ -1,6 +1,7 @@
+import { ApiUnavailable } from '@/components/ui/api-unavailable';
 import type { Metadata } from 'next';
 import { PageHero } from '@/components/site/page-hero';
-import { EstimatorWizard } from '@/components/site/estimator/wizard';
+import { LazyEstimatorWizard as EstimatorWizard } from '@/components/site/lazy';
 import { ButtonLink } from '@/components/ui/button';
 import { buildMetadata, getEstimatorConfig, getLeadConfig, getPageSeo } from '@/lib/cms';
 import { getSiteSettings } from '@/lib/server-api';
@@ -20,7 +21,7 @@ export default async function EstimatePage({ searchParams }: { searchParams: Pro
     if (value) query.set(key, value);
   }
   const [config, settings, leadConfig] = await Promise.all([getEstimatorConfig(query.toString()), getSiteSettings(), getLeadConfig()]);
-  if (!config) throw new Error('Estimator is unavailable.');
+  if (!config) return <ApiUnavailable what="The estimator" />;
 
   return (
     <>

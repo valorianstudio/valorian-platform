@@ -1,3 +1,4 @@
+import { ApiUnavailable } from '@/components/ui/api-unavailable';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { CaseCardView } from '@/components/site/editorial';
@@ -29,7 +30,7 @@ export default async function CaseStudiesPage({ searchParams }: { searchParams: 
   if (page > 1) query.set('page', String(page));
 
   const data = await getCaseStudies(query.toString());
-  if (!data) throw new Error('Case studies are unavailable.');
+  if (!data) return <ApiUnavailable what="Case studies" />;
   const pageCount = Math.max(1, Math.ceil(data.total / data.pageSize));
   const href = (overrides: Record<string, string>) => {
     const next = new URLSearchParams();

@@ -1,3 +1,4 @@
+import { ApiUnavailable } from '@/components/ui/api-unavailable';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Search } from 'lucide-react';
@@ -33,7 +34,7 @@ export default async function InsightsPage({ searchParams }: { searchParams: Pro
     return next.toString();
   };
   const data = await getInsights(build({}));
-  if (!data) throw new Error('Insights are unavailable.');
+  if (!data) return <ApiUnavailable what="Insights" />;
   const href = (overrides: Record<string, string>) => `/insights${build(overrides) ? `?${build(overrides)}` : ''}`;
   const pageCount = Math.max(1, Math.ceil(data.total / data.pageSize));
   const filtered = Boolean(filters.q || filters.category || filters.tag);

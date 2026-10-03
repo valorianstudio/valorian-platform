@@ -1,18 +1,31 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
+/** Intrinsic size of the trimmed logo files (public/branding). Keep in sync with scripts/generate-brand-assets.mjs. */
+const LOGO_WIDTH = 1190;
+const LOGO_HEIGHT = 321;
+
 /**
- * The Valorian logo, unmodified (black lettering on a transparent background).
- * On slate sections pass `onDark` and it sits on a warm-white tile instead of being recoloured.
+ * The official Valorian Studio logo. The dark-ink file is used on light surfaces and the cream file on slate sections (`onDark`).
+ * Both are served through the Next.js optimizer, so retina screens get a 2x/3x rendition without shipping a huge file everywhere.
  */
-export function Wordmark({ name, href = '/', priority = false, onDark = false, className = 'h-10 sm:h-11 lg:h-12' }: { name: string; href?: string; priority?: boolean; onDark?: boolean; className?: string }) {
+export function Wordmark({ name, href = '/', priority = false, onDark = false, className = 'h-11 sm:h-12 lg:h-14' }: { name: string; href?: string; priority?: boolean; onDark?: boolean; className?: string }) {
   return (
     <Link
       href={href}
       aria-label={`${name} home`}
-      className={onDark ? 'inline-flex items-center rounded-xl bg-[#fffdfc] px-3 py-1' : '-ml-2 inline-flex min-w-0 items-center rounded-lg px-2 transition-opacity duration-200 hover:opacity-80'}
+      className="-ml-1 inline-flex min-w-0 items-center rounded-lg px-1 transition-opacity duration-200 hover:opacity-80"
     >
-      <Image src="/branding/valorian-logo.png" alt="Valorian" width={1280} height={427} priority={priority} sizes="180px" className={`${className} w-auto`} />
+      <Image
+        src={onDark ? '/branding/valorian-logo-light.png' : '/branding/valorian-logo.png'}
+        alt="Valorian Studio"
+        width={LOGO_WIDTH}
+        height={LOGO_HEIGHT}
+        priority={priority}
+        quality={90}
+        sizes="(min-width: 1024px) 208px, (min-width: 640px) 178px, 163px"
+        className={`${className} w-auto max-w-full`}
+      />
     </Link>
   );
 }

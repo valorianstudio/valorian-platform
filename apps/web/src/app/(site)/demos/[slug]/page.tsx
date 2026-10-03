@@ -5,7 +5,7 @@ import { ArrowRight, ArrowUpRight, Calculator, Check, Lightbulb, MessageCircle, 
 import { Breadcrumbs } from '@/components/site/seo';
 import { CheckList, CtaBand, TechList } from '@/components/site/blocks';
 import { DEMO_LABELS, DemoCard, DemoVisual, PlatformIndicators } from '@/components/site/demos/demo-card';
-import { Gallery } from '@/components/site/demos/gallery';
+import { LazyGallery as Gallery } from '@/components/site/lazy';
 import { PlatformTabs } from '@/components/site/demos/platform-tabs';
 import { Badge } from '@/components/ui/badge';
 import { ButtonLink } from '@/components/ui/button';

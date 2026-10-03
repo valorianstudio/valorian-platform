@@ -1,5 +1,6 @@
 import { ArrowRight, Check } from 'lucide-react';
 import { ButtonLink } from '@/components/ui/button';
+import { SmartImage } from '@/components/ui/smart-image';
 import type { HeroContent } from '@/lib/cms-types';
 
 /** Product showcase: a framed web app with an overlapping mobile screen. Pure markup, no images to load. */
@@ -153,8 +154,7 @@ export function Hero({ content }: { content: HeroContent }) {
 
         <div>
           {content.imageUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={content.imageUrl} alt="" width={900} height={700} fetchPriority="high" className="mx-auto w-full max-w-xl rounded-3xl border border-border shadow-[var(--shadow-float)] lg:max-w-none" />
+            <SmartImage src={content.imageUrl} alt="" width={900} height={700} sizes="(min-width: 1024px) 560px, 100vw" priority className="mx-auto h-auto w-full max-w-xl rounded-3xl border border-border shadow-[var(--shadow-float)] lg:max-w-none" />
           ) : (
             <ProductShowcase />
           )}

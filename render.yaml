@@ -30,6 +30,13 @@ services:
         sync: false
       - key: JWT_SECRET
         generateValue: true
+      # Image hosting. Uploads go to Cloudinary, never to this service's disk.
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
       - key: ERROR_WEBHOOK_URL
         sync: false
       - key: SMTP_HOST

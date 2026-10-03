@@ -20,6 +20,7 @@ import type {
   SolutionDetailData,
   SolutionsData,
 } from './cms-types';
+import { unwrap } from './api-response';
 import { CMS_TAG } from './server-api';
 import { SITE_URL } from './site';
 
@@ -28,7 +29,7 @@ const API_URL = process.env.API_URL ?? 'http://localhost:4000';
 async function fetchContent<T>(path: string): Promise<T | null> {
   try {
     const response = await fetch(`${API_URL}/api/content/${path}`, { next: { revalidate: 60, tags: [CMS_TAG] } });
-    return response.ok ? ((await response.json()) as T) : null;
+    return response.ok ? (unwrap(await response.json()) as T) : null;
   } catch {
     return null;
   }

@@ -1,3 +1,4 @@
+import { ApiUnavailable } from '@/components/ui/api-unavailable';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
@@ -16,7 +17,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function SolutionsPage() {
   const data = await getSolutions();
-  if (!data) throw new Error('Solutions content is unavailable.');
+  if (!data) return <ApiUnavailable what="Solutions" />;
   const hero = findSection<PageHeroContent>(data.sections, 'hero');
   const cta = findSection<CtaContent>(data.sections, 'cta');
 
