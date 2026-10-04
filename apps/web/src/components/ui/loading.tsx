@@ -2,14 +2,6 @@ import Image from 'next/image';
 import { cn } from '@/lib/cn';
 import { Skeleton } from './skeleton';
 
-export function Spinner({ className, label }: { className?: string; label?: string }) {
-  return (
-    <span role={label ? 'status' : undefined} aria-label={label} className="inline-flex">
-      <span aria-hidden className={cn('size-5 animate-spin rounded-full border-2 border-primary/25 border-t-primary', className)} />
-    </span>
-  );
-}
-
 /** Full-area loader with the logo, used while a route's data is on its way. */
 export function PageLoader({ message = 'Loading…' }: { message?: string }) {
   return (

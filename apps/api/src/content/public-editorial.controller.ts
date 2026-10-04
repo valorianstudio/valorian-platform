@@ -1,4 +1,5 @@
-import { applyDecorators, Controller, Get, Header, NotFoundException, Param, Query } from '@nestjs/common';
+import { applyDecorators, Controller, Get, Header, NotFoundException, Param, Query, UseInterceptors } from '@nestjs/common';
+import { PublicCacheInterceptor } from '../common/public-cache.interceptor';
 import type { Prisma } from '@prisma/client';
 import { demoCardSelect, demoOrder, publicDemoWhere } from '../demos/demo-queries';
 import { PrismaService } from '../prisma/prisma.service';
@@ -38,6 +39,7 @@ export const articleCardSelect = {
 const seoSelect = { metaTitle: true, metaDescription: true, ogImageUrl: true, canonicalUrl: true, noindex: true } as const;
 const cardOrder = [{ publishedAt: { sort: 'desc', nulls: 'last' } }, { createdAt: 'desc' }] satisfies Prisma.ArticleOrderByWithRelationInput[];
 
+@UseInterceptors(PublicCacheInterceptor)
 @Controller('content')
 export class PublicEditorialController {
   constructor(private readonly prisma: PrismaService) {}
@@ -51,9 +53,9 @@ export class PublicEditorialController {
       AND: [publishedNow(), query.industry ? { industry: { slug: query.industry } } : {}, query.service ? { services: { some: { slug: query.service } } } : {}],
     };
     const [items, total, industries] = await Promise.all([
-      this.prisma.caseStudy.findMany({ where, orderBy: [{ featured: 'desc' }, { displayOrder: 'asc' }, ...cardOrder], skip: (page - 1) * 9, take: 9, select: caseCardSelect }),
+      this.prisma.caseStudy.findMany({ relationLoadStrategy: 'join', where, orderBy: [{ featured: 'desc' }, { displayOrder: 'asc' }, ...cardOrder], skip: (page - 1) * 9, take: 9, select: caseCardSelect }),
       this.prisma.caseStudy.count({ where }),
-      this.prisma.industry.findMany({ where: { status: 'PUBLISHED', caseStudies: { some: publishedNow() } }, orderBy: { displayOrder: 'asc' }, select: { name: true, slug: true } }),
+      this.prisma.industry.findMany({ relationLoadStrategy: 'join', where: { status: 'PUBLISHED', caseStudies: { some: publishedNow() } }, orderBy: { displayOrder: 'asc' }, select: { name: true, slug: true } }),
     ]);
     return { items, total, page, pageSize: 9, industries };
   }
@@ -61,6 +63,7 @@ export class PublicEditorialController {
   @CachedGet('case-studies/:slug')
   async caseStudy(@Param('slug') slug: string) {
     const study = await this.prisma.caseStudy.findFirst({
+      relationLoadStrategy: 'join',
       where: { AND: [{ slug }, publishedNow()] },
       select: {
         ...caseCardSelect,
@@ -87,6 +90,7 @@ export class PublicEditorialController {
     });
     if (!study) throw new NotFoundException();
     const related = await this.prisma.caseStudy.findMany({
+      relationLoadStrategy: 'join',
       where: { AND: [publishedNow(), { slug: { not: slug } }, study.industry ? { industry: { slug: study.industry.slug } } : {}] },
       orderBy: cardOrder,
       take: 3,
@@ -111,10 +115,10 @@ export class PublicEditorialController {
       ],
     };
     const [items, total, categories, featured] = await Promise.all([
-      this.prisma.article.findMany({ where, orderBy: cardOrder, skip: (page - 1) * 9, take: 9, select: articleCardSelect }),
+      this.prisma.article.findMany({ relationLoadStrategy: 'join', where, orderBy: cardOrder, skip: (page - 1) * 9, take: 9, select: articleCardSelect }),
       this.prisma.article.count({ where }),
-      this.prisma.articleCategory.findMany({ where: { active: true, articles: { some: publishedNow() } }, orderBy: [{ displayOrder: 'asc' }, { name: 'asc' }], select: { name: true, slug: true } }),
-      !filtered && page === 1 ? this.prisma.article.findFirst({ where: { AND: [publishedNow(), { featured: true }] }, orderBy: cardOrder, select: articleCardSelect }) : Promise.resolve(null),
+      this.prisma.articleCategory.findMany({ relationLoadStrategy: 'join', where: { active: true, articles: { some: publishedNow() } }, orderBy: [{ displayOrder: 'asc' }, { name: 'asc' }], select: { name: true, slug: true } }),
+      !filtered && page === 1 ? this.prisma.article.findFirst({ relationLoadStrategy: 'join', where: { AND: [publishedNow(), { featured: true }] }, orderBy: cardOrder, select: articleCardSelect }) : Promise.resolve(null),
     ]);
     return { items, total, page, pageSize: 9, categories, featured };
   }
@@ -122,6 +126,7 @@ export class PublicEditorialController {
   @CachedGet('insights/:slug')
   async insight(@Param('slug') slug: string) {
     const article = await this.prisma.article.findFirst({
+      relationLoadStrategy: 'join',
       where: { AND: [{ slug }, publishedNow()] },
       select: {
         ...articleCardSelect,
@@ -136,6 +141,7 @@ export class PublicEditorialController {
     });
     if (!article) throw new NotFoundException();
     const related = await this.prisma.article.findMany({
+      relationLoadStrategy: 'join',
       where: { AND: [publishedNow(), { slug: { not: slug } }, article.category ? { category: { slug: article.category.slug } } : {}] },
       orderBy: cardOrder,
       take: 3,
@@ -148,7 +154,7 @@ export class PublicEditorialController {
 
   @CachedGet('page-seo')
   async pageSeo() {
-    const pages = await this.prisma.page.findMany({ select: { key: true, ...seoSelect } });
+    const pages = await this.prisma.page.findMany({ relationLoadStrategy: 'join', select: { key: true, ...seoSelect } });
     return Object.fromEntries(pages.map(({ key, ...seo }) => [key, seo]));
   }
 }

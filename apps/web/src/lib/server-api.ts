@@ -38,7 +38,8 @@ export const defaultSettings: SiteSettings = {
 export async function getSiteSettings(): Promise<SiteSettings> {
   try {
     const response = await fetch(`${API_URL}/api/settings`, {
-      next: { revalidate: 60, tags: [SETTINGS_TAG] },
+      next: { revalidate: 300, tags: [SETTINGS_TAG] },
+      signal: AbortSignal.timeout(8000),
     });
     if (!response.ok) return defaultSettings;
     return unwrap(await response.json()) as SiteSettings;

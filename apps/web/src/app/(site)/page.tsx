@@ -1,11 +1,12 @@
 import { ApiUnavailable } from '@/components/ui/api-unavailable';
 import { SectionBoundary } from '@/components/ui/error-boundary';
 import type { Metadata } from 'next';
-import { CapabilitySection, CtaBand, DemoSection, ProcessSection, TechSection, WhySection } from '@/components/site/blocks';
+import { CapabilitySection, CtaBand, ProcessSection, TechSection, WhySection } from '@/components/site/blocks';
 import { CaseStudiesSection, InsightsSection, TestimonialsSection } from '@/components/site/editorial';
 import { CapabilityBar } from '@/components/site/home/capability-bar';
 import { Hero } from '@/components/site/home/hero';
-import { SolutionsSection } from '@/components/site/solutions/solutions-section';
+import { DemoShowcase } from '@/components/site/demos/demo-showcase';
+import { Section } from '@/components/ui/section';
 import { buildMetadata, findSection, getHome } from '@/lib/cms';
 import type { CtaContent, HeroContent, HomeData, IntroContent } from '@/lib/cms-types';
 import { getSiteSettings } from '@/lib/server-api';
@@ -26,11 +27,12 @@ function renderSection(key: string, home: HomeData) {
     case 'why':
       return <WhySection intro={content} values={home.values} />;
     case 'featuredWork':
-      return <DemoSection intro={content} demos={home.demos} />;
+      // The demo showcase below (after the capabilities) is the single home for demos, so this legacy block renders nothing.
+      return null;
     case 'process':
       return <ProcessSection intro={content} steps={home.steps} />;
     case 'technology':
-      return <TechSection intro={content} technologies={home.technologies} />;
+      return <TechSection intro={content} />;
     case 'caseStudies':
       return <CaseStudiesSection intro={content} items={home.caseStudies} />;
     case 'testimonials':
@@ -55,7 +57,11 @@ export default async function HomePage() {
         <SectionBoundary key={section.key}>
           {renderSection(section.key, home)}
           {section.key === 'hero' && <CapabilityBar />}
-          {section.key === 'capabilities' && <SolutionsSection />}
+          {section.key === 'capabilities' && (
+            <Section id="solutions" tone="surface" eyebrow="Solutions & Demos" title="Landing pages, web apps and mobile apps, built for your business" description="Whatever you need to launch or run, start from a proven solution and make it yours.">
+              <DemoShowcase limit={6} />
+            </Section>
+          )}
         </SectionBoundary>
       ))}
     </>

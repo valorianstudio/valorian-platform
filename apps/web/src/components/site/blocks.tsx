@@ -6,10 +6,9 @@ import { Section } from '@/components/ui/section';
 import { SmartImage } from '@/components/ui/smart-image';
 import { isExternal } from '@/lib/cms';
 import type { CtaContent, DemoCardData, FaqItem, IntroContent, ProcessStepItem, ServiceCard, TechnologyCard, ValueItem } from '@/lib/cms-types';
-import { DemoCard } from './demos/demo-card';
+import { DemoCard, demoFromApi } from './demos/demo-card';
 import { JsonLd } from './seo';
 import { getIcon } from '@/lib/icons';
-import { mergeTechnologies } from '@/lib/tech-catalog';
 import { TechShowcase } from './tech-showcase';
 
 export function SmartLink({ href, className, children, newTab }: { href: string; className?: string; children: ReactNode; newTab?: boolean }) {
@@ -151,7 +150,7 @@ export function DemoSection({ intro, demos, tone = 'default', showAll = true }: 
       <ul className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:gap-8">
         {demos.map((demo, index) => (
           <li key={demo.slug} data-reveal style={{ ['--i' as string]: index % 2 }}>
-            <DemoCard demo={demo} />
+            <DemoCard demo={demoFromApi(demo)} />
           </li>
         ))}
       </ul>
@@ -217,10 +216,10 @@ export function TechList({ technologies }: { technologies: TechnologyCard[] }) {
 }
 
 /** Technology ecosystem: searchable, filterable cards with a plain-language explanation for every tool. */
-export function TechSection({ intro, technologies }: { intro: IntroContent; technologies: TechnologyCard[] }) {
+export function TechSection({ intro }: { intro: IntroContent }) {
   return (
     <Section id="technology" tone="surface" eyebrow={intro.eyebrow ?? undefined} title={intro.title} description={intro.subtitle ?? undefined}>
-      <TechShowcase technologies={mergeTechnologies(technologies)} />
+      <TechShowcase />
     </Section>
   );
 }

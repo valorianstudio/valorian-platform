@@ -1,64 +1,23 @@
-import { applyDecorators, Controller, Get, Header, NotFoundException, Param, Query } from '@nestjs/common';
+import { applyDecorators, Controller, Get, Header, NotFoundException, Param, UseInterceptors } from '@nestjs/common';
+import { PublicCacheInterceptor } from '../common/public-cache.interceptor';
 import type { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { demoCardSelect, demoOrder, publicDemoWhere } from './demo-queries';
 
 const CachedGet = (path: string) => applyDecorators(Get(path), Header('Cache-Control', 'public, max-age=30, stale-while-revalidate=300'));
-const PAGE_SIZE = 12;
 const itemOrder = [{ displayOrder: 'asc' }, { id: 'asc' }] satisfies Prisma.DemoFeatureOrderByWithRelationInput[];
 
-interface ListQuery {
-  q?: string;
-  category?: string;
-  industry?: string;
-  platform?: string;
-  page?: string;
-}
-
+@UseInterceptors(PublicCacheInterceptor)
 @Controller('content/demos')
 export class PublicDemosController {
   constructor(private readonly prisma: PrismaService) {}
 
-  @CachedGet('')
-  async list(@Query() query: ListQuery) {
-    const q = query.q?.trim().slice(0, 80);
-    const and: Prisma.DemoWhereInput[] = [];
-    if (query.platform === 'website' || query.platform === 'both') and.push({ platforms: { some: { type: 'WEBSITE', enabled: true } } });
-    if (query.platform === 'mobile' || query.platform === 'both') and.push({ platforms: { some: { type: 'MOBILE', enabled: true } } });
-
-    const where: Prisma.DemoWhereInput = {
-      ...publicDemoWhere,
-      ...(query.category ? { category: { slug: query.category, active: true } } : {}),
-      ...(query.industry ? { industry: { slug: query.industry } } : {}),
-      ...(q ? { OR: [{ name: { contains: q, mode: 'insensitive' } }, { shortDescription: { contains: q, mode: 'insensitive' } }] } : {}),
-      ...(and.length ? { AND: and } : {}),
-    };
-    const page = Math.max(1, Number.parseInt(query.page ?? '1', 10) || 1);
-    const filtered = Boolean(q || query.category || query.industry || query.platform);
-
-    const [items, total, categories, industries, featured] = await Promise.all([
-      this.prisma.demo.findMany({ where, orderBy: demoOrder, skip: (page - 1) * PAGE_SIZE, take: PAGE_SIZE, select: demoCardSelect }),
-      this.prisma.demo.count({ where }),
-      this.prisma.demoCategory.findMany({
-        where: { active: true, demos: { some: publicDemoWhere } },
-        orderBy: [{ displayOrder: 'asc' }, { name: 'asc' }],
-        select: { name: true, slug: true },
-      }),
-      this.prisma.industry.findMany({
-        where: { status: 'PUBLISHED', demos: { some: publicDemoWhere } },
-        orderBy: [{ displayOrder: 'asc' }, { name: 'asc' }],
-        select: { name: true, slug: true },
-      }),
-      !filtered && page === 1
-        ? this.prisma.demo.findMany({ where: { ...publicDemoWhere, featured: true }, orderBy: demoOrder, take: 3, select: demoCardSelect })
-        : Promise.resolve([]),
-    ]);
-    return { items, total, page, pageSize: PAGE_SIZE, categories, industries, featured };
-  }
-
   @CachedGet(':slug')
   async detail(@Param('slug') slug: string) {
     const demo = await this.prisma.demo.findFirst({
+      // One SQL statement with joins instead of one query per relation: this endpoint loads 8 relations, and every extra
+      // query is another round trip to the database.
+      relationLoadStrategy: 'join',
       where: { slug, ...publicDemoWhere },
       select: {
         ...demoCardSelect,

@@ -6,7 +6,9 @@ import { Splash } from '@/components/site/splash';
 import { getNavigation } from '@/lib/cms';
 import { getSiteSettings } from '@/lib/server-api';
 
-export const dynamic = 'force-dynamic';
+// No `force-dynamic`: nothing here reads cookies, headers or the query string, so pages are rendered once and served from cache,
+// then refreshed in the background every 5 minutes (the revalidate time of the CMS fetches in lib/cms.ts) and immediately when an editor saves (lib/actions.ts).
+export const revalidate = 300;
 
 export default async function SiteLayout({ children }: { children: React.ReactNode }) {
   // Only what the header and maintenance gate need blocks the first byte. Footer, structured data and analytics stream in behind Suspense.

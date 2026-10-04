@@ -1,6 +1,6 @@
 'use client';
 
-import { useId, useState } from 'react';
+import { useEffect, useId, useState } from 'react';
 import type { KeyboardEvent, ReactNode } from 'react';
 import { Globe, Smartphone } from 'lucide-react';
 import { track } from '@/lib/analytics';
@@ -15,6 +15,11 @@ interface Panel {
 export function PlatformTabs({ panels, initial }: { panels: Panel[]; initial: Panel['type'] }) {
   const [active, setActive] = useState(initial);
   const base = useId();
+
+  // Deep links (?platform=mobile) are read on the client, so the page never depends on the query string and can be cached.
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get('platform') === 'mobile' && panels.some((panel) => panel.type === 'MOBILE')) setActive('MOBILE');
+  }, [panels]);
 
   function select(type: Panel['type']) {
     if (type !== active) track({ type: 'DEMO_PLATFORM_SELECT', platform: type });

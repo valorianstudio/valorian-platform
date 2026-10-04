@@ -1,104 +1,171 @@
 import Link from 'next/link';
-import { ArrowRight, Globe, Smartphone } from 'lucide-react';
+import { ArrowRight, Check, Clock, Globe, Rocket, Smartphone } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { SmartImage } from '@/components/ui/smart-image';
+import { cn } from '@/lib/cn';
+import { getIcon } from '@/lib/icons';
+import { DEMOS, DEMO_STATUS_LABEL } from '@/data/demos';
+import type { Demo, DemoPlatform, PlaceholderTone } from '@/data/demos';
 import type { DemoCardData } from '@/lib/cms-types';
 
-export const DEMO_LABELS: Record<DemoCardData['statusLabel'], string> = {
-  INTERACTIVE_CONCEPT: 'Interactive concept',
-  PROTOTYPE: 'Prototype',
-  DEMO_PRODUCT: 'Demo product',
-  PRODUCTION_EXAMPLE: 'Production example',
+const STAGE: Record<PlaceholderTone, string> = {
+  cream: 'bg-[linear-gradient(135deg,#fbe0c3,#f3d3b6)]',
+  coral: 'bg-[linear-gradient(135deg,#ffd9c6,#ffbb98)]',
+  slate: 'bg-[linear-gradient(135deg,#4a5e60,#344648)]',
+  mist: 'bg-[linear-gradient(135deg,#e4eaea,#cfd8d9)]',
 };
 
-export function PlatformIndicators({ platforms }: { platforms: DemoCardData['platforms'] }) {
-  const types = new Set(platforms.map((p) => p.type));
-  return (
-    <ul className="flex items-center gap-1.5 text-primary" aria-label="Available platforms">
-      {types.has('WEBSITE') && (
-        <li className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background px-2.5 py-1 text-xs font-semibold">
-          <Globe className="size-3.5 text-accent" aria-hidden /> Web
-        </li>
-      )}
-      {types.has('MOBILE') && (
-        <li className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background px-2.5 py-1 text-xs font-semibold">
-          <Smartphone className="size-3.5 text-accent" aria-hidden /> Mobile
-        </li>
-      )}
-    </ul>
-  );
-}
+const WINDOW = 'absolute inset-x-[9%] bottom-0 top-[11%] overflow-hidden rounded-t-xl border border-b-0 border-[rgb(52_70_72/0.2)] bg-card shadow-[var(--shadow-float)]';
+const DOTS = 'block size-2 rounded-full bg-[#e8a99a] shadow-[12px_0_#ecd08b,24px_0_#a8c3a0]';
 
-/** Product preview: the web screenshot in a browser frame, with a phone overlapping when a mobile screen exists. */
-export function DemoVisual({ demo, className = 'aspect-[16/10]' }: { demo: Pick<DemoCardData, 'slug' | 'name' | 'thumbnailUrl' | 'coverImageUrl'> & { screenshots?: { url: string }[] }; className?: string }) {
-  const image = demo.thumbnailUrl ?? demo.coverImageUrl;
-  const phone = demo.screenshots?.[0]?.url;
-  const warm = demo.slug.length % 2 === 0;
+/**
+ * Preview area for a demo. With a real screenshot it shows that; until then a small code-drawn mockup (about twenty elements,
+ * no image request): a dashboard window, with a phone in front of it when the demo also ships as a mobile app.
+ */
+export function DemoVisual({ demo, className = 'aspect-[16/10]', phoneImage }: { demo: Pick<Demo, 'title' | 'image' | 'placeholder'> & { platforms?: DemoPlatform[] }; className?: string; phoneImage?: string }) {
+  const Icon = getIcon(demo.placeholder.icon);
+  const dark = demo.placeholder.tone === 'slate';
+  const phone = demo.platforms?.includes('Mobile App');
+
   return (
-    <div aria-hidden={image ? undefined : true} className={`relative overflow-hidden ${warm ? 'bg-[linear-gradient(135deg,#fbe0c3,#f3d3b6)]' : 'bg-[linear-gradient(135deg,#dfe5e5,#cfd8d9)]'} ${className}`}>
-      <div className="absolute inset-x-[8%] bottom-0 top-[11%] overflow-hidden rounded-t-xl border border-b-0 border-[rgb(52_70_72/0.2)] bg-card shadow-[var(--shadow-float)]">
-        <div className="flex items-center gap-1.5 border-b border-border bg-surface px-3 py-2">
-          <span className="size-2 rounded-full bg-[#e8a99a]" />
-          <span className="size-2 rounded-full bg-[#ecd08b]" />
-          <span className="size-2 rounded-full bg-[#a8c3a0]" />
-          <span className="ml-2 h-3.5 flex-1 rounded-full bg-background" />
+    <div className={cn('relative overflow-hidden', STAGE[demo.placeholder.tone], className)}>
+      <div className={WINDOW}>
+        <div className="flex h-7 items-center border-b border-border bg-surface px-3">
+          <span aria-hidden className={DOTS} />
         </div>
-        {image ? (
-          <SmartImage src={image} alt={`${demo.name} screenshot`} width={800} height={500} sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 90vw" retry={false} className="img-zoom size-full object-cover object-top" />
+        {demo.image ? (
+          <SmartImage src={demo.image} alt={`${demo.title} screenshot`} width={800} height={500} sizes="(min-width: 1280px) 30vw, (min-width: 768px) 45vw, 90vw" retry={false} className="img-zoom size-full object-cover object-top" />
         ) : (
-          <div className="space-y-3 p-4">
-            <div className="flex items-center gap-2">
-              <span className="grid size-7 place-items-center rounded-md bg-primary text-xs font-semibold text-primary-foreground">{demo.name.charAt(0)}</span>
-              <span className="h-2.5 w-24 rounded-full bg-surface-strong" />
-            </div>
-            <div className="flex h-20 items-end gap-1.5">
-              {[40, 65, 50, 80, 60, 90, 70].map((height, i) => (
-                <span key={i} className={`flex-1 rounded-t ${i === 5 ? 'bg-coral' : 'bg-primary'}`} style={{ height: `${height}%`, opacity: i === 5 ? 1 : 0.25 + i * 0.07 }} />
-              ))}
+          <div aria-hidden className="grid h-full grid-cols-[22%_1fr]">
+            <span className="bg-slate" />
+            <div className="space-y-2.5 p-3">
+              <span className="block h-2.5 w-24 rounded-full bg-surface-strong" />
+              <span className="block h-7 rounded-lg border border-border bg-cream" />
+              <span className="block h-12 rounded-lg bg-[linear-gradient(90deg,var(--primary)_0_12%,transparent_12%_16%,var(--blue-gray)_16%_28%,transparent_28%_32%,var(--primary)_32%_46%,transparent_46%_50%,var(--coral)_50%_62%,transparent_62%_66%,var(--blue-gray)_66%_80%,transparent_80%)] opacity-70" />
             </div>
           </div>
         )}
       </div>
-      {phone && (
-        <div className="absolute -bottom-3 right-[5%] w-[22%] min-w-[4.5rem] rounded-[1.1rem] border-[4px] border-slate bg-slate shadow-[var(--shadow-float)] transition-transform duration-500 ease-out group-hover:-translate-y-1.5">
-          <SmartImage src={phone} alt={`${demo.name} mobile screenshot`} width={240} height={480} sizes="120px" retry={false} className="aspect-[9/18] w-full rounded-[0.8rem] object-cover object-top" />
+      {phoneImage ? (
+        <div className="absolute -bottom-3 right-[5%] w-[22%] min-w-[4.5rem] rounded-[1.1rem] border-4 border-slate bg-slate shadow-[var(--shadow-float)] transition-transform duration-500 ease-out group-hover:-translate-y-1.5">
+          <SmartImage src={phoneImage} alt={`${demo.title} mobile screenshot`} width={240} height={480} sizes="120px" retry={false} className="aspect-[9/18] w-full rounded-[0.8rem] object-cover object-top" />
         </div>
+      ) : (
+        phone && (
+          <div aria-hidden className="absolute -bottom-4 right-[6%] h-[62%] w-[22%] min-w-[4rem] rounded-[1.1rem] border-4 border-slate bg-background p-1.5 shadow-[var(--shadow-float)] transition-transform duration-500 ease-out group-hover:-translate-y-1.5">
+            <span className="block h-6 rounded-md bg-coral/80" />
+            <span className="mt-1.5 block h-3 rounded bg-surface-strong" />
+            <span className="mt-1 block h-3 rounded bg-surface-strong" />
+          </div>
+        )
       )}
+      <span aria-hidden className={cn('absolute left-3 top-3 grid size-8 place-items-center rounded-full backdrop-blur', dark ? 'bg-white/15 text-white' : 'bg-card/80 text-primary')}>
+        <Icon className="size-4" />
+      </span>
     </div>
   );
 }
 
-export function DemoCard({ demo, priority = false }: { demo: DemoCardData; priority?: boolean }) {
-  const stack = [...new Set(demo.platforms.flatMap((p) => p.technologies?.map((t) => t.name) ?? []))].slice(0, 5);
-  const label = demo.category ?? demo.industry;
+const PLATFORM_ICON = { Website: Globe, 'Mobile App': Smartphone, 'Landing Page': Rocket } as const;
+
+export function PlatformChips({ platforms }: { platforms: DemoPlatform[] }) {
   return (
-    <Link href={`/demos/${demo.slug}`} className="card-lift group flex h-full flex-col overflow-hidden">
+    <ul className="flex flex-wrap items-center gap-1.5" aria-label="Available as">
+      {platforms.map((platform) => {
+        const Icon = PLATFORM_ICON[platform];
+        return (
+          <li key={platform} className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background px-2.5 py-1 text-xs font-semibold text-primary">
+            <Icon className="size-3.5 text-accent" aria-hidden /> {platform}
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
+export function StatusBadge({ status }: { status: Demo['status'] }) {
+  return (
+    <Badge tone={status === 'available' ? 'accent' : 'neutral'} className="normal-case">
+      {status !== 'available' && <Clock className="size-3" aria-hidden />}
+      {DEMO_STATUS_LABEL[status]}
+    </Badge>
+  );
+}
+
+const PLATFORM_LABEL = { WEBSITE: 'Website', MOBILE: 'Mobile App' } as const;
+
+/**
+ * Demos that come from the CMS (related demos on case studies, industries and demo pages) are drawn by the same card.
+ * When the CMS slug exists in data/demos.ts that entry is used, so a demo never looks different in two places.
+ */
+export function demoFromApi(item: DemoCardData): Demo {
+  const known = DEMOS.find((demo) => demo.slug === item.slug);
+  if (known) return known;
+  return {
+    slug: item.slug,
+    title: item.name,
+    category: 'full-stack',
+    offerings: ['full-stack'],
+    industry: item.industry?.name ?? item.category?.name ?? 'Software',
+    description: item.shortDescription,
+    features: [],
+    technologies: [...new Set(item.platforms.flatMap((platform) => platform.technologies?.map((tech) => tech.name) ?? []))].slice(0, 5),
+    platforms: [...new Set(item.platforms.map((platform) => PLATFORM_LABEL[platform.type]))],
+    image: item.thumbnailUrl ?? item.coverImageUrl ?? undefined,
+    placeholder: { icon: 'layers', tone: 'cream' },
+    status: 'available',
+  };
+}
+
+/** The one demo card: used by the home page, /demos, related-demo sections and the placeholder detail pages. */
+export function DemoCard({ demo }: { demo: Demo }) {
+  const ready = demo.status === 'available';
+  return (
+    <article className="card-lift group relative flex h-full flex-col overflow-hidden">
       <DemoVisual demo={demo} />
-      <div className="flex flex-1 flex-col p-6 sm:p-7">
-        <div className="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-accent">
-          {label && <span>{label.name}</span>}
-          {demo.industry && demo.category && demo.industry.name !== demo.category.name && <span className="text-muted">/ {demo.industry.name}</span>}
-          {demo.badge && <Badge className="ml-auto normal-case tracking-normal">{demo.badge}</Badge>}
-          {demo.featured && priority && <Badge tone="accent" className="normal-case tracking-normal">Featured</Badge>}
+      <div className="flex flex-1 flex-col p-5 sm:p-6">
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-xs font-semibold uppercase tracking-[0.12em] text-accent">{demo.industry}</span>
+          <span className="ml-auto">
+            <StatusBadge status={demo.status} />
+          </span>
         </div>
-        <h3 className="display mt-3 text-2xl text-primary">{demo.name}</h3>
-        <p className="mt-2.5 flex-1 leading-relaxed text-muted">{demo.shortDescription}</p>
-        {stack.length > 0 && (
-          <ul className="mt-5 flex flex-wrap gap-1.5" aria-label="Technology stack">
-            {stack.map((name) => (
-              <li key={name} className="rounded-full bg-primary-soft px-2.5 py-1 text-[11px] font-semibold text-primary">
-                {name}
+        <h3 className="display mt-3 text-xl text-primary sm:text-2xl">
+          {/* The whole card is the link target (stretched ::after), so the card stays a single tab stop. */}
+          <Link href={`/demos/${demo.slug}`} className="after:absolute after:inset-0 after:content-['']">
+            {demo.title}
+          </Link>
+        </h3>
+        <p className="mt-2.5 text-sm leading-relaxed text-muted">{demo.description}</p>
+
+        {demo.features.length > 0 && (
+          <ul className="mt-4 space-y-1.5" aria-label="Key features">
+            {demo.features.slice(0, 3).map((feature) => (
+              <li key={feature} className="flex gap-2.5 text-sm text-primary">
+                <Check className="mt-0.5 size-4 shrink-0 text-accent" aria-hidden />
+                {feature}
               </li>
             ))}
           </ul>
         )}
-        <div className="mt-6 flex items-center justify-between gap-3 border-t border-border pt-5">
-          <PlatformIndicators platforms={demo.platforms} />
-          <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary">
-            View demo <ArrowRight className="size-4 transition-transform duration-200 group-hover:translate-x-1" aria-hidden />
+
+        {demo.technologies.length > 0 && (
+          <ul className="mt-5 flex flex-wrap gap-1.5" aria-label="Technology stack">
+            {demo.technologies.slice(0, 5).map((tech) => (
+              <li key={tech} className="rounded-full bg-primary-soft px-2.5 py-1 text-[11px] font-semibold text-primary">
+                {tech}
+              </li>
+            ))}
+          </ul>
+        )}
+
+        <div className="mt-auto flex items-center justify-between gap-3 border-t border-border pt-5">
+          <PlatformChips platforms={demo.platforms} />
+          <span aria-hidden className={cn('inline-flex h-9 shrink-0 items-center gap-1.5 rounded-full px-4 text-sm font-semibold transition-colors duration-200', ready ? 'bg-primary text-primary-foreground group-hover:bg-[#415558]' : 'border border-[rgb(52_70_72/0.25)] text-primary group-hover:border-primary')}>
+            View Demo <ArrowRight className="size-4 transition-transform duration-200 group-hover:translate-x-1" />
           </span>
         </div>
       </div>
-    </Link>
+    </article>
   );
 }

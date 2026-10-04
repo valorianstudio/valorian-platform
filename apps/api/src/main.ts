@@ -8,6 +8,7 @@ import fastifyHelmet from '@fastify/helmet';
 import fastifyRateLimit from '@fastify/rate-limit';
 import { AppModule } from './app.module';
 import { AllExceptionsFilter } from './common/all-exceptions.filter';
+import { PublicCacheInterceptor } from './common/public-cache.interceptor';
 import { env, isProduction } from './config/env';
 import { MAX_PROJECT_FILE_BYTES } from './project-files/project-file-storage';
 import { MAX_UPLOAD_BYTES } from './storage/storage.service';
@@ -90,6 +91,11 @@ async function bootstrap(): Promise<void> {
 
   fastify.addHook('onSend', async (request, reply) => {
     if (request.url.startsWith('/api/admin') || request.url.startsWith('/api/client')) void reply.header('Cache-Control', 'no-store');
+  });
+
+  // Any successful admin change empties the public response cache, so edits show up straight away instead of after the cache lifetime.
+  fastify.addHook('onResponse', async (request, reply) => {
+    if (request.method !== 'GET' && request.url.startsWith('/api/admin') && reply.statusCode < 400) PublicCacheInterceptor.clear();
   });
 
   // Registered after the envelope hook above, so responses are wrapped first and compressed last.

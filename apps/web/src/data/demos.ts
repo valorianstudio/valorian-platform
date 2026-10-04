@@ -1,53 +1,50 @@
-import type { IconName } from './icon-names';
+import type { IconName } from '@/lib/icon-names';
 
 /**
- * Solutions & Product Demos catalog: the structure and content behind the demo showcase.
+ * The single source of truth for the Solutions & Demos showcase: the home page section, the /demos page and every demo
+ * detail page read from this file, and every card is drawn by one component (components/site/demos/demo-card.tsx).
  *
- * These are placeholders on purpose. Each entry describes a product Valorian Studio can build; the live demos are produced
- * one at a time later. When a demo is ready, set `demoStatus: 'available'` and either point `demoSlug` at an interactive demo
- * managed in the admin panel (/demos/<demoSlug>) or set `demoUrl` to an external link. Add real screenshots through `imageUrl`.
+ * Entries are placeholders until each demo is built. Set `status: 'available'` when it is ready and add a real screenshot
+ * through `image`. A demo whose `slug` matches an interactive demo managed in the admin panel (educore, clinicos, ...) opens
+ * that demo at /demos/<slug>; any other slug opens the placeholder page generated from the entry below.
  */
 
-export type SolutionCategoryId = 'landing-page' | 'full-stack' | 'mobile-app';
-export type SolutionPlatform = 'Website' | 'Mobile App' | 'Landing Page';
+export type DemoCategoryId = 'landing-page' | 'full-stack' | 'mobile-app';
+export type DemoPlatform = 'Website' | 'Mobile App' | 'Landing Page';
 export type DemoStatus = 'available' | 'in-development' | 'coming-soon';
 export type PlaceholderTone = 'cream' | 'coral' | 'slate' | 'mist';
 
-export interface SolutionDemo {
+export interface Demo {
   slug: string;
   title: string;
   /** Primary category. */
-  category: SolutionCategoryId;
-  /** Every category this solution is offered in. Always includes `category`. */
-  offerings: SolutionCategoryId[];
+  category: DemoCategoryId;
+  /** Every category the demo is offered in (always includes `category`). One demo, shown once per tab it belongs to. */
+  offerings: DemoCategoryId[];
   industry: string;
   description: string;
   features: string[];
   technologies: string[];
-  platforms: SolutionPlatform[];
-  /** Code-rendered preview used until a real screenshot exists. */
-  imagePlaceholder: { icon: IconName; tone: PlaceholderTone };
-  demoStatus: DemoStatus;
-  /** Real screenshot, once available. */
-  imageUrl?: string;
-  /** Interactive demo managed in the admin panel: opens /demos/<demoSlug>. */
-  demoSlug?: string;
-  /** External demo link, used when there is no `demoSlug`. */
-  demoUrl?: string;
+  platforms: DemoPlatform[];
+  /** Real screenshot URL, once there is one. */
+  image?: string;
+  /** Drawn in code until `image` exists. */
+  placeholder: { icon: IconName; tone: PlaceholderTone };
+  status: DemoStatus;
 }
 
-export interface SolutionCategory {
-  id: SolutionCategoryId;
+export interface DemoCategory {
+  id: DemoCategoryId;
   label: string;
   short: string;
   tagline: string;
   description: string;
-  platform: SolutionPlatform;
+  platform: DemoPlatform;
   icon: IconName;
   bestFor: string[];
 }
 
-export const SOLUTION_CATEGORIES: SolutionCategory[] = [
+export const DEMO_CATEGORIES: DemoCategory[] = [
   {
     id: 'landing-page',
     label: 'Landing Page Solutions',
@@ -86,11 +83,9 @@ export const DEMO_STATUS_LABEL: Record<DemoStatus, string> = {
   'coming-soon': 'Coming soon',
 };
 
-const FULL = ['full-stack'] as const;
-
-export const SOLUTIONS: SolutionDemo[] = [
+export const DEMOS: Demo[] = [
   {
-    slug: 'school-management-system',
+    slug: 'educore',
     title: 'School Management System',
     category: 'full-stack',
     offerings: ['full-stack', 'mobile-app', 'landing-page'],
@@ -99,12 +94,11 @@ export const SOLUTIONS: SolutionDemo[] = [
     features: ['Student and guardian records', 'Daily attendance with summaries', 'Fee invoicing and payment tracking', 'Timetables and class management', 'Parent and teacher portals', 'Admissions landing page with enquiry form'],
     technologies: ['Next.js', 'NestJS', 'PostgreSQL', 'React Native'],
     platforms: ['Website', 'Mobile App', 'Landing Page'],
-    imagePlaceholder: { icon: 'graduation-cap', tone: 'cream' },
-    demoStatus: 'available',
-    demoSlug: 'educore',
+    placeholder: { icon: 'graduation-cap', tone: 'cream' },
+    status: 'available',
   },
   {
-    slug: 'clinic-management-system',
+    slug: 'clinicos',
     title: 'Clinic Management System',
     category: 'full-stack',
     offerings: ['full-stack', 'mobile-app', 'landing-page'],
@@ -113,12 +107,11 @@ export const SOLUTIONS: SolutionDemo[] = [
     features: ['Appointment calendar by doctor and room', 'Patient profiles and visit history', 'Invoicing and payment tracking', 'Automated appointment reminders', 'Patient booking app', 'Clinic marketing landing page'],
     technologies: ['Next.js', 'NestJS', 'PostgreSQL', 'React Native'],
     platforms: ['Website', 'Mobile App', 'Landing Page'],
-    imagePlaceholder: { icon: 'heart-pulse', tone: 'mist' },
-    demoStatus: 'available',
-    demoSlug: 'clinicos',
+    placeholder: { icon: 'heart-pulse', tone: 'mist' },
+    status: 'available',
   },
   {
-    slug: 'restaurant-management-system',
+    slug: 'tableflow',
     title: 'Restaurant Management System',
     category: 'full-stack',
     offerings: ['full-stack', 'mobile-app', 'landing-page'],
@@ -127,12 +120,11 @@ export const SOLUTIONS: SolutionDemo[] = [
     features: ['Reservations and table management', 'Order and kitchen display flow', 'Menu and pricing management', 'Daily sales reporting', 'Guest ordering and booking app', 'Restaurant landing page with online booking'],
     technologies: ['Next.js', 'NestJS', 'PostgreSQL', 'Flutter'],
     platforms: ['Website', 'Mobile App', 'Landing Page'],
-    imagePlaceholder: { icon: 'utensils', tone: 'coral' },
-    demoStatus: 'available',
-    demoSlug: 'tableflow',
+    placeholder: { icon: 'utensils', tone: 'coral' },
+    status: 'available',
   },
   {
-    slug: 'gym-management-system',
+    slug: 'fitcore',
     title: 'Gym Management System',
     category: 'full-stack',
     offerings: ['full-stack', 'mobile-app', 'landing-page'],
@@ -141,12 +133,11 @@ export const SOLUTIONS: SolutionDemo[] = [
     features: ['Membership plans and renewals', 'Class and trainer scheduling', 'QR check-in and attendance', 'Payment tracking and reminders', 'Member progress and workout plans', 'Membership landing page'],
     technologies: ['Next.js', 'NestJS', 'PostgreSQL', 'React Native'],
     platforms: ['Website', 'Mobile App', 'Landing Page'],
-    imagePlaceholder: { icon: 'dumbbell', tone: 'slate' },
-    demoStatus: 'available',
-    demoSlug: 'fitcore',
+    placeholder: { icon: 'dumbbell', tone: 'slate' },
+    status: 'available',
   },
   {
-    slug: 'course-learning-management-system',
+    slug: 'learnova',
     title: 'Course Learning Management System',
     category: 'full-stack',
     offerings: ['full-stack', 'mobile-app', 'landing-page'],
@@ -155,23 +146,47 @@ export const SOLUTIONS: SolutionDemo[] = [
     features: ['Course builder with video and documents', 'Quizzes and assignments', 'Student progress and certificates', 'Payments and enrolment', 'Instructor and admin dashboards', 'Course sales landing page'],
     technologies: ['Next.js', 'NestJS', 'PostgreSQL', 'Redis'],
     platforms: ['Website', 'Mobile App', 'Landing Page'],
-    imagePlaceholder: { icon: 'book-open', tone: 'cream' },
-    demoStatus: 'available',
-    demoSlug: 'learnova',
+    placeholder: { icon: 'book-open', tone: 'cream' },
+    status: 'available',
   },
   {
-    slug: 'business-operations-management-system',
+    slug: 'flowdesk',
     title: 'Business Operations Management System',
     category: 'full-stack',
-    offerings: [...FULL],
+    offerings: ['full-stack'],
     industry: 'Business Operations',
     description: 'One workspace for tasks, teams, approvals, documents and reporting, so a growing business runs on a single source of truth instead of spreadsheets.',
     features: ['Task and project tracking', 'Role-based access and approvals', 'Document management', 'Customer and vendor records', 'Automated workflows and notifications', 'Management reports and dashboards'],
     technologies: ['Next.js', 'NestJS', 'PostgreSQL', 'Redis'],
     platforms: ['Website'],
-    imagePlaceholder: { icon: 'briefcase', tone: 'slate' },
-    demoStatus: 'available',
-    demoSlug: 'flowdesk',
+    placeholder: { icon: 'briefcase', tone: 'slate' },
+    status: 'available',
+  },
+  {
+    slug: 'modeva',
+    title: 'E-commerce Storefront',
+    category: 'full-stack',
+    offerings: ['full-stack', 'mobile-app', 'landing-page'],
+    industry: 'Retail & E-commerce',
+    description: 'A fast online store with catalog, cart, checkout and inventory management, plus a shopping app and campaign landing pages.',
+    features: ['Product catalog with search', 'Cart and secure checkout', 'Inventory and order management', 'Discounts and campaigns', 'Shopping mobile app', 'Campaign landing pages'],
+    technologies: ['Next.js', 'NestJS', 'PostgreSQL', 'Cloudflare', 'React Native'],
+    platforms: ['Website', 'Mobile App', 'Landing Page'],
+    placeholder: { icon: 'shopping-cart', tone: 'coral' },
+    status: 'available',
+  },
+  {
+    slug: 'assistiq',
+    title: 'AI Business Assistant',
+    category: 'full-stack',
+    offerings: ['full-stack'],
+    industry: 'AI Solutions',
+    description: 'An AI assistant that answers customer and staff questions from your own business content, with human hand-off when needed.',
+    features: ['Answers grounded in your documents', 'Website chat widget', 'Human hand-off and conversation history', 'Usage and quality analytics', 'Role-based admin console', 'Integrations with your existing tools'],
+    technologies: ['Next.js', 'NestJS', 'PostgreSQL', 'OpenAI APIs', 'AI Agents'],
+    platforms: ['Website'],
+    placeholder: { icon: 'bot', tone: 'slate' },
+    status: 'available',
   },
   {
     slug: 'waste-management-system',
@@ -183,8 +198,8 @@ export const SOLUTIONS: SolutionDemo[] = [
     features: ['Route planning and scheduling', 'Pickup requests and tracking', 'Driver mobile app with proof of collection', 'Bin and vehicle management', 'Billing and customer accounts', 'Recycling and volume reports'],
     technologies: ['React', 'Node.js', 'PostgreSQL', 'React Native'],
     platforms: ['Website', 'Mobile App'],
-    imagePlaceholder: { icon: 'wrench', tone: 'mist' },
-    demoStatus: 'coming-soon',
+    placeholder: { icon: 'wrench', tone: 'mist' },
+    status: 'coming-soon',
   },
   {
     slug: 'salon-management-system',
@@ -196,8 +211,8 @@ export const SOLUTIONS: SolutionDemo[] = [
     features: ['Online booking and calendar', 'Staff schedules and commissions', 'Service menu and packages', 'Client history and preferences', 'Reminders by SMS or email', 'Salon landing page with booking widget'],
     technologies: ['Next.js', 'NestJS', 'PostgreSQL', 'Flutter'],
     platforms: ['Website', 'Mobile App', 'Landing Page'],
-    imagePlaceholder: { icon: 'sparkles', tone: 'coral' },
-    demoStatus: 'coming-soon',
+    placeholder: { icon: 'sparkles', tone: 'coral' },
+    status: 'coming-soon',
   },
   {
     slug: 'student-attendance-system',
@@ -209,8 +224,8 @@ export const SOLUTIONS: SolutionDemo[] = [
     features: ['One-tap and QR attendance', 'Instant absence alerts to parents', 'Class, term and student reports', 'Leave requests and approvals', 'Teacher mobile app', 'Exportable records'],
     technologies: ['React', 'NestJS', 'PostgreSQL', 'React Native'],
     platforms: ['Website', 'Mobile App'],
-    imagePlaceholder: { icon: 'users', tone: 'cream' },
-    demoStatus: 'coming-soon',
+    placeholder: { icon: 'users', tone: 'cream' },
+    status: 'coming-soon',
   },
   {
     slug: 'job-finder-platform',
@@ -222,8 +237,8 @@ export const SOLUTIONS: SolutionDemo[] = [
     features: ['Job search with smart filters', 'Candidate profiles and CV upload', 'Employer posting and applicant tracking', 'Job alerts and notifications', 'Company pages', 'Admin moderation tools'],
     technologies: ['Next.js', 'NestJS', 'PostgreSQL', 'Redis', 'React Native'],
     platforms: ['Website', 'Mobile App'],
-    imagePlaceholder: { icon: 'briefcase', tone: 'mist' },
-    demoStatus: 'coming-soon',
+    placeholder: { icon: 'briefcase', tone: 'mist' },
+    status: 'coming-soon',
   },
   {
     slug: 'exercise-tracker-application',
@@ -235,8 +250,8 @@ export const SOLUTIONS: SolutionDemo[] = [
     features: ['Workout and exercise logging', 'Custom plans and routines', 'Progress charts and personal records', 'Reminders and streaks', 'Offline-friendly logging', 'App download landing page'],
     technologies: ['React Native', 'TypeScript', 'Node.js', 'PostgreSQL'],
     platforms: ['Mobile App', 'Landing Page'],
-    imagePlaceholder: { icon: 'dumbbell', tone: 'coral' },
-    demoStatus: 'coming-soon',
+    placeholder: { icon: 'dumbbell', tone: 'coral' },
+    status: 'coming-soon',
   },
   {
     slug: 'hotel-management-system',
@@ -248,8 +263,8 @@ export const SOLUTIONS: SolutionDemo[] = [
     features: ['Room inventory and availability calendar', 'Reservations and check-in/out', 'Housekeeping task board', 'Billing and invoices', 'Guest app for bookings and requests', 'Direct-booking landing page'],
     technologies: ['Next.js', 'NestJS', 'PostgreSQL', 'Flutter'],
     platforms: ['Website', 'Mobile App', 'Landing Page'],
-    imagePlaceholder: { icon: 'store', tone: 'slate' },
-    demoStatus: 'coming-soon',
+    placeholder: { icon: 'store', tone: 'slate' },
+    status: 'coming-soon',
   },
   {
     slug: 'delivery-management-platform',
@@ -261,8 +276,8 @@ export const SOLUTIONS: SolutionDemo[] = [
     features: ['Order intake and dispatch board', 'Driver app with navigation and proof of delivery', 'Live tracking and status updates', 'Zone and fee management', 'Customer notifications', 'Performance and cost reports'],
     technologies: ['React', 'NestJS', 'PostgreSQL', 'Redis', 'React Native'],
     platforms: ['Website', 'Mobile App'],
-    imagePlaceholder: { icon: 'zap', tone: 'mist' },
-    demoStatus: 'coming-soon',
+    placeholder: { icon: 'zap', tone: 'mist' },
+    status: 'coming-soon',
   },
   {
     slug: 'event-management-system',
@@ -274,8 +289,8 @@ export const SOLUTIONS: SolutionDemo[] = [
     features: ['Event creation and scheduling', 'Ticketing and registration', 'QR check-in', 'Speaker, vendor and sponsor management', 'Attendee app with agenda', 'Event landing page builder'],
     technologies: ['Next.js', 'NestJS', 'PostgreSQL', 'React Native'],
     platforms: ['Website', 'Mobile App', 'Landing Page'],
-    imagePlaceholder: { icon: 'lightbulb', tone: 'coral' },
-    demoStatus: 'coming-soon',
+    placeholder: { icon: 'lightbulb', tone: 'coral' },
+    status: 'coming-soon',
   },
   {
     slug: 'muslim-daily-life-application',
@@ -287,8 +302,8 @@ export const SOLUTIONS: SolutionDemo[] = [
     features: ['Accurate prayer times and reminders', 'Qibla direction', 'Quran reading with bookmarks', 'Daily habit and dhikr tracker', 'Calendar and key dates', 'App download landing page'],
     technologies: ['Flutter', 'Firebase', 'Node.js', 'PostgreSQL'],
     platforms: ['Mobile App', 'Landing Page'],
-    imagePlaceholder: { icon: 'book-open', tone: 'slate' },
-    demoStatus: 'coming-soon',
+    placeholder: { icon: 'book-open', tone: 'slate' },
+    status: 'coming-soon',
   },
   {
     slug: 'pet-shop-management-system',
@@ -300,8 +315,8 @@ export const SOLUTIONS: SolutionDemo[] = [
     features: ['Product and stock management', 'Point of sale and invoices', 'Pet profiles and vaccination records', 'Grooming and vet appointments', 'Customer ordering app', 'Shop landing page'],
     technologies: ['Next.js', 'NestJS', 'PostgreSQL', 'Flutter'],
     platforms: ['Website', 'Mobile App', 'Landing Page'],
-    imagePlaceholder: { icon: 'store', tone: 'cream' },
-    demoStatus: 'coming-soon',
+    placeholder: { icon: 'store', tone: 'cream' },
+    status: 'coming-soon',
   },
   {
     slug: 'online-exam-tracker',
@@ -313,8 +328,8 @@ export const SOLUTIONS: SolutionDemo[] = [
     features: ['Question bank and exam builder', 'Timed online exams with auto-grading', 'Randomised questions', 'Result analytics by student and class', 'Student mobile app', 'Anti-cheating safeguards'],
     technologies: ['Next.js', 'NestJS', 'PostgreSQL', 'Redis'],
     platforms: ['Website', 'Mobile App'],
-    imagePlaceholder: { icon: 'shield-check', tone: 'mist' },
-    demoStatus: 'coming-soon',
+    placeholder: { icon: 'shield-check', tone: 'mist' },
+    status: 'coming-soon',
   },
   {
     slug: 'pharmacy-management-system',
@@ -326,8 +341,8 @@ export const SOLUTIONS: SolutionDemo[] = [
     features: ['Inventory with batch and expiry alerts', 'Point of sale and invoicing', 'Prescription records', 'Supplier and purchase management', 'Customer reorder app', 'Pharmacy landing page'],
     technologies: ['Next.js', 'NestJS', 'PostgreSQL', 'React Native'],
     platforms: ['Website', 'Mobile App', 'Landing Page'],
-    imagePlaceholder: { icon: 'heart-pulse', tone: 'coral' },
-    demoStatus: 'coming-soon',
+    placeholder: { icon: 'heart-pulse', tone: 'coral' },
+    status: 'coming-soon',
   },
   {
     slug: 'local-store-management-system',
@@ -339,8 +354,8 @@ export const SOLUTIONS: SolutionDemo[] = [
     features: ['Product and stock tracking', 'Fast point of sale', 'Customer accounts and credit ledger', 'Supplier purchasing', 'Online ordering app', 'Store landing page'],
     technologies: ['React', 'Node.js', 'PostgreSQL', 'Flutter'],
     platforms: ['Website', 'Mobile App', 'Landing Page'],
-    imagePlaceholder: { icon: 'shopping-cart', tone: 'slate' },
-    demoStatus: 'coming-soon',
+    placeholder: { icon: 'shopping-cart', tone: 'slate' },
+    status: 'coming-soon',
   },
   {
     slug: 'building-management-system',
@@ -352,26 +367,18 @@ export const SOLUTIONS: SolutionDemo[] = [
     features: ['Unit and tenant records', 'Rent invoicing and payment tracking', 'Maintenance request tickets', 'Notices and resident messaging', 'Resident mobile app', 'Owner and manager reports'],
     technologies: ['Next.js', 'NestJS', 'PostgreSQL', 'React Native'],
     platforms: ['Website', 'Mobile App'],
-    imagePlaceholder: { icon: 'server', tone: 'mist' },
-    demoStatus: 'coming-soon',
+    placeholder: { icon: 'server', tone: 'mist' },
+    status: 'coming-soon',
   },
 ];
 
-export function getSolution(slug: string): SolutionDemo | undefined {
-  return SOLUTIONS.find((solution) => solution.slug === slug);
+
+export function getDemo(slug: string): Demo | undefined {
+  return DEMOS.find((demo) => demo.slug === slug);
 }
 
-export function getCategory(id: string): SolutionCategory | undefined {
-  return SOLUTION_CATEGORIES.find((category) => category.id === id);
+export function demosIn(category: DemoCategoryId): Demo[] {
+  return DEMOS.filter((demo) => demo.offerings.includes(category));
 }
 
-export function solutionsIn(category: SolutionCategoryId): SolutionDemo[] {
-  return SOLUTIONS.filter((solution) => solution.offerings.includes(category));
-}
-
-/** Where the "View Demo" button goes: the interactive demo when there is one, otherwise the solution's own page. */
-export function demoHref(solution: SolutionDemo): string {
-  return solution.demoUrl ?? (solution.demoSlug ? `/demos/${solution.demoSlug}` : `/demos/${solution.slug}`);
-}
-
-export const SOLUTION_SLUGS = SOLUTIONS.map((solution) => solution.slug);
+export const DEMO_SLUGS = DEMOS.map((demo) => demo.slug);

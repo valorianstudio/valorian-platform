@@ -97,15 +97,6 @@ export interface DemoCardData {
   /** First active mobile screenshot, used for the phone preview on cards. */
   screenshots?: { url: string }[];
 }
-export interface DemoListData {
-  items: DemoCardData[];
-  total: number;
-  page: number;
-  pageSize: number;
-  categories: { name: string; slug: string }[];
-  industries: { name: string; slug: string }[];
-  featured: DemoCardData[];
-}
 export interface DemoDetail extends DemoCardData, Seo {
   fullDescription: string;
   problem: string | null;
@@ -245,8 +236,6 @@ export interface HomeData extends PageBase {
   services: ServiceCard[];
   values: ValueItem[];
   steps: ProcessStepItem[];
-  technologies: TechnologyCard[];
-  demos: DemoCardData[];
 }
 export interface AboutData extends PageBase {
   faqs: FaqItem[];

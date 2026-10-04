@@ -1,4 +1,5 @@
-import { Body, Controller, Get, Header, HttpCode, Post } from '@nestjs/common';
+import { Body, Controller, Get, Header, HttpCode, Post, UseInterceptors } from '@nestjs/common';
+import { PublicCacheInterceptor } from '../common/public-cache.interceptor';
 import { ZodBodyPipe } from '../cms/zod-body.pipe';
 import { AnalyticsService } from '../analytics/analytics.service';
 import { NotificationsService } from '../mail/notifications.service';
@@ -16,6 +17,7 @@ export class PublicLeadsController {
     private readonly notifications: NotificationsService,
   ) {}
 
+  @UseInterceptors(PublicCacheInterceptor)
   @Get('leads/config')
   @Header('Cache-Control', 'public, max-age=60')
   async config() {

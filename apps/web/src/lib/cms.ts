@@ -10,7 +10,6 @@ import type {
   SeoConfig,
   EstimatorConfig,
   DemoDetail,
-  DemoListData,
   HomeData,
   NavigationData,
   SectionRow,
@@ -28,7 +27,8 @@ const API_URL = process.env.API_URL ?? 'http://localhost:4000';
 
 async function fetchContent<T>(path: string): Promise<T | null> {
   try {
-    const response = await fetch(`${API_URL}/api/content/${path}`, { next: { revalidate: 60, tags: [CMS_TAG] } });
+    // A stalled API must never hang a page: give up after 8 s and let the page show its fallback.
+    const response = await fetch(`${API_URL}/api/content/${path}`, { next: { revalidate: 300, tags: [CMS_TAG] }, signal: AbortSignal.timeout(8000) });
     return response.ok ? (unwrap(await response.json()) as T) : null;
   } catch {
     return null;
@@ -43,7 +43,6 @@ export const getSolutions = cache(() => fetchContent<SolutionsData>('solutions')
 export const getSolution = cache((slug: string) => fetchContent<SolutionDetailData>(`solutions/${encodeURIComponent(slug)}`));
 type SlugList = { slug: string; updatedAt: string }[];
 export const getSlugs = cache(() => fetchContent<{ services: SlugList; solutions: SlugList; demos: SlugList; caseStudies: SlugList; articles: SlugList }>('slugs'));
-export const getDemoList = cache((query: string) => fetchContent<DemoListData>(`demos${query ? `?${query}` : ''}`));
 export const getEstimatorConfig = cache((query: string) => fetchContent<EstimatorConfig>(`../estimator/config${query ? `?${query}` : ''}`));
 export const getLeadConfig = cache(() => fetchContent<{ responseNote: string | null }>('../leads/config'));
 export const getCaseStudies = cache((query: string) => fetchContent<CaseListData>(`case-studies${query ? `?${query}` : ''}`));

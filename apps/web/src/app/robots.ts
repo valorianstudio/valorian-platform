@@ -2,7 +2,7 @@ import type { MetadataRoute } from 'next';
 import { getSeoConfig } from '@/lib/cms';
 import { SITE_URL } from '@/lib/site';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 3600;
 
 export default async function robots(): Promise<MetadataRoute.Robots> {
   const seo = await getSeoConfig();

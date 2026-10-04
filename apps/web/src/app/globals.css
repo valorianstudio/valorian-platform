@@ -207,3 +207,24 @@ html[data-splash] .splash {
 @media (prefers-reduced-motion: reduce) {
   html[data-splash] .splash { display: none; }
 }
+
+/* Demo showcase tabs: a native radio group drives which cards are visible, with no client JavaScript. Each card lists the
+   categories it belongs to in data-tabs. Browsers without :has() simply show everything. */
+@supports selector(:has(*)) {
+  .demo-tabs [data-tabs] { display: none; }
+  .demo-tabs:has(input[value='landing-page']:checked) [data-tabs~='landing-page'],
+  .demo-tabs:has(input[value='full-stack']:checked) [data-tabs~='full-stack'],
+  .demo-tabs:has(input[value='mobile-app']:checked) [data-tabs~='mobile-app'] { display: block; }
+
+  /* Technology showcase tabs: same idea, one rule per category. */
+  .tech-tabs [data-cat] { display: none; }
+  .tech-tabs:has(input[value='all']:checked) [data-cat],
+  .tech-tabs:has(input[value='frontend']:checked) [data-cat='frontend'],
+  .tech-tabs:has(input[value='backend']:checked) [data-cat='backend'],
+  .tech-tabs:has(input[value='database']:checked) [data-cat='database'],
+  .tech-tabs:has(input[value='cloud']:checked) [data-cat='cloud'],
+  .tech-tabs:has(input[value='devops']:checked) [data-cat='devops'],
+  .tech-tabs:has(input[value='mobile']:checked) [data-cat='mobile'],
+  .tech-tabs:has(input[value='ai']:checked) [data-cat='ai'],
+  .tech-tabs:has(input[value='infrastructure']:checked) [data-cat='infrastructure'] { display: flex; }
+}

@@ -1,4 +1,5 @@
-import { Body, Controller, Get, Header, HttpCode, Post, Put, Query, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Header, HttpCode, Post, Put, Query, Req, UseGuards, UseInterceptors } from '@nestjs/common';
+import { PublicCacheInterceptor } from '../common/public-cache.interceptor';
 import { JwtService } from '@nestjs/jwt';
 import type { FastifyRequest } from 'fastify';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -23,6 +24,7 @@ export class AnalyticsController {
 
   /* ---------- public ---------- */
 
+  @UseInterceptors(PublicCacheInterceptor)
   @Get('analytics/config')
   @Header('Cache-Control', 'public, max-age=60')
   async config() {

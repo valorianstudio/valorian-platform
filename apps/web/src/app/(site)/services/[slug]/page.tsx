@@ -13,6 +13,12 @@ import { getIcon } from '@/lib/icons';
 import { getSiteSettings } from '@/lib/server-api';
 import { SERVICE_ALIASES } from '@/lib/site';
 
+// Empty list: nothing is built ahead of time, but each page is rendered on its first visit and then served from cache
+// (refreshed every 60 s, or immediately when an editor saves) instead of being rendered again for every request.
+export function generateStaticParams() {
+  return [];
+}
+
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const data = await getService(slug);

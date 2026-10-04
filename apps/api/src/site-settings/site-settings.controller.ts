@@ -1,4 +1,5 @@
-import { Body, Controller, Get, Header, Patch, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Header, Patch, Put, UseGuards, UseInterceptors } from '@nestjs/common';
+import { PublicCacheInterceptor } from '../common/public-cache.interceptor';
 import { SiteSetting } from '@prisma/client';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RequirePermission } from '../auth/permissions.decorator';
@@ -20,6 +21,7 @@ const footerSchema = z.object({
 export class SiteSettingsController {
   constructor(private readonly settings: SiteSettingsService) {}
 
+  @UseInterceptors(PublicCacheInterceptor)
   @Get('settings')
   @Header('Cache-Control', 'public, max-age=30, stale-while-revalidate=300')
   getPublic(): Promise<SiteSetting> {

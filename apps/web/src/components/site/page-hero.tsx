@@ -9,8 +9,8 @@ export function PageHero({ eyebrow, title, description, children }: { eyebrow: s
           <span aria-hidden className="h-px w-8 bg-accent/60" />
           {eyebrow}
         </p>
-        <h1 className="display max-w-3xl animate-fade-up text-balance text-4xl leading-[1.05] text-primary [animation-delay:80ms] sm:text-6xl">{title}</h1>
-        <p className="mt-6 max-w-2xl animate-fade-up text-pretty text-lg leading-relaxed text-muted [animation-delay:180ms] sm:text-xl">{description}</p>
+        <h1 className="display max-w-3xl text-balance text-4xl leading-[1.05] text-primary sm:text-6xl">{title}</h1>
+        <p className="mt-6 max-w-2xl text-pretty text-lg leading-relaxed text-muted sm:text-xl">{description}</p>
         {children && <div className="mt-8 animate-fade-up [animation-delay:280ms]">{children}</div>}
       </div>
     </section>

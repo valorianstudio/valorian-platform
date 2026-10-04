@@ -180,7 +180,3 @@ export function replaceMedia(id: string, file: File, options: UploadOptions = {}
   if (problem) return Promise.reject(new ApiError(problem, 400));
   return transfer('PUT', `/api/admin/media/${encodeURIComponent(id)}?name=${encodeURIComponent(file.name)}`, file, options);
 }
-
-export async function uploadImage(file: File, options: UploadOptions = {}): Promise<string> {
-  return (await uploadMedia(file, options)).url;
-}

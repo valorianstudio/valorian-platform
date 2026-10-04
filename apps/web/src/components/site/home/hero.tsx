@@ -130,7 +130,7 @@ export function Hero({ content }: { content: HeroContent }) {
               </span>
             )}
           </h1>
-          <p className="mt-8 max-w-xl animate-fade-up text-pretty text-lg leading-relaxed text-muted [animation-delay:380ms] sm:text-xl">{content.description}</p>
+          <p className="mt-8 max-w-xl text-pretty text-lg leading-relaxed text-muted sm:text-xl">{content.description}</p>
           <div className="mt-10 flex animate-fade-up flex-col gap-3 [animation-delay:480ms] sm:flex-row">
             <ButtonLink href={content.primaryUrl} size="lg">
               {content.primaryLabel}

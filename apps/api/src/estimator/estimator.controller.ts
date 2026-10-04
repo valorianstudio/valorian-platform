@@ -1,4 +1,5 @@
-import { Body, Controller, Get, Header, HttpCode, Post, Put, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Header, HttpCode, Post, Put, Query, UseGuards, UseInterceptors } from '@nestjs/common';
+import { PublicCacheInterceptor } from '../common/public-cache.interceptor';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RequirePermission } from '../auth/permissions.decorator';
 import { ZodBodyPipe } from '../cms/zod-body.pipe';
@@ -14,6 +15,7 @@ export class EstimatorController {
     private readonly prisma: PrismaService,
   ) {}
 
+  @UseInterceptors(PublicCacheInterceptor)
   @Get('estimator/config')
   @Header('Cache-Control', 'public, max-age=30, stale-while-revalidate=120')
   config(@Query() query: { demo?: string; type?: string; industry?: string }) {

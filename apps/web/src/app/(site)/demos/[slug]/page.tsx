@@ -4,7 +4,8 @@ import { notFound } from 'next/navigation';
 import { ArrowRight, ArrowUpRight, Calculator, Check, Lightbulb, MessageCircle, Play } from 'lucide-react';
 import { Breadcrumbs } from '@/components/site/seo';
 import { CheckList, CtaBand, TechList } from '@/components/site/blocks';
-import { DEMO_LABELS, DemoCard, DemoVisual, PlatformIndicators } from '@/components/site/demos/demo-card';
+import { DemoCard, DemoVisual, PlatformChips, demoFromApi } from '@/components/site/demos/demo-card';
+import { DemoPlaceholderPage } from '@/components/site/demos/demo-placeholder-page';
 import { LazyGallery as Gallery } from '@/components/site/lazy';
 import { PlatformTabs } from '@/components/site/demos/platform-tabs';
 import { Badge } from '@/components/ui/badge';
@@ -13,19 +14,31 @@ import { Card } from '@/components/ui/card';
 import { Section } from '@/components/ui/section';
 import { buildMetadata, getDemo } from '@/lib/cms';
 import type { DemoDetail } from '@/lib/cms-types';
-import { SolutionDetail } from '@/components/site/solutions/solution-detail';
 import { getIcon } from '@/lib/icons';
-import { getSolution as getCatalogSolution } from '@/lib/solutions-catalog';
+import { getDemo as getCatalogDemo } from '@/data/demos';
+import type { DemoPlatform } from '@/data/demos';
 import { getSiteSettings } from '@/lib/server-api';
 import { whatsappLink, whatsappMessages } from '@/lib/whatsapp';
 
 type Platform = DemoDetail['platforms'][number];
 
+const DEMO_LABELS: Record<DemoDetail['statusLabel'], string> = {
+  INTERACTIVE_CONCEPT: 'Interactive concept',
+  PROTOTYPE: 'Prototype',
+  DEMO_PRODUCT: 'Demo product',
+  PRODUCTION_EXAMPLE: 'Production example',
+};
+// Empty list: nothing is built ahead of time, but each page is rendered on its first visit and then served from cache
+// (refreshed every 60 s, or immediately when an editor saves) instead of being rendered again for every request.
+export function generateStaticParams() {
+  return [];
+}
+
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const demo = await getDemo(slug);
   if (!demo) {
-    const solution = getCatalogSolution(slug);
+    const solution = getCatalogDemo(slug);
     if (!solution) return {};
     return buildMetadata(null, { title: `${solution.title} | Demo`, description: solution.description, path: `/demos/${slug}` });
   }
@@ -142,18 +155,18 @@ function PlatformPanel({ demo, platform }: { demo: DemoDetail; platform: Platfor
   );
 }
 
-export default async function DemoDetailPage({ params, searchParams }: { params: Promise<{ slug: string }>; searchParams: Promise<{ platform?: string }> }) {
-  const [{ slug }, { platform: platformParam }] = await Promise.all([params, searchParams]);
+export default async function DemoDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
   const [demo, settings] = await Promise.all([getDemo(slug), getSiteSettings()]);
   if (!demo) {
-    const solution = getCatalogSolution(slug);
+    const solution = getCatalogDemo(slug);
     if (!solution) notFound();
-    return <SolutionDetail solution={solution} />;
+    return <DemoPlaceholderPage demo={solution} />;
   }
 
   const platforms = [...demo.platforms].sort((a) => (a.type === 'WEBSITE' ? -1 : 1));
-  const wanted = platformParam === 'mobile' ? 'MOBILE' : 'WEBSITE';
-  const initial = platforms.find((p) => p.type === wanted)?.type ?? platforms[0]?.type;
+  const initial = platforms.find((p) => p.type === 'WEBSITE')?.type ?? platforms[0]?.type;
+  const catalogEntry = getCatalogDemo(slug);
   const benefits = demo.points.filter((p) => p.type === 'BENEFIT');
   const useCases = demo.points.filter((p) => p.type === 'USE_CASE');
   const ctaUrl = !demo.ctaUrl || demo.ctaUrl === '/contact' ? `/contact?demo=${demo.slug}` : demo.ctaUrl;
@@ -177,7 +190,7 @@ export default async function DemoDetailPage({ params, searchParams }: { params:
             <h1 className="display mt-6 text-balance text-5xl leading-[1.04] text-primary sm:text-6xl">{demo.name}</h1>
             <p className="mt-4 max-w-xl text-pretty text-lg text-muted sm:text-xl">{demo.shortDescription}</p>
             <div className="mt-6">
-              <PlatformIndicators platforms={demo.platforms} />
+              <PlatformChips platforms={demo.platforms.map((platform): DemoPlatform => (platform.type === 'MOBILE' ? 'Mobile App' : 'Website'))} />
             </div>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               <ButtonLink href={ctaUrl} size="lg">
@@ -195,7 +208,8 @@ export default async function DemoDetailPage({ params, searchParams }: { params:
           </div>
           <div className="relative">
             <DemoVisual
-              demo={{ ...demo, thumbnailUrl: demo.coverImageUrl ?? demo.thumbnailUrl ?? demo.screenshots.find((shot) => shot.platform === 'WEBSITE')?.url ?? null, screenshots: demo.screenshots.filter((shot) => shot.platform === 'MOBILE') }}
+              demo={{ title: demo.name, image: demo.coverImageUrl ?? demo.thumbnailUrl ?? demo.screenshots.find((shot) => shot.platform === 'WEBSITE')?.url ?? undefined, placeholder: catalogEntry?.placeholder ?? { icon: 'layers', tone: 'cream' }, platforms: demo.platforms.map((platform): DemoPlatform => (platform.type === 'MOBILE' ? 'Mobile App' : 'Website')) }}
+              phoneImage={demo.screenshots.find((shot) => shot.platform === 'MOBILE')?.url}
               className="aspect-[16/11] w-full rounded-[1.75rem] shadow-[var(--shadow-lift)]"
             />
           </div>
@@ -298,7 +312,7 @@ export default async function DemoDetailPage({ params, searchParams }: { params:
           <ul className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
             {demo.related.map((item) => (
               <li key={item.slug}>
-                <DemoCard demo={item} />
+                <DemoCard demo={demoFromApi(item)} />
               </li>
             ))}
           </ul>

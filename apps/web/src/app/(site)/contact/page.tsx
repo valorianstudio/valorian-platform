@@ -8,7 +8,7 @@ import { Card } from '@/components/ui/card';
 import { Section } from '@/components/ui/section';
 import { buildMetadata, getDemo, getLeadConfig, getPageSeo, getService } from '@/lib/cms';
 import { getSiteSettings } from '@/lib/server-api';
-import { getSolution as getCatalogSolution } from '@/lib/solutions-catalog';
+import { getDemo as getCatalogDemo } from '@/data/demos';
 import { whatsappLink, whatsappMessages } from '@/lib/whatsapp';
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -39,7 +39,7 @@ export default async function ContactPage({ searchParams }: { searchParams: Prom
     serviceSlug ? getService(serviceSlug) : null,
   ]);
 
-  const catalog = !demo && demoSlug ? getCatalogSolution(demoSlug) : undefined;
+  const catalog = !demo && demoSlug ? getCatalogDemo(demoSlug) : undefined;
   const context: LeadContext = demo
     ? { source: 'DEMO', demo: demo.slug, demoName: demo.name, platform, backHref: `/demos/${demo.slug}`, backLabel: `Return to ${demo.name}` }
     : catalog

@@ -1,4 +1,5 @@
-import { Body, Controller, Get, Header, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Header, Put, UseGuards, UseInterceptors } from '@nestjs/common';
+import { PublicCacheInterceptor } from '../common/public-cache.interceptor';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RequirePermission } from '../auth/permissions.decorator';
 import { ZodBodyPipe } from '../cms/zod-body.pipe';
@@ -13,6 +14,7 @@ export class SeoController {
     return this.prisma.seoSettings.upsert({ where: { id: 'seo' }, update: {}, create: { id: 'seo' } });
   }
 
+  @UseInterceptors(PublicCacheInterceptor)
   @Get('seo/config')
   @Header('Cache-Control', 'public, max-age=60, stale-while-revalidate=300')
   async config() {

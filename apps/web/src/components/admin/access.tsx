@@ -23,9 +23,3 @@ export function useAccess(): Access {
   if (!access) throw new Error('useAccess must be used within AccessProvider');
   return access;
 }
-
-/** Renders children only when the admin holds one of the permissions. Backend enforcement still applies. */
-export function Can({ any, children, fallback = null }: { any: string[]; children: ReactNode; fallback?: ReactNode }) {
-  const { can } = useAccess();
-  return <>{can(...any) ? children : fallback}</>;
-}
