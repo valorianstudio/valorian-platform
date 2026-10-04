@@ -8,10 +8,11 @@ import { Button, ButtonLink } from '@/components/ui/button';
 import { Input, Select } from '@/components/ui/field';
 import { Section } from '@/components/ui/section';
 import { EmptyState } from '@/components/ui/states';
+import { SolutionsShowcase } from '@/components/site/solutions/solutions-showcase';
 import { buildMetadata, getDemoList, getPageSeo } from '@/lib/cms';
 
 export async function generateMetadata(): Promise<Metadata> {
-  return buildMetadata(await getPageSeo('DEMOS'), { title: 'Demos', description: 'Explore web and mobile product concepts and prototypes built by Valorian Studio.', path: '/demos' });
+  return buildMetadata(await getPageSeo('DEMOS'), { title: 'Solutions & Product Demos', description: 'Landing pages, full stack web applications and mobile apps for schools, clinics, restaurants, gyms, hotels and more. Explore what Valorian Studio builds.', path: '/demos' });
 }
 
 type Params = Record<string, string | string[] | undefined>;
@@ -38,8 +39,20 @@ export default async function DemosPage({ searchParams }: { searchParams: Promis
     return next.toString();
   };
 
+  const intro = (
+    <>
+      <PageHero eyebrow="Solutions & Product Demos" title="See what we build, before we build it" description="Landing pages, full stack web applications and mobile apps for real businesses. Each solution is a showcase concept, not a client project.">
+        <ButtonLink href="/contact">Start a Project</ButtonLink>
+      </PageHero>
+
+      <Section id="solutions" eyebrow="Solutions" title="Three ways we help you grow" description="Pick a category to see the systems we build for your industry. Every solution can be adapted to your business.">
+        <SolutionsShowcase filters />
+      </Section>
+    </>
+  );
   const data = await getDemoList(query({}));
-  if (!data) return <ApiUnavailable what="Demos" />;
+  // The solutions catalog is static, so it still renders when the API is down.
+  if (!data) return <>{intro}<ApiUnavailable what="Interactive prototypes" /></>;
   const href = (overrides: Record<string, string>) => `/demos${query(overrides) ? `?${query(overrides)}` : ''}`;
   const active = [
     filters.q && { label: `“${filters.q}”`, clear: href({ q: '', page: '1' }) },
@@ -51,11 +64,9 @@ export default async function DemosPage({ searchParams }: { searchParams: Promis
 
   return (
     <>
-      <PageHero eyebrow="Demos" title="Product concepts, ready to explore" description="Web and mobile experiences that show how we approach real business problems. Each is a showcase concept, not a client project.">
-        <ButtonLink href="/contact">Start a Project</ButtonLink>
-      </PageHero>
+      {intro}
 
-      <Section>
+      <Section id="prototypes" tone="surface" eyebrow="Interactive prototypes" title="Explore working concepts" description="Prototypes you can click through, with web and mobile screens for each.">
         <form action="/demos" method="get" role="search" aria-label="Filter demos" className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-[2fr_1fr_1fr_1fr_auto]">
           <div className="relative sm:col-span-2 lg:col-span-1">
             <Search className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted" aria-hidden />

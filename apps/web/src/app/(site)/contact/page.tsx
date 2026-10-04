@@ -8,6 +8,7 @@ import { Card } from '@/components/ui/card';
 import { Section } from '@/components/ui/section';
 import { buildMetadata, getDemo, getLeadConfig, getPageSeo, getService } from '@/lib/cms';
 import { getSiteSettings } from '@/lib/server-api';
+import { getSolution as getCatalogSolution } from '@/lib/solutions-catalog';
 import { whatsappLink, whatsappMessages } from '@/lib/whatsapp';
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -38,16 +39,21 @@ export default async function ContactPage({ searchParams }: { searchParams: Prom
     serviceSlug ? getService(serviceSlug) : null,
   ]);
 
+  const catalog = !demo && demoSlug ? getCatalogSolution(demoSlug) : undefined;
   const context: LeadContext = demo
     ? { source: 'DEMO', demo: demo.slug, demoName: demo.name, platform, backHref: `/demos/${demo.slug}`, backLabel: `Return to ${demo.name}` }
-    : service
+    : catalog
+      ? { source: 'DEMO', demo: catalog.slug, demoName: catalog.title, backHref: `/demos/${catalog.slug}`, backLabel: `Return to ${catalog.title}` }
+      : service
       ? { source: 'SERVICE', service: service.service.slug, serviceName: service.service.title, backHref: `/services/${service.service.slug}`, backLabel: `Return to ${service.service.title}` }
       : { source: 'CONTACT' };
 
   const platformName = platform === 'MOBILE' ? 'Mobile App' : platform === 'BOTH' ? 'Website + Mobile App' : platform === 'WEBSITE' ? 'Website' : undefined;
   const waMessage = demo
     ? whatsappMessages.demo(settings.companyName, demo.name, platformName)
-    : service
+    : catalog
+      ? whatsappMessages.demo(settings.companyName, catalog.title, platformName)
+      : service
       ? whatsappMessages.service(settings.companyName, service.service.title)
       : whatsappMessages.general(settings.companyName);
   const wa = whatsappLink(settings.whatsapp, waMessage);

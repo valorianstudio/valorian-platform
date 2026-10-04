@@ -11,11 +11,12 @@ const inter = Inter({ subsets: ['latin'], weight: ['400', '500', '600', '700'], 
 
 const KEYWORDS = [
   'software development company',
-  'web application development',
-  'SaaS development',
-  'AI solutions',
   'custom software development',
+  'SaaS development company',
+  'AI development services',
+  'web application development',
   'mobile app development',
+  'business automation software',
   'Valorian Studio',
 ];
 
@@ -23,7 +24,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const [settings, seo] = await Promise.all([getSiteSettings(), getSeoConfig()]);
   const siteName = seo?.siteName || settings.companyName;
   const template = (seo?.titleTemplate ?? '%s | {site}').replace('{site}', siteName);
-  const title = seo?.defaultTitle || `${settings.companyName} | Software Development Company`;
+  const title = seo?.defaultTitle || `Software Development Company | ${settings.companyName}`;
   const description = seo?.defaultDescription || settings.description;
   const base = seo?.canonicalBaseUrl || SITE_URL;
   const image = seo?.defaultOgImageUrl || '/brand/og.png';

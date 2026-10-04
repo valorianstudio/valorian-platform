@@ -108,7 +108,7 @@ function ProductShowcase() {
 
 export function Hero({ content }: { content: HeroContent }) {
   return (
-    <section className="relative isolate -mt-16 overflow-hidden bg-[radial-gradient(70%_60%_at_85%_10%,rgb(251_224_195/0.9),transparent),radial-gradient(50%_50%_at_0%_100%,rgb(255_187_152/0.18),transparent)] lg:-mt-[4.5rem]">
+    <section className="relative isolate -mt-(--navbar-height) overflow-hidden bg-[radial-gradient(70%_60%_at_85%_10%,rgb(251_224_195/0.9),transparent),radial-gradient(50%_50%_at_0%_100%,rgb(255_187_152/0.18),transparent)]">
       <div aria-hidden className="grain pointer-events-none absolute inset-0 -z-10" />
       <div className="mx-auto grid grid-cols-1 w-full max-w-7xl items-center gap-14 px-5 pb-20 pt-32 sm:px-8 sm:pt-36 lg:grid-cols-[1fr_1.05fr] lg:gap-10 lg:pb-28 lg:pt-44">
         <div className="min-w-0">

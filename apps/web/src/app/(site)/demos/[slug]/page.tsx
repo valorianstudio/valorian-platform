@@ -13,7 +13,9 @@ import { Card } from '@/components/ui/card';
 import { Section } from '@/components/ui/section';
 import { buildMetadata, getDemo } from '@/lib/cms';
 import type { DemoDetail } from '@/lib/cms-types';
+import { SolutionDetail } from '@/components/site/solutions/solution-detail';
 import { getIcon } from '@/lib/icons';
+import { getSolution as getCatalogSolution } from '@/lib/solutions-catalog';
 import { getSiteSettings } from '@/lib/server-api';
 import { whatsappLink, whatsappMessages } from '@/lib/whatsapp';
 
@@ -22,7 +24,11 @@ type Platform = DemoDetail['platforms'][number];
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const demo = await getDemo(slug);
-  if (!demo) return {};
+  if (!demo) {
+    const solution = getCatalogSolution(slug);
+    if (!solution) return {};
+    return buildMetadata(null, { title: `${solution.title} | Demo`, description: solution.description, path: `/demos/${slug}` });
+  }
   return buildMetadata({ ...demo, ogImageUrl: demo.ogImageUrl ?? demo.coverImageUrl }, { title: demo.name, description: demo.shortDescription, path: `/demos/${slug}` });
 }
 
@@ -139,7 +145,11 @@ function PlatformPanel({ demo, platform }: { demo: DemoDetail; platform: Platfor
 export default async function DemoDetailPage({ params, searchParams }: { params: Promise<{ slug: string }>; searchParams: Promise<{ platform?: string }> }) {
   const [{ slug }, { platform: platformParam }] = await Promise.all([params, searchParams]);
   const [demo, settings] = await Promise.all([getDemo(slug), getSiteSettings()]);
-  if (!demo) notFound();
+  if (!demo) {
+    const solution = getCatalogSolution(slug);
+    if (!solution) notFound();
+    return <SolutionDetail solution={solution} />;
+  }
 
   const platforms = [...demo.platforms].sort((a) => (a.type === 'WEBSITE' ? -1 : 1));
   const wanted = platformParam === 'mobile' ? 'MOBILE' : 'WEBSITE';
@@ -153,7 +163,7 @@ export default async function DemoDetailPage({ params, searchParams }: { params:
 
   return (
     <>
-      <section className="relative isolate -mt-16 overflow-hidden bg-[radial-gradient(60%_70%_at_90%_0%,rgb(251_224_195/0.85),transparent)] lg:-mt-[4.5rem]">
+      <section className="relative isolate -mt-(--navbar-height) overflow-hidden bg-[radial-gradient(60%_70%_at_90%_0%,rgb(251_224_195/0.85),transparent)]">
         <div aria-hidden className="grain pointer-events-none absolute inset-0 -z-10" />
         <div className="mx-auto grid grid-cols-1 w-full max-w-7xl gap-12 px-5 pb-16 pt-28 sm:px-8 sm:pb-24 sm:pt-36 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
           <div className="min-w-0">

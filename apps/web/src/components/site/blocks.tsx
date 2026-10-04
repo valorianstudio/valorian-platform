@@ -9,6 +9,8 @@ import type { CtaContent, DemoCardData, FaqItem, IntroContent, ProcessStepItem, 
 import { DemoCard } from './demos/demo-card';
 import { JsonLd } from './seo';
 import { getIcon } from '@/lib/icons';
+import { mergeTechnologies } from '@/lib/tech-catalog';
+import { TechShowcase } from './tech-showcase';
 
 export function SmartLink({ href, className, children, newTab }: { href: string; className?: string; children: ReactNode; newTab?: boolean }) {
   if (isExternal(href) || newTab) {
@@ -113,7 +115,7 @@ export function WhySection({ intro, values }: { intro: IntroContent; values: Val
   return (
     <section className="relative bg-surface py-20 sm:py-24 lg:py-32">
       <div className="mx-auto grid grid-cols-1 w-full max-w-7xl gap-12 px-5 sm:px-8 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20">
-        <div data-reveal className="lg:sticky lg:top-28 lg:self-start">
+        <div data-reveal className="lg:sticky lg:top-[calc(var(--navbar-height)+2rem)] lg:self-start">
           {intro.eyebrow && (
             <p className="mb-4 inline-flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.16em] text-accent">
               <span aria-hidden className="h-px w-8 bg-accent/60" />
@@ -199,11 +201,6 @@ export function ProcessSection({ intro, steps, tone = 'surface' }: { intro: Intr
   );
 }
 
-function monogram(name: string): string {
-  const parts = name.replace(/[^A-Za-z0-9 .+#]/g, '').split(/[\s.]+/).filter(Boolean);
-  return (parts.length > 1 ? parts[0][0] + parts[1][0] : name.slice(0, 2)).toUpperCase();
-}
-
 export function TechList({ technologies }: { technologies: TechnologyCard[] }) {
   return (
     <ul className="flex flex-wrap gap-2">
@@ -219,44 +216,11 @@ export function TechList({ technologies }: { technologies: TechnologyCard[] }) {
   );
 }
 
-const CATEGORY_LABEL: Record<string, string> = {
-  FRONTEND: 'Frontend',
-  BACKEND: 'Backend',
-  DATABASE: 'Data',
-  INFRASTRUCTURE: 'Infrastructure',
-  MOBILE: 'Mobile',
-  AI: 'AI',
-  DEVOPS: 'DevOps',
-};
-const CATEGORY_ORDER = ['FRONTEND', 'BACKEND', 'DATABASE', 'MOBILE', 'AI', 'INFRASTRUCTURE', 'DEVOPS'];
-
-/** Technology as quiet credibility: one ruled row per discipline, restrained marks and names. */
+/** Technology ecosystem: searchable, filterable cards with a plain-language explanation for every tool. */
 export function TechSection({ intro, technologies }: { intro: IntroContent; technologies: TechnologyCard[] }) {
-  if (technologies.length === 0) return null;
-  const groups = Object.entries(Object.groupBy(technologies, (tech) => tech.category)).sort(([a], [b]) => (CATEGORY_ORDER.indexOf(a) + 100) % 100 - (CATEGORY_ORDER.indexOf(b) + 100) % 100);
   return (
-    <Section tone="surface" eyebrow={intro.eyebrow ?? undefined} title={intro.title} description={intro.subtitle ?? undefined}>
-      <div className="border-b border-[rgb(52_70_72/0.2)]">
-        {groups.map(([category, items], groupIndex) => (
-          <div key={category} data-reveal style={{ ['--i' as string]: groupIndex % 3 }} className="grid grid-cols-1 gap-4 border-t border-[rgb(52_70_72/0.2)] py-6 md:grid-cols-[12rem_1fr] md:gap-8">
-            <h3 className="display text-xl text-primary">{CATEGORY_LABEL[category] ?? category}</h3>
-            <ul className="flex flex-wrap gap-x-7 gap-y-3">
-              {(items ?? []).map((tech) => (
-                <li key={tech.id} className="inline-flex items-center gap-2.5 text-[15px] font-medium text-primary">
-                  {tech.logoUrl && /^https?:/i.test(tech.logoUrl) ? (
-                    <SmartImage src={tech.logoUrl} alt="" width={20} height={20} sizes="20px" className="size-5 object-contain" />
-                  ) : (
-                    <span aria-hidden className="grid size-6 place-items-center rounded-md bg-primary text-[9px] font-semibold text-primary-foreground">
-                      {monogram(tech.name)}
-                    </span>
-                  )}
-                  {tech.name}
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
-      </div>
+    <Section id="technology" tone="surface" eyebrow={intro.eyebrow ?? undefined} title={intro.title} description={intro.subtitle ?? undefined}>
+      <TechShowcase technologies={mergeTechnologies(technologies)} />
     </Section>
   );
 }

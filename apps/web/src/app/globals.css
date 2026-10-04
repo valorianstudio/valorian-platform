@@ -34,9 +34,16 @@
   --shadow-lift: 0 2px 4px rgb(52 70 72 / 0.06), 0 22px 44px -18px rgb(52 70 72 / 0.3);
   --shadow-float: 0 30px 60px -24px rgb(52 70 72 / 0.38), 0 8px 20px -10px rgb(52 70 72 / 0.18);
 
+  /* Height of the fixed site header. Page offset, hero overlap, mobile menu and anchor scrolling all read this. */
+  --navbar-height: 4rem;
+
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   --t-fast: 180ms;
   --t-base: 240ms;
+}
+
+@media (min-width: 1024px) {
+  :root { --navbar-height: 4.5rem; }
 }
 
 @theme inline {
@@ -108,7 +115,7 @@
 @layer base {
   html {
     scroll-behavior: smooth;
-    scroll-padding-top: 5.5rem;
+    scroll-padding-top: calc(var(--navbar-height) + 1rem);
     -webkit-text-size-adjust: 100%;
     background: var(--background);
   }

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
+import { notFound, permanentRedirect } from 'next/navigation';
 import { ArrowRight, Calculator } from 'lucide-react';
 import { CaseStudiesSection, InsightsSection, TestimonialsSection } from '@/components/site/editorial';
 import { Breadcrumbs, JsonLd } from '@/components/site/seo';
@@ -11,6 +11,7 @@ import { Section } from '@/components/ui/section';
 import { buildMetadata, getService } from '@/lib/cms';
 import { getIcon } from '@/lib/icons';
 import { getSiteSettings } from '@/lib/server-api';
+import { SERVICE_ALIASES } from '@/lib/site';
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
@@ -23,7 +24,11 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 export default async function ServiceDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const [data, settings] = await Promise.all([getService(slug), getSiteSettings()]);
-  if (!data) notFound();
+  if (!data) {
+    const target = SERVICE_ALIASES[slug];
+    if (target) permanentRedirect(`/services/${target}`);
+    notFound();
+  }
   const { service, steps, faqs, related, cta, caseStudies, testimonials, articles } = data;
   const Icon = getIcon(service.icon);
   const ctaLabel = service.ctaLabel ?? cta?.label ?? 'Start a Project';

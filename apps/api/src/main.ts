@@ -2,6 +2,7 @@ import 'reflect-metadata';
 import { Logger, RequestMethod, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
+import fastifyCompress from '@fastify/compress';
 import fastifyCookie from '@fastify/cookie';
 import fastifyHelmet from '@fastify/helmet';
 import fastifyRateLimit from '@fastify/rate-limit';
@@ -90,6 +91,9 @@ async function bootstrap(): Promise<void> {
   fastify.addHook('onSend', async (request, reply) => {
     if (request.url.startsWith('/api/admin') || request.url.startsWith('/api/client')) void reply.header('Cache-Control', 'no-store');
   });
+
+  // Registered after the envelope hook above, so responses are wrapped first and compressed last.
+  await fastify.register(fastifyCompress, { global: true, threshold: 1024, encodings: ['br', 'gzip', 'deflate'] });
 
   await app.listen(env.PORT, '0.0.0.0');
   new Logger('Bootstrap').log(`API ${env.APP_VERSION} listening on port ${env.PORT} (${env.NODE_ENV})`);

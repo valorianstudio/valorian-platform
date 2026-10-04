@@ -24,7 +24,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
         <AnalyticsGate />
       </Suspense>
       <SiteHeader brandName={settings.brandName} items={headerItems} cta={navigation.cta} />
-      <main id="main" className="min-h-[70vh] pt-16 lg:pt-[4.5rem]">
+      <main id="main" className="min-h-[70vh] pt-(--navbar-height)">
         {settings.maintenanceMode ? (
           <div className="mx-auto flex max-w-xl flex-col items-center px-5 py-32 text-center">
             <span className="grid size-12 place-items-center rounded-full bg-primary-soft text-primary">

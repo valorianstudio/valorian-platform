@@ -5,13 +5,14 @@ import { CapabilitySection, CtaBand, DemoSection, ProcessSection, TechSection, W
 import { CaseStudiesSection, InsightsSection, TestimonialsSection } from '@/components/site/editorial';
 import { CapabilityBar } from '@/components/site/home/capability-bar';
 import { Hero } from '@/components/site/home/hero';
+import { SolutionsSection } from '@/components/site/solutions/solutions-section';
 import { buildMetadata, findSection, getHome } from '@/lib/cms';
 import type { CtaContent, HeroContent, HomeData, IntroContent } from '@/lib/cms-types';
 import { getSiteSettings } from '@/lib/server-api';
 
 export async function generateMetadata(): Promise<Metadata> {
   const [home, settings] = await Promise.all([getHome(), getSiteSettings()]);
-  return buildMetadata(home?.seo, { title: `${settings.companyName} | Software Development Company`, description: settings.description, path: '/' });
+  return buildMetadata(home?.seo, { title: `Software Development Company | ${settings.companyName}`, description: settings.description, path: '/' });
 }
 
 function renderSection(key: string, home: HomeData) {
@@ -54,6 +55,7 @@ export default async function HomePage() {
         <SectionBoundary key={section.key}>
           {renderSection(section.key, home)}
           {section.key === 'hero' && <CapabilityBar />}
+          {section.key === 'capabilities' && <SolutionsSection />}
         </SectionBoundary>
       ))}
     </>
