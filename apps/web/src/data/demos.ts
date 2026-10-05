@@ -1,5 +1,6 @@
 import type { IconName } from '@/lib/icon-names';
 import { CLINIC_DEMO, CLINIC_EXPERIENCES } from './clinic/meta';
+import { COURSE_DEMO, COURSE_EXPERIENCES } from './course/meta';
 import { GYM_DEMO, GYM_EXPERIENCES } from './gym/meta';
 import { RESTAURANT_DEMO, RESTAURANT_EXPERIENCES } from './restaurant/meta';
 import { SCHOOL_DEMO, SCHOOL_EXPERIENCES } from './school/meta';
@@ -163,8 +164,12 @@ export const DEMOS: Demo[] = [
     status: 'available',
   },
   {
-    slug: 'learnova',
-    title: 'Course Learning Management System',
+    slug: COURSE_DEMO.slug,
+    aliases: ['learnova'],
+    experiences: { 'Landing Page': COURSE_EXPERIENCES[0].href, Website: COURSE_EXPERIENCES[1].href, 'Mobile App': COURSE_EXPERIENCES[2].href },
+    title: COURSE_DEMO.title,
+    image: '/demos/course-learning-dashboard.webp',
+    phoneImage: '/demos/course-learning-phone.webp',
     category: 'full-stack',
     offerings: ['full-stack', 'mobile-app', 'landing-page'],
     industry: 'EdTech',

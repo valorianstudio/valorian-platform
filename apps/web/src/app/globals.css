@@ -102,6 +102,15 @@
   --color-gym-orange-ink: #c2410c;
 }
 
+/* Course LMS demo palette: deep indigo, blue, emerald and soft orange. */
+@theme {
+  --color-course: #4338ca;
+  --color-course-blue: #2563eb;
+  --color-course-emerald: #10b981;
+  --color-course-amber: #f59e0b;
+  --color-course-amber-ink: #b45309;
+}
+
 @keyframes fade-up {
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
