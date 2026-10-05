@@ -67,6 +67,7 @@ const config: NextConfig = {
       { source: '/demos/modeva', destination: '/demos/clothing-ecommerce', permanent: true },
       { source: '/demos/hotel-management-system', destination: '/demos/hotel-management', permanent: true },
       { source: '/demos/delivery-management-platform', destination: '/demos/bike-delivery', permanent: true },
+      { source: '/demos/pet-shop-management-system', destination: '/demos/petshop-management', permanent: true },
     ];
   },
   async rewrites() {

@@ -133,6 +133,15 @@
   --color-delivery-orange: #f97316;
 }
 
+/* Pet shop palette: deep green, soft blue, warm orange, soft beige and surface. */
+@theme {
+  --color-petshop-green: #166534;
+  --color-petshop-blue: #2563eb;
+  --color-petshop-orange: #f97316;
+  --color-petshop-beige: #fef3c7;
+  --color-petshop-surface: #f8fafc;
+}
+
 @keyframes fade-up {
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }

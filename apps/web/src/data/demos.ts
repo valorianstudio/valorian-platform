@@ -2,6 +2,7 @@ import type { IconName } from '@/lib/icon-names';
 import { CLINIC_DEMO, CLINIC_EXPERIENCES } from './clinic/meta';
 import { CLOTHING_DEMO, CLOTHING_EXPERIENCES } from './clothing/meta';
 import { DELIVERY_DEMO, DELIVERY_EXPERIENCES } from './delivery/meta';
+import { PETSHOP_DEMO, PETSHOP_EXPERIENCES } from './petshop/meta';
 import { HOTEL_DEMO, HOTEL_EXPERIENCES } from './hotel/meta';
 import { COURSE_DEMO, COURSE_EXPERIENCES } from './course/meta';
 import { GYM_DEMO, GYM_EXPERIENCES } from './gym/meta';
@@ -352,12 +353,16 @@ export const DEMOS: Demo[] = [
     status: 'coming-soon',
   },
   {
-    slug: 'pet-shop-management-system',
-    title: 'Pet Shop Management System',
+    slug: PETSHOP_DEMO.slug,
+    aliases: ['pet-shop-management-system'],
+    experiences: { 'Landing Page': PETSHOP_EXPERIENCES[0].href, Website: PETSHOP_EXPERIENCES[1].href, 'Mobile App': PETSHOP_EXPERIENCES[2].href },
+    title: PETSHOP_DEMO.title,
+    image: '/demos/petshop-management-dashboard.webp',
+    phoneImage: '/demos/petshop-management-phone.webp',
     category: 'full-stack',
     offerings: ['full-stack', 'mobile-app', 'landing-page'],
-    industry: 'Retail',
-    description: 'Inventory, sales, pet profiles and appointments for pet shops and grooming services, with an ordering app and a storefront landing page.',
+    industry: 'Pet Care & Retail',
+    description: 'Pets, products, grooming and vet appointments, stock and orders for pet shops, with a customer app and a pet care landing page.',
     features: ['Product and stock management', 'Point of sale and invoices', 'Pet profiles and vaccination records', 'Grooming and vet appointments', 'Customer ordering app', 'Shop landing page'],
     technologies: ['Next.js', 'NestJS', 'PostgreSQL', 'Flutter'],
     platforms: ['Website', 'Mobile App', 'Landing Page'],
