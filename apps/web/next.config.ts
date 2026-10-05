@@ -57,7 +57,7 @@ const config: NextConfig = {
     minimumCacheTTL: 60 * 60 * 24 * 30,
   },
   async redirects() {
-    // Demos that moved to a new slug (educore, clinicos, tableflow, fitcore, learnova, modeva, hotel-management-system). One page per demo: the old address sends visitors (and search engines) to the new one.
+    // Demos that moved to a new slug (educore, clinicos, tableflow, fitcore, learnova, modeva, hotel-management-system, delivery-management-platform). One page per demo: the old address sends visitors (and search engines) to the new one.
     return [
       { source: '/demos/educore', destination: '/demos/school-management', permanent: true },
       { source: '/demos/clinicos', destination: '/demos/clinic-management', permanent: true },
@@ -66,6 +66,7 @@ const config: NextConfig = {
       { source: '/demos/learnova', destination: '/demos/course-learning', permanent: true },
       { source: '/demos/modeva', destination: '/demos/clothing-ecommerce', permanent: true },
       { source: '/demos/hotel-management-system', destination: '/demos/hotel-management', permanent: true },
+      { source: '/demos/delivery-management-platform', destination: '/demos/bike-delivery', permanent: true },
     ];
   },
   async rewrites() {

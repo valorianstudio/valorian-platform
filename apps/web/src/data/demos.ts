@@ -1,6 +1,7 @@
 import type { IconName } from '@/lib/icon-names';
 import { CLINIC_DEMO, CLINIC_EXPERIENCES } from './clinic/meta';
 import { CLOTHING_DEMO, CLOTHING_EXPERIENCES } from './clothing/meta';
+import { DELIVERY_DEMO, DELIVERY_EXPERIENCES } from './delivery/meta';
 import { HOTEL_DEMO, HOTEL_EXPERIENCES } from './hotel/meta';
 import { COURSE_DEMO, COURSE_EXPERIENCES } from './course/meta';
 import { GYM_DEMO, GYM_EXPERIENCES } from './gym/meta';
@@ -308,11 +309,15 @@ export const DEMOS: Demo[] = [
     status: 'coming-soon',
   },
   {
-    slug: 'delivery-management-platform',
-    title: 'Delivery Management Platform',
+    slug: DELIVERY_DEMO.slug,
+    aliases: ['delivery-management-platform'],
+    experiences: { 'Landing Page': DELIVERY_EXPERIENCES[0].href, Website: DELIVERY_EXPERIENCES[1].href, 'Mobile App': DELIVERY_EXPERIENCES[2].href },
+    title: DELIVERY_DEMO.title,
+    image: '/demos/bike-delivery-dashboard.webp',
+    phoneImage: '/demos/bike-delivery-phone.webp',
     category: 'full-stack',
-    offerings: ['full-stack', 'mobile-app'],
-    industry: 'Logistics',
+    offerings: ['full-stack', 'mobile-app', 'landing-page'],
+    industry: 'Logistics & Delivery',
     description: 'Dispatch, track and prove deliveries across fleets and couriers, with live status for customers and a driver app.',
     features: ['Order intake and dispatch board', 'Driver app with navigation and proof of delivery', 'Live tracking and status updates', 'Zone and fee management', 'Customer notifications', 'Performance and cost reports'],
     technologies: ['React', 'NestJS', 'PostgreSQL', 'Redis', 'React Native'],

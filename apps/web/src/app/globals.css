@@ -126,6 +126,13 @@
   --color-hotel-beige: #f5f1eb;
 }
 
+/* Delivery palette: deep blue, dark navy, orange and green. */
+@theme {
+  --color-delivery-blue: #1d4ed8;
+  --color-delivery-navy: #0f172a;
+  --color-delivery-orange: #f97316;
+}
+
 @keyframes fade-up {
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
