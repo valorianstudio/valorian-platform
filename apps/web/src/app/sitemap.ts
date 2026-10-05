@@ -27,24 +27,28 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [slugs, seo] = await Promise.all([getSlugs(), getSeoConfig()]);
   if (seo?.allowIndexing === false) return [];
   const base = seo?.canonicalBaseUrl || SITE_URL;
-  const dynamicRoutes = [
-    ...(slugs?.services ?? []).map((item) => ({ path: `/services/${item.slug}`, updatedAt: item.updatedAt })),
-    ...SHOWCASE_DEMOS.map((demo) => demo.slug).filter((slug) => !(slugs?.demos ?? []).some((demo) => demo.slug === slug)).map((slug) => ({ path: `/demos/${slug}`, updatedAt: SOLUTIONS_UPDATED })),
-    ...(slugs?.solutions ?? []).map((item) => ({ path: `/solutions/${item.slug}`, updatedAt: item.updatedAt })),
-    ...(slugs?.demos ?? []).filter((item) => !aliases.has(item.slug)).map((item) => ({ path: `/demos/${item.slug}`, updatedAt: item.updatedAt })),
-    ...[...SCHOOL_EXPERIENCES, ...CLINIC_EXPERIENCES, ...RESTAURANT_EXPERIENCES, ...GYM_EXPERIENCES, ...COURSE_EXPERIENCES, ...CLOTHING_EXPERIENCES, ...HOTEL_EXPERIENCES, ...DELIVERY_EXPERIENCES, ...PETSHOP_EXPERIENCES, ...PHARMACY_EXPERIENCES, ...PROPERTY_EXPERIENCES].map((experience) => ({ path: experience.href, updatedAt: SOLUTIONS_UPDATED })),
-    ...(slugs?.caseStudies ?? []).map((item) => ({ path: `/case-studies/${item.slug}`, updatedAt: item.updatedAt })),
-    ...(slugs?.articles ?? []).map((item) => ({ path: `/insights/${item.slug}`, updatedAt: item.updatedAt })),
+  // Priorities follow how much each page sells: services first, then demos and solutions, then case studies and articles.
+  const dynamicRoutes: { path: string; updatedAt: string; priority: number }[] = [
+    ...(slugs?.services ?? []).map((item) => ({ path: `/services/${item.slug}`, updatedAt: item.updatedAt, priority: 0.9 })),
+    ...SHOWCASE_DEMOS.map((demo) => demo.slug).filter((slug) => !(slugs?.demos ?? []).some((demo) => demo.slug === slug)).map((slug) => ({ path: `/demos/${slug}`, updatedAt: SOLUTIONS_UPDATED, priority: 0.7 })),
+    ...(slugs?.solutions ?? []).map((item) => ({ path: `/solutions/${item.slug}`, updatedAt: item.updatedAt, priority: 0.7 })),
+    ...(slugs?.demos ?? []).filter((item) => !aliases.has(item.slug)).map((item) => ({ path: `/demos/${item.slug}`, updatedAt: item.updatedAt, priority: 0.7 })),
+    ...[...SCHOOL_EXPERIENCES, ...CLINIC_EXPERIENCES, ...RESTAURANT_EXPERIENCES, ...GYM_EXPERIENCES, ...COURSE_EXPERIENCES, ...CLOTHING_EXPERIENCES, ...HOTEL_EXPERIENCES, ...DELIVERY_EXPERIENCES, ...PETSHOP_EXPERIENCES, ...PHARMACY_EXPERIENCES, ...PROPERTY_EXPERIENCES].map((experience) => ({ path: experience.href, updatedAt: SOLUTIONS_UPDATED, priority: 0.7 })),
+    ...(slugs?.caseStudies ?? []).map((item) => ({ path: `/case-studies/${item.slug}`, updatedAt: item.updatedAt, priority: 0.7 })),
+    ...(slugs?.articles ?? []).map((item) => ({ path: `/insights/${item.slug}`, updatedAt: item.updatedAt, priority: 0.6 })),
   ];
   const hasCaseStudies = (slugs?.caseStudies.length ?? 0) > 0;
   const hasArticles = (slugs?.articles.length ?? 0) > 0;
+  const staticPriority: Record<string, number> = { '/services': 0.9, '/solutions': 0.8, '/demos': 0.8, '/estimate': 0.7, '/case-studies': 0.7, '/insights': 0.6, '/about': 0.6, '/contact': 0.6, '/privacy': 0.3, '/terms': 0.3 };
+  const now = new Date();
 
   return [
     ...PUBLIC_ROUTES.filter((route) => (route !== '/case-studies' || hasCaseStudies) && (route !== '/insights' || hasArticles)).map((route) => ({
       url: `${base}${route === '/' ? '' : route}`,
+      lastModified: now,
       changeFrequency: route === '/' ? ('weekly' as const) : ('monthly' as const),
-      priority: route === '/' ? 1 : 0.7,
+      priority: route === '/' ? 1 : (staticPriority[route] ?? 0.5),
     })),
-    ...dynamicRoutes.map((item) => ({ url: `${base}${item.path}`, lastModified: new Date(item.updatedAt), changeFrequency: 'monthly' as const, priority: 0.6 })),
+    ...dynamicRoutes.map((item) => ({ url: `${base}${item.path}`, lastModified: new Date(item.updatedAt), changeFrequency: 'monthly' as const, priority: item.priority })),
   ];
 }
