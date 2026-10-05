@@ -7,6 +7,9 @@ import type { CalculateInput } from './estimator-schemas';
 /** Estimates are always quoted in US dollars. Stored submissions keep whatever currency they were created with. */
 const PUBLIC_CURRENCY: EstimatorCurrency = 'USD';
 
+/** Temporary: every estimate is quoted at half the configured prices. Set back to 1 to restore the full prices. */
+const PRICE_FACTOR = 0.5;
+
 type Platform = FeaturePlatform;
 interface Priced {
   websitePrice: number | null;
@@ -121,14 +124,15 @@ export class EstimatorService {
     const priced = <T extends Priced>(items: T[]) =>
       items.flatMap((item) => {
         const value = priceFor(item, platform, settings.bothDiscountPercent);
-        return value === null ? [] : [{ item, value }];
+        return value === null ? [] : [{ item, value: Math.round(value * PRICE_FACTOR) }];
       });
     const featureLines = priced(features);
     const integrationLines = priced(integrations);
 
     const featureTotal = featureLines.reduce((sum, line) => sum + line.value, 0);
     const integrationTotal = integrationLines.reduce((sum, line) => sum + line.value, 0);
-    const subtotal = type.basePrice + featureTotal + integrationTotal;
+    const basePrice = Math.round(type.basePrice * PRICE_FACTOR);
+    const subtotal = basePrice + featureTotal + integrationTotal;
     const total = subtotal * complexity.multiplier * scale.multiplier * urgency.multiplier;
 
     const step = settings.roundingStep;
@@ -160,7 +164,7 @@ export class EstimatorService {
         weeksMax,
         breakdown: {
           snapshot: {
-            projectType: { name: type.name, basePrice: type.basePrice },
+            projectType: { name: type.name, basePrice },
             features: featureLines.map((l) => ({ id: l.item.id, name: l.item.name, category: l.item.category?.name ?? null, price: l.value })),
             integrations: integrationLines.map((l) => ({ id: l.item.id, name: l.item.name, price: l.value })),
             complexity: { name: complexity.name, multiplier: complexity.multiplier },
@@ -168,7 +172,7 @@ export class EstimatorService {
             urgency: { label: urgency.label, multiplier: urgency.multiplier },
             range: { lowPercent: settings.rangeLowPercent, highPercent: settings.rangeHighPercent, step },
           },
-          base: type.basePrice,
+          base: basePrice,
           features: featureTotal,
           integrations: integrationTotal,
           subtotal,
