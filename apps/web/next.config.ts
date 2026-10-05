@@ -68,6 +68,8 @@ const config: NextConfig = {
       { source: '/demos/hotel-management-system', destination: '/demos/hotel-management', permanent: true },
       { source: '/demos/delivery-management-platform', destination: '/demos/bike-delivery', permanent: true },
       { source: '/demos/pet-shop-management-system', destination: '/demos/petshop-management', permanent: true },
+      { source: '/demos/pharmacy-management-system', destination: '/demos/pharmacy-management', permanent: true },
+      { source: '/demos/building-management-system', destination: '/demos/property-management', permanent: true },
     ];
   },
   async rewrites() {

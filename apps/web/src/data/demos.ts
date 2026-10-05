@@ -3,6 +3,8 @@ import { CLINIC_DEMO, CLINIC_EXPERIENCES } from './clinic/meta';
 import { CLOTHING_DEMO, CLOTHING_EXPERIENCES } from './clothing/meta';
 import { DELIVERY_DEMO, DELIVERY_EXPERIENCES } from './delivery/meta';
 import { PETSHOP_DEMO, PETSHOP_EXPERIENCES } from './petshop/meta';
+import { PHARMACY_DEMO, PHARMACY_EXPERIENCES } from './pharmacy/meta';
+import { PROPERTY_DEMO, PROPERTY_EXPERIENCES } from './property/meta';
 import { HOTEL_DEMO, HOTEL_EXPERIENCES } from './hotel/meta';
 import { COURSE_DEMO, COURSE_EXPERIENCES } from './course/meta';
 import { GYM_DEMO, GYM_EXPERIENCES } from './gym/meta';
@@ -367,7 +369,7 @@ export const DEMOS: Demo[] = [
     technologies: ['Next.js', 'NestJS', 'PostgreSQL', 'Flutter'],
     platforms: ['Website', 'Mobile App', 'Landing Page'],
     placeholder: { icon: 'store', tone: 'cream' },
-    status: 'coming-soon',
+    status: 'available',
   },
   {
     slug: 'online-exam-tracker',
@@ -383,8 +385,12 @@ export const DEMOS: Demo[] = [
     status: 'coming-soon',
   },
   {
-    slug: 'pharmacy-management-system',
-    title: 'Pharmacy Management System',
+    slug: PHARMACY_DEMO.slug,
+    aliases: ['pharmacy-management-system'],
+    experiences: { 'Landing Page': PHARMACY_EXPERIENCES[0].href, Website: PHARMACY_EXPERIENCES[1].href, 'Mobile App': PHARMACY_EXPERIENCES[2].href },
+    title: PHARMACY_DEMO.title,
+    image: '/demos/pharmacy-management-dashboard.webp',
+    phoneImage: '/demos/pharmacy-management-phone.webp',
     category: 'full-stack',
     offerings: ['full-stack', 'mobile-app', 'landing-page'],
     industry: 'Healthcare',
@@ -393,7 +399,7 @@ export const DEMOS: Demo[] = [
     technologies: ['Next.js', 'NestJS', 'PostgreSQL', 'React Native'],
     platforms: ['Website', 'Mobile App', 'Landing Page'],
     placeholder: { icon: 'heart-pulse', tone: 'coral' },
-    status: 'coming-soon',
+    status: 'available',
   },
   {
     slug: 'local-store-management-system',
@@ -409,17 +415,21 @@ export const DEMOS: Demo[] = [
     status: 'coming-soon',
   },
   {
-    slug: 'building-management-system',
-    title: 'House & Building Management System',
+    slug: PROPERTY_DEMO.slug,
+    aliases: ['building-management-system'],
+    experiences: { 'Landing Page': PROPERTY_EXPERIENCES[0].href, Website: PROPERTY_EXPERIENCES[1].href, 'Mobile App': PROPERTY_EXPERIENCES[2].href },
+    title: PROPERTY_DEMO.title,
+    image: '/demos/property-management-dashboard.webp',
+    phoneImage: '/demos/property-management-phone.webp',
     category: 'full-stack',
-    offerings: ['full-stack', 'mobile-app'],
+    offerings: ['full-stack', 'mobile-app', 'landing-page'],
     industry: 'Real Estate & Property',
     description: 'Manage tenants, rent, maintenance requests and shared services for apartment buildings, landlords and property managers, with a resident app.',
     features: ['Unit and tenant records', 'Rent invoicing and payment tracking', 'Maintenance request tickets', 'Notices and resident messaging', 'Resident mobile app', 'Owner and manager reports'],
     technologies: ['Next.js', 'NestJS', 'PostgreSQL', 'React Native'],
-    platforms: ['Website', 'Mobile App'],
+    platforms: ['Website', 'Mobile App', 'Landing Page'],
     placeholder: { icon: 'server', tone: 'mist' },
-    status: 'coming-soon',
+    status: 'available',
   },
 ];
 

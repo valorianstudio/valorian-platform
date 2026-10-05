@@ -142,6 +142,24 @@
   --color-petshop-surface: #f8fafc;
 }
 
+/* Pharmacy palette: medical blue, healthcare teal, green, soft cyan and surface. */
+@theme {
+  --color-pharmacy-blue: #0f4c81;
+  --color-pharmacy-teal: #0f766e;
+  --color-pharmacy-green: #16a34a;
+  --color-pharmacy-cyan: #06b6d4;
+  --color-pharmacy-surface: #f8fafc;
+}
+
+/* Property palette: deep navy, slate blue, emerald, warm gold and surface. */
+@theme {
+  --color-property-navy: #0f172a;
+  --color-property-slate: #334155;
+  --color-property-emerald: #10b981;
+  --color-property-gold: #d4af37;
+  --color-property-surface: #f8fafc;
+}
+
 @keyframes fade-up {
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }

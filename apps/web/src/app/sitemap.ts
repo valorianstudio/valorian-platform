@@ -6,6 +6,8 @@ import { CLINIC_EXPERIENCES } from '@/data/clinic/meta';
 import { CLOTHING_EXPERIENCES } from '@/data/clothing/meta';
 import { DELIVERY_EXPERIENCES } from '@/data/delivery/meta';
 import { PETSHOP_EXPERIENCES } from '@/data/petshop/meta';
+import { PHARMACY_EXPERIENCES } from '@/data/pharmacy/meta';
+import { PROPERTY_EXPERIENCES } from '@/data/property/meta';
 import { HOTEL_EXPERIENCES } from '@/data/hotel/meta';
 import { COURSE_EXPERIENCES } from '@/data/course/meta';
 import { GYM_EXPERIENCES } from '@/data/gym/meta';
@@ -30,7 +32,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...DEMO_SLUGS.filter((slug) => !(slugs?.demos ?? []).some((demo) => demo.slug === slug)).map((slug) => ({ path: `/demos/${slug}`, updatedAt: SOLUTIONS_UPDATED })),
     ...(slugs?.solutions ?? []).map((item) => ({ path: `/solutions/${item.slug}`, updatedAt: item.updatedAt })),
     ...(slugs?.demos ?? []).filter((item) => !aliases.has(item.slug)).map((item) => ({ path: `/demos/${item.slug}`, updatedAt: item.updatedAt })),
-    ...[...SCHOOL_EXPERIENCES, ...CLINIC_EXPERIENCES, ...RESTAURANT_EXPERIENCES, ...GYM_EXPERIENCES, ...COURSE_EXPERIENCES, ...CLOTHING_EXPERIENCES, ...HOTEL_EXPERIENCES, ...DELIVERY_EXPERIENCES, ...PETSHOP_EXPERIENCES].map((experience) => ({ path: experience.href, updatedAt: SOLUTIONS_UPDATED })),
+    ...[...SCHOOL_EXPERIENCES, ...CLINIC_EXPERIENCES, ...RESTAURANT_EXPERIENCES, ...GYM_EXPERIENCES, ...COURSE_EXPERIENCES, ...CLOTHING_EXPERIENCES, ...HOTEL_EXPERIENCES, ...DELIVERY_EXPERIENCES, ...PETSHOP_EXPERIENCES, ...PHARMACY_EXPERIENCES, ...PROPERTY_EXPERIENCES].map((experience) => ({ path: experience.href, updatedAt: SOLUTIONS_UPDATED })),
     ...(slugs?.caseStudies ?? []).map((item) => ({ path: `/case-studies/${item.slug}`, updatedAt: item.updatedAt })),
     ...(slugs?.articles ?? []).map((item) => ({ path: `/insights/${item.slug}`, updatedAt: item.updatedAt })),
   ];
