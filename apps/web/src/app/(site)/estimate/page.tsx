@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { PageHero } from '@/components/site/page-hero';
 import { LazyEstimatorWizard as EstimatorWizard } from '@/components/site/lazy';
 import { ButtonLink } from '@/components/ui/button';
+import { PaymentProcess, PricingPackages } from '@/components/site/estimator/pricing-packages';
 import { buildMetadata, getEstimatorConfig, getLeadConfig, getPageSeo } from '@/lib/cms';
 import { getSiteSettings } from '@/lib/server-api';
 
@@ -26,16 +27,22 @@ export default async function EstimatePage({ searchParams }: { searchParams: Pro
   return (
     <>
       <PageHero eyebrow="Estimator" title="Estimate your project" description="Answer a few quick questions and get an indicative investment range and timeline. No sign-up needed." />
+      <div className="mx-auto w-full max-w-6xl space-y-16 px-5 pt-10 sm:px-8 sm:pt-14">
+        <PricingPackages />
+        <PaymentProcess />
+      </div>
       <div className="mx-auto w-full max-w-4xl px-5 py-10 sm:px-8 sm:py-14">
-        {config.enabled && config.projectTypes.length > 0 ? (
-          <EstimatorWizard config={config} company={settings.companyName} whatsappNumber={settings.whatsapp} responseNote={leadConfig?.responseNote} />
-        ) : (
-          <div className="rounded-2xl border border-border p-10 text-center">
-            <h2 className="text-xl font-semibold">The estimator is temporarily unavailable</h2>
-            <p className="mt-2 text-muted">Tell us about your project directly and we will prepare a tailored quote.</p>
-            <ButtonLink href="/contact" className="mt-6">Contact us</ButtonLink>
-          </div>
-        )}
+        <div id="estimator" className="scroll-mt-28">
+          {config.enabled && config.projectTypes.length > 0 ? (
+            <EstimatorWizard config={config} company={settings.companyName} whatsappNumber={settings.whatsapp} responseNote={leadConfig?.responseNote} />
+          ) : (
+            <div className="rounded-2xl border border-border p-10 text-center">
+              <h2 className="text-xl font-semibold">The estimator is temporarily unavailable</h2>
+              <p className="mt-2 text-muted">Tell us about your project directly and we will prepare a tailored quote.</p>
+              <ButtonLink href="/contact" className="mt-6">Contact us</ButtonLink>
+            </div>
+          )}
+        </div>
       </div>
     </>
   );

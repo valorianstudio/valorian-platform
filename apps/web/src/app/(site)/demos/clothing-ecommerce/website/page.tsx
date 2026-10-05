@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { DemoInterest } from '@/components/demos/shared/demo-interest';
 import { ClothingDemoBar } from '@/components/demos/clothing/clothing-demo-bar';
 import { LazyEcommerceWebsite } from '@/components/demos/clothing/lazy';
 import { DemoExperienceIntro } from '@/components/demos/shared/experience-intro';
@@ -32,6 +33,7 @@ export default function ClothingWebsitePage() {
         </div>
         <LazyEcommerceWebsite />
       </DemoExperienceIntro>
+      <DemoInterest slug={CLOTHING_DEMO.slug} title={CLOTHING_DEMO.title} />
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { DemoInterest } from '@/components/demos/shared/demo-interest';
 import { CourseDemoBar } from '@/components/demos/course/course-demo-bar';
 import { LazyCourseMobileApp } from '@/components/demos/course/lazy';
 import { DemoExperienceIntro } from '@/components/demos/shared/experience-intro';
@@ -32,6 +33,7 @@ export default function CourseMobileAppPage() {
         </div>
         <LazyCourseMobileApp />
       </DemoExperienceIntro>
+      <DemoInterest slug={COURSE_DEMO.slug} title={COURSE_DEMO.title} />
     </div>
   );
 }

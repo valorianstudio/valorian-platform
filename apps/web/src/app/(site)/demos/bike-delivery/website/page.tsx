@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { DemoInterest } from '@/components/demos/shared/demo-interest';
 import { DeliveryDemoBar } from '@/components/demos/delivery/delivery-demo-bar';
 import { LazyDeliveryDashboard } from '@/components/demos/delivery/lazy';
 import { DemoExperienceIntro } from '@/components/demos/shared/experience-intro';
@@ -32,6 +33,7 @@ export default function BikeDeliveryWebsitePage() {
         </div>
         <LazyDeliveryDashboard />
       </DemoExperienceIntro>
+      <DemoInterest slug={DELIVERY_DEMO.slug} title={DELIVERY_DEMO.title} />
     </div>
   );
 }

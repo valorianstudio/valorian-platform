@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { DemoInterest } from '@/components/demos/shared/demo-interest';
 import { HotelDemoBar } from '@/components/demos/hotel/hotel-demo-bar';
 import { LazyHotelMobileApp } from '@/components/demos/hotel/lazy';
 import { DemoExperienceIntro } from '@/components/demos/shared/experience-intro';
@@ -32,6 +33,7 @@ export default function HotelMobileAppPage() {
         </div>
         <LazyHotelMobileApp />
       </DemoExperienceIntro>
+      <DemoInterest slug={HOTEL_DEMO.slug} title={HOTEL_DEMO.title} />
     </div>
   );
 }

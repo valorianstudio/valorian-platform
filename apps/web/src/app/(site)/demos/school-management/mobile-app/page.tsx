@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { DemoInterest } from '@/components/demos/shared/demo-interest';
 import { LazySchoolMobileDemo } from '@/components/demos/school/lazy';
 import { SchoolDemoBar } from '@/components/demos/school/school-demo-bar';
 import { DemoExperienceIntro } from '@/components/demos/shared/experience-intro';
@@ -32,6 +33,7 @@ export default function SchoolMobileAppPage() {
         </div>
         <LazySchoolMobileDemo />
       </DemoExperienceIntro>
+      <DemoInterest slug={SCHOOL_DEMO.slug} title={SCHOOL_DEMO.title} />
     </>
   );
 }

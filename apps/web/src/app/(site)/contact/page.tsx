@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Mail, MapPin, MessageCircle, Phone } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
+import { ConsultationBand } from '@/components/site/consultation-band';
 import { LeadForm } from '@/components/site/lead-form';
 import type { LeadContext } from '@/components/site/lead-form';
 import { PageHero } from '@/components/site/page-hero';
@@ -9,7 +10,7 @@ import { Section } from '@/components/ui/section';
 import { buildMetadata, getDemo, getLeadConfig, getPageSeo, getService } from '@/lib/cms';
 import { getSiteSettings } from '@/lib/server-api';
 import { getDemo as getCatalogDemo } from '@/data/demos';
-import { whatsappLink, whatsappMessages } from '@/lib/whatsapp';
+import { whatsappLink, whatsappMessages, whatsappNumberFrom } from '@/lib/whatsapp';
 
 export async function generateMetadata(): Promise<Metadata> {
   return buildMetadata(await getPageSeo('CONTACT'), { title: 'Contact', description: 'Tell us about your project. We will get back to you with a clear plan.', path: '/contact' });
@@ -56,7 +57,7 @@ export default async function ContactPage({ searchParams }: { searchParams: Prom
       : service
       ? whatsappMessages.service(settings.companyName, service.service.title)
       : whatsappMessages.general(settings.companyName);
-  const wa = whatsappLink(settings.whatsapp, waMessage);
+  const wa = whatsappLink(whatsappNumberFrom(settings.whatsapp), waMessage);
 
   const channels: Channel[] = [
     { label: 'Email', value: settings.primaryEmail, href: `mailto:${settings.primaryEmail}`, Icon: Mail },
@@ -69,8 +70,11 @@ export default async function ContactPage({ searchParams }: { searchParams: Prom
     <>
       <PageHero eyebrow="Contact" title="Let's talk about your project" description="Share what you want to build and the problem it solves. The more detail you give, the more useful our reply." />
       <Section>
+        <div className="mb-10">
+          <ConsultationBand number={whatsappNumberFrom(settings.whatsapp)} />
+        </div>
         <div className="grid grid-cols-1 gap-10 lg:grid-cols-[1.6fr_1fr]">
-          <Card className="p-5 sm:p-8">
+          <Card id="lead-form" className="scroll-mt-28 p-5 sm:p-8">
             <LeadForm context={context} company={settings.companyName} whatsappNumber={settings.whatsapp} responseNote={config?.responseNote} showInquiryTypes />
           </Card>
           <aside aria-label="Other ways to reach us">

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { DemoInterest } from '@/components/demos/shared/demo-interest';
 import { PetshopDemoBar } from '@/components/demos/petshop/petshop-demo-bar';
 import { LazyPetshopMobileApp } from '@/components/demos/petshop/lazy';
 import { DemoExperienceIntro } from '@/components/demos/shared/experience-intro';
@@ -32,6 +33,7 @@ export default function PetShopMobileAppPage() {
         </div>
         <LazyPetshopMobileApp />
       </DemoExperienceIntro>
+      <DemoInterest slug={PETSHOP_DEMO.slug} title={PETSHOP_DEMO.title} />
     </div>
   );
 }

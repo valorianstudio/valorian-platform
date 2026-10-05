@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { DemoInterest } from '@/components/demos/shared/demo-interest';
 import { ClinicDemoBar } from '@/components/demos/clinic/clinic-demo-bar';
 import { LazyClinicDashboard } from '@/components/demos/clinic/lazy';
 import { DemoExperienceIntro } from '@/components/demos/shared/experience-intro';
@@ -32,6 +33,7 @@ export default function ClinicWebsitePage() {
         </div>
         <LazyClinicDashboard />
       </DemoExperienceIntro>
+      <DemoInterest slug={CLINIC_DEMO.slug} title={CLINIC_DEMO.title} />
     </div>
   );
 }

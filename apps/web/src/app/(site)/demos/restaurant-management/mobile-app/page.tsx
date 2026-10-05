@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { DemoInterest } from '@/components/demos/shared/demo-interest';
 import { LazyRestaurantMobileApp } from '@/components/demos/restaurant/lazy';
 import { RestaurantDemoBar } from '@/components/demos/restaurant/restaurant-demo-bar';
 import { DemoExperienceIntro } from '@/components/demos/shared/experience-intro';
@@ -32,6 +33,7 @@ export default function RestaurantMobileAppPage() {
         </div>
         <LazyRestaurantMobileApp />
       </DemoExperienceIntro>
+      <DemoInterest slug={RESTAURANT_DEMO.slug} title={RESTAURANT_DEMO.title} />
     </div>
   );
 }

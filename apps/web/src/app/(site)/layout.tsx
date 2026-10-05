@@ -3,7 +3,9 @@ import { Wrench } from 'lucide-react';
 import { AnalyticsGate, FooterLoader, FooterSkeleton, SiteSchema } from '@/components/site/site-chrome';
 import { SiteHeader } from '@/components/site/site-header';
 import { Splash } from '@/components/site/splash';
+import { FloatingWhatsApp } from '@/components/site/whatsapp-float';
 import { getNavigation } from '@/lib/cms';
+import { whatsappNumberFrom } from '@/lib/whatsapp';
 import { getSiteSettings } from '@/lib/server-api';
 
 // No `force-dynamic`: nothing here reads cookies, headers or the query string, so pages are rendered once and served from cache,
@@ -48,6 +50,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
       <Suspense fallback={<FooterSkeleton />}>
         <FooterLoader />
       </Suspense>
+      {!settings.maintenanceMode && <FloatingWhatsApp number={whatsappNumberFrom(settings.whatsapp)} />}
     </>
   );
 }

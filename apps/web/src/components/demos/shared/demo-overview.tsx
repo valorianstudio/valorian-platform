@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { ArrowRight, Calculator, Check, Globe, Rocket, Smartphone } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { CtaBand } from '@/components/site/blocks';
+import { DemoInterest } from '@/components/demos/shared/demo-interest';
 import { Breadcrumbs, JsonLd } from '@/components/site/seo';
 import { Badge } from '@/components/ui/badge';
 import { ButtonLink } from '@/components/ui/button';
@@ -134,6 +135,7 @@ export function DemoOverview({ demo, config, bar, visual, sectionTitle, closing,
         </div>
       </Section>
 
+      <DemoInterest slug={config.slug} title={config.title} />
       <CtaBand content={{ ...closing, primaryLabel: 'Start a project', primaryUrl: `/contact?demo=${config.slug}` }} />
     </>
   );

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { DemoInterest } from '@/components/demos/shared/demo-interest';
 import { PropertyDemoBar } from '@/components/demos/property/property-demo-bar';
 import { LazyPropertyDashboard } from '@/components/demos/property/lazy';
 import { DemoExperienceIntro } from '@/components/demos/shared/experience-intro';
@@ -32,6 +33,7 @@ export default function PropertyWebsitePage() {
         </div>
         <LazyPropertyDashboard />
       </DemoExperienceIntro>
+      <DemoInterest slug={PROPERTY_DEMO.slug} title={PROPERTY_DEMO.title} />
     </div>
   );
 }
