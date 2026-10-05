@@ -111,6 +111,13 @@
   --color-course-amber-ink: #b45309;
 }
 
+/* Clothing e-commerce palette: luxury black, warm beige and gold. */
+@theme {
+  --color-lux: #111111;
+  --color-beige: #f5f1eb;
+  --color-gold-lux: #d4af37;
+}
+
 @keyframes fade-up {
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }

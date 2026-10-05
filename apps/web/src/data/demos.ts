@@ -1,5 +1,6 @@
 import type { IconName } from '@/lib/icon-names';
 import { CLINIC_DEMO, CLINIC_EXPERIENCES } from './clinic/meta';
+import { CLOTHING_DEMO, CLOTHING_EXPERIENCES } from './clothing/meta';
 import { COURSE_DEMO, COURSE_EXPERIENCES } from './course/meta';
 import { GYM_DEMO, GYM_EXPERIENCES } from './gym/meta';
 import { RESTAURANT_DEMO, RESTAURANT_EXPERIENCES } from './restaurant/meta';
@@ -194,12 +195,16 @@ export const DEMOS: Demo[] = [
     status: 'available',
   },
   {
-    slug: 'modeva',
-    title: 'E-commerce Storefront',
+    slug: CLOTHING_DEMO.slug,
+    aliases: ['modeva'],
+    experiences: { 'Landing Page': CLOTHING_EXPERIENCES[0].href, Website: CLOTHING_EXPERIENCES[1].href, 'Mobile App': CLOTHING_EXPERIENCES[2].href },
+    title: CLOTHING_DEMO.title,
+    image: '/demos/clothing-ecommerce-dashboard.webp',
+    phoneImage: '/demos/clothing-ecommerce-phone.webp',
     category: 'full-stack',
     offerings: ['full-stack', 'mobile-app', 'landing-page'],
-    industry: 'Retail & E-commerce',
-    description: 'A fast online store with catalog, cart, checkout and inventory management, plus a shopping app and campaign landing pages.',
+    industry: 'Fashion & Retail',
+    description: 'An online fashion store with product pages, filters, cart and checkout, an admin dashboard for stock and orders, and a shopping app.',
     features: ['Product catalog with search', 'Cart and secure checkout', 'Inventory and order management', 'Discounts and campaigns', 'Shopping mobile app', 'Campaign landing pages'],
     technologies: ['Next.js', 'NestJS', 'PostgreSQL', 'Cloudflare', 'React Native'],
     platforms: ['Website', 'Mobile App', 'Landing Page'],
