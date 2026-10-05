@@ -1,6 +1,7 @@
 import type { IconName } from '@/lib/icon-names';
 import { CLINIC_DEMO, CLINIC_EXPERIENCES } from './clinic/meta';
 import { CLOTHING_DEMO, CLOTHING_EXPERIENCES } from './clothing/meta';
+import { HOTEL_DEMO, HOTEL_EXPERIENCES } from './hotel/meta';
 import { COURSE_DEMO, COURSE_EXPERIENCES } from './course/meta';
 import { GYM_DEMO, GYM_EXPERIENCES } from './gym/meta';
 import { RESTAURANT_DEMO, RESTAURANT_EXPERIENCES } from './restaurant/meta';
@@ -290,12 +291,16 @@ export const DEMOS: Demo[] = [
     status: 'coming-soon',
   },
   {
-    slug: 'hotel-management-system',
-    title: 'Hotel Management System',
+    slug: HOTEL_DEMO.slug,
+    aliases: ['hotel-management-system'],
+    experiences: { 'Landing Page': HOTEL_EXPERIENCES[0].href, Website: HOTEL_EXPERIENCES[1].href, 'Mobile App': HOTEL_EXPERIENCES[2].href },
+    title: HOTEL_DEMO.title,
+    image: '/demos/hotel-management-dashboard.webp',
+    phoneImage: '/demos/hotel-management-phone.webp',
     category: 'full-stack',
     offerings: ['full-stack', 'mobile-app', 'landing-page'],
     industry: 'Hospitality',
-    description: 'Reservations, room inventory, housekeeping and billing for hotels and guest houses, with a guest app and a direct-booking landing page.',
+    description: 'Reservations, room inventory, housekeeping and billing for luxury hotels, with a guest booking app and a direct-booking landing page.',
     features: ['Room inventory and availability calendar', 'Reservations and check-in/out', 'Housekeeping task board', 'Billing and invoices', 'Guest app for bookings and requests', 'Direct-booking landing page'],
     technologies: ['Next.js', 'NestJS', 'PostgreSQL', 'Flutter'],
     platforms: ['Website', 'Mobile App', 'Landing Page'],

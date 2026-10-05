@@ -4,6 +4,7 @@ import { PUBLIC_ROUTES, SITE_URL } from '@/lib/site';
 import { DEMOS, DEMO_SLUGS } from '@/data/demos';
 import { CLINIC_EXPERIENCES } from '@/data/clinic/meta';
 import { CLOTHING_EXPERIENCES } from '@/data/clothing/meta';
+import { HOTEL_EXPERIENCES } from '@/data/hotel/meta';
 import { COURSE_EXPERIENCES } from '@/data/course/meta';
 import { GYM_EXPERIENCES } from '@/data/gym/meta';
 import { RESTAURANT_EXPERIENCES } from '@/data/restaurant/meta';
@@ -27,7 +28,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...DEMO_SLUGS.filter((slug) => !(slugs?.demos ?? []).some((demo) => demo.slug === slug)).map((slug) => ({ path: `/demos/${slug}`, updatedAt: SOLUTIONS_UPDATED })),
     ...(slugs?.solutions ?? []).map((item) => ({ path: `/solutions/${item.slug}`, updatedAt: item.updatedAt })),
     ...(slugs?.demos ?? []).filter((item) => !aliases.has(item.slug)).map((item) => ({ path: `/demos/${item.slug}`, updatedAt: item.updatedAt })),
-    ...[...SCHOOL_EXPERIENCES, ...CLINIC_EXPERIENCES, ...RESTAURANT_EXPERIENCES, ...GYM_EXPERIENCES, ...COURSE_EXPERIENCES, ...CLOTHING_EXPERIENCES].map((experience) => ({ path: experience.href, updatedAt: SOLUTIONS_UPDATED })),
+    ...[...SCHOOL_EXPERIENCES, ...CLINIC_EXPERIENCES, ...RESTAURANT_EXPERIENCES, ...GYM_EXPERIENCES, ...COURSE_EXPERIENCES, ...CLOTHING_EXPERIENCES, ...HOTEL_EXPERIENCES].map((experience) => ({ path: experience.href, updatedAt: SOLUTIONS_UPDATED })),
     ...(slugs?.caseStudies ?? []).map((item) => ({ path: `/case-studies/${item.slug}`, updatedAt: item.updatedAt })),
     ...(slugs?.articles ?? []).map((item) => ({ path: `/insights/${item.slug}`, updatedAt: item.updatedAt })),
   ];

@@ -118,6 +118,14 @@
   --color-gold-lux: #d4af37;
 }
 
+/* Hotel palette: luxury navy, warm gold, teal and warm beige. */
+@theme {
+  --color-hotel-navy: #0f172a;
+  --color-hotel-gold: #d4af37;
+  --color-hotel-teal: #0f766e;
+  --color-hotel-beige: #f5f1eb;
+}
+
 @keyframes fade-up {
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
