@@ -8,7 +8,13 @@ import { cn } from '@/lib/cn';
 
 /** Small interactive building blocks for the interactive website demos (client side). Colours come from the --demo-* CSS variables set by each demo, with the School palette as the default. */
 
-const AVATAR_TONES = ['bg-blue-100 text-blue-700', 'bg-emerald-100 text-emerald-800', 'bg-amber-100 text-amber-800', 'bg-slate-200 text-slate-700', 'bg-sky-100 text-sky-800'];
+const AVATAR_TONES = [
+  'bg-[var(--demo-accent-soft,#dbeafe)] text-[color:var(--demo-accent-ink,#1d4ed8)]',
+  'bg-[var(--demo-good-soft,#d1fae5)] text-[color:var(--demo-good-ink,#065f46)]',
+  'bg-amber-100 text-amber-800',
+  'bg-slate-200 text-slate-700',
+  'bg-stone-200 text-stone-700',
+];
 
 export function Avatar({ name, size = 'md' }: { name: string; size?: 'sm' | 'md' | 'lg' }) {
   const initials = name

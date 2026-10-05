@@ -41,14 +41,15 @@ const COL = 'mx-auto w-full max-w-7xl px-5 sm:px-8';
 const BTN = 'inline-flex h-12 items-center justify-center gap-2 rounded-lg px-6 text-[15px] font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2';
 
 /**
- * The marketing site of the fictional ClinicOS product. A Server Component end to end: every section is static HTML, and the
+ * The marketing site of the fictional ClinicOS product. A standalone full-page preview (no Valorian header or footer) and a Server Component end to end: every section is static HTML, and the
  * only client code is the small demo-request form.
  */
 export function ClinicLandingPage() {
   return (
     <div id="top" style={CLINIC_THEME} className="bg-white text-slate-900">
-      <DemoNavbar brand={<ClinicLogo />} links={LANDING_NAV} cta={{ label: 'Book a demo', href: '#contact' }} />
+      <DemoNavbar brand={<ClinicLogo />} links={LANDING_NAV} cta={{ label: 'Book a demo', href: '#contact' }} standalone />
 
+      <main id="main">
       {/* Hero */}
       <section aria-labelledby="clinic-hero" className="relative overflow-x-clip bg-[radial-gradient(60%_70%_at_88%_0%,#e8f1f9,transparent)]">
         <div className="mx-auto grid w-full max-w-7xl items-center gap-14 px-5 pb-20 pt-14 sm:px-8 sm:pt-20 lg:grid-cols-[1fr_1.05fr] lg:gap-10 lg:pb-28 lg:pt-24">
@@ -90,7 +91,7 @@ export function ClinicLandingPage() {
             {FEATURES.map((feature, i) => {
               const Icon = ICONS[feature.icon];
               return (
-                <article key={feature.title} data-reveal style={{ ['--i' as string]: i % 4 }} className={cn('group rounded-2xl border border-slate-200 bg-white p-6 transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-clinic-teal/50 hover:shadow-[0_18px_40px_-24px_rgb(14_165_164/0.45)]', i === 0 && 'bg-clinic text-white lg:col-span-2 lg:p-8 [&_p]:text-white/80')}>
+                <article key={feature.title} data-reveal style={{ ['--i' as string]: i % 4 }} className={cn('group rounded-2xl border p-6 transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5', i === 0 ? 'border-clinic bg-clinic text-white lg:col-span-2 lg:p-8 [&_p]:text-white/80' : 'border-slate-200 bg-white hover:border-clinic-teal/50 hover:shadow-[0_18px_40px_-24px_rgb(14_165_164/0.45)]')}>
                   <span className={cn('grid size-11 place-items-center rounded-xl transition-colors duration-200', i === 0 ? 'bg-white/15 text-white' : 'bg-clinic-teal/10 text-clinic-teal-ink group-hover:bg-clinic-teal-ink group-hover:text-white')}>
                     <Icon className="size-5" aria-hidden />
                   </span>
@@ -221,6 +222,8 @@ export function ClinicLandingPage() {
           <EnquiryForm copy={ENQUIRY_COPY} />
         </div>
       </section>
+
+      </main>
 
       {/* Footer */}
       <footer className="bg-clinic-ink py-14 text-slate-400">

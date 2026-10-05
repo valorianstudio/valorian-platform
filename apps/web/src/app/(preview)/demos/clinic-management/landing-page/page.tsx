@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import { ClinicDemoBar } from '@/components/demos/clinic/clinic-demo-bar';
 import { ClinicLandingPage } from '@/components/demos/clinic/clinic-landing-page';
 import { Breadcrumbs } from '@/components/site/seo';
 import { CLINIC_DEMO, CLINIC_EXPERIENCES } from '@/data/clinic/meta';
@@ -15,11 +14,10 @@ export function generateMetadata(): Promise<Metadata> {
   });
 }
 
-/** Landing Page showcase: the marketing site. Server-rendered end to end; the only client code is the small demo form. */
+/** Landing Page showcase: the marketing site as a standalone full-page preview (see the (preview) layout). Server-rendered end to end; the only client code is the small demo form. */
 export default function ClinicLandingPageRoute() {
   return (
     <>
-      <ClinicDemoBar active="landing-page" />
       <div className="sr-only">
         <Breadcrumbs items={[{ name: 'Demos', href: '/demos' }, { name: CLINIC_DEMO.title, href: CLINIC_DEMO.basePath }, { name: experience.label }]} />
       </div>

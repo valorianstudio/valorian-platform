@@ -27,10 +27,10 @@ export function Card({ children, className }: { children: ReactNode; className?:
   return <div className={cn('rounded-xl border border-slate-200 bg-white p-3', className)}>{children}</div>;
 }
 
-export function BottomNav<T extends string>({ items, value, onChange, label }: { items: { id: T; label: string; icon: LucideIcon }[]; value: T; onChange: (id: T) => void; label: string }) {
+export function BottomNav<T extends string>({ items, value, onChange, label }: { items: { id: T; label: string; icon: LucideIcon; badge?: number }[]; value: T; onChange: (id: T) => void; label: string }) {
   return (
     <nav aria-label={label} className="flex shrink-0 border-t border-slate-200 bg-white px-1 pb-3 pt-1.5">
-      {items.map(({ id, label: text, icon: Icon }) => (
+      {items.map(({ id, label: text, icon: Icon, badge }) => (
         <button
           key={id}
           type="button"
@@ -38,7 +38,10 @@ export function BottomNav<T extends string>({ items, value, onChange, label }: {
           onClick={() => onChange(id)}
           className={cn('flex min-w-0 flex-1 flex-col items-center gap-0.5 rounded-lg py-1 text-[10px] font-medium focus-visible:outline-2 focus-visible:outline-[color:var(--demo-accent,#2563eb)]', id === value ? 'text-[color:var(--demo-accent,#2563eb)]' : 'text-slate-500')}
         >
-          <Icon className="size-[18px]" aria-hidden />
+          <span className="relative">
+            <Icon className="size-[18px]" aria-hidden />
+            {badge ? <span className="absolute -right-2 -top-1.5 grid min-w-4 place-items-center rounded-full bg-[var(--demo-nav-active,#2563eb)] px-1 text-[9px] font-semibold leading-4 text-white">{badge}</span> : null}
+          </span>
           <span className="truncate">{text}</span>
         </button>
       ))}

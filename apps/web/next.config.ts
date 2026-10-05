@@ -49,7 +49,7 @@ const config: NextConfig = {
   compress: true,
   experimental: { authInterrupts: true },
   images: {
-    localPatterns: [{ pathname: '/api/media/**' }, { pathname: '/brand/**' }, { pathname: '/branding/**' }],
+    localPatterns: [{ pathname: '/api/media/**' }, { pathname: '/brand/**' }, { pathname: '/branding/**' }, { pathname: '/demos/**' }],
     // Uploaded media lives on Cloudinary. Only that host (and, when set, only this account's folder) may be optimised.
     remotePatterns: [{ protocol: 'https', hostname: 'res.cloudinary.com', pathname: cloudinaryName ? `/${cloudinaryName}/image/upload/**` : '/**' }],
     formats: ['image/avif', 'image/webp'],
@@ -57,10 +57,11 @@ const config: NextConfig = {
     minimumCacheTTL: 60 * 60 * 24 * 30,
   },
   async redirects() {
-    // Demos that moved to a new slug (educore, clinicos). One page per demo: the old address sends visitors (and search engines) to the new one.
+    // Demos that moved to a new slug (educore, clinicos, tableflow). One page per demo: the old address sends visitors (and search engines) to the new one.
     return [
       { source: '/demos/educore', destination: '/demos/school-management', permanent: true },
       { source: '/demos/clinicos', destination: '/demos/clinic-management', permanent: true },
+      { source: '/demos/tableflow', destination: '/demos/restaurant-management', permanent: true },
     ];
   },
   async rewrites() {

@@ -85,6 +85,14 @@
   --color-clinic-green: #22c55e;
 }
 
+/* Restaurant Management demo palette: deep charcoal, warm gold and fresh green (gold-ink is the text-safe gold). */
+@theme {
+  --color-resto: #111827;
+  --color-gold: #d97706;
+  --color-gold-ink: #b45309;
+  --color-fresh: #16a34a;
+}
+
 @keyframes fade-up {
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }

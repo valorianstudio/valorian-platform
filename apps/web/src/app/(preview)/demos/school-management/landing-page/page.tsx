@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import { SchoolDemoBar } from '@/components/demos/school/school-demo-bar';
 import { SchoolLandingPage } from '@/components/demos/school/school-landing-page';
 import { Breadcrumbs } from '@/components/site/seo';
 import { SCHOOL_DEMO, SCHOOL_EXPERIENCES } from '@/data/school/meta';
@@ -15,11 +14,10 @@ export function generateMetadata(): Promise<Metadata> {
   });
 }
 
-/** Landing Page showcase: the marketing site. Server-rendered end to end; the only client code is the small enquiry form. */
+/** Landing Page showcase: the marketing site as a standalone full-page preview (see the (preview) layout). Server-rendered end to end; the only client code is the small enquiry form. */
 export default function SchoolLandingPageRoute() {
   return (
     <>
-      <SchoolDemoBar active="landing-page" />
       <div className="sr-only">
         <Breadcrumbs items={[{ name: 'Demos', href: '/demos' }, { name: SCHOOL_DEMO.title, href: SCHOOL_DEMO.basePath }, { name: experience.label }]} />
       </div>

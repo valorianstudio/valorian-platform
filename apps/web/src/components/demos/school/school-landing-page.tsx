@@ -1,5 +1,6 @@
 import { ArrowRight, Check, ChevronDown, Quote, ShieldCheck, Star } from 'lucide-react';
 import { DemoNavbar } from '@/components/demos/shared/demo-navbar';
+import { DemoPricing } from '@/components/demos/shared/demo-pricing';
 import { SectionTitle } from '@/components/demos/shared/section-title';
 import { FAQS, FEATURES, FOOTER_LINKS, LANDING_NAV, PRICING, SCHOOL_BRAND, STATS, TESTIMONIALS, WHY } from '@/data/school/landing';
 import { cn } from '@/lib/cn';
@@ -26,14 +27,15 @@ const ENQUIRY_COPY: EnquiryCopy = {
 const BTN = 'inline-flex h-12 items-center justify-center gap-2 rounded-lg px-6 text-[15px] font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2';
 
 /**
- * The marketing site of the fictional EduCore product. A Server Component end to end: every section is static HTML, the pricing
+ * The marketing site of the fictional EduCore product. A standalone full-page preview (no Valorian header or footer) and a Server Component end to end: every section is static HTML, the pricing
  * toggle and FAQ use native inputs and <details>, and the only client code is the small enquiry form.
  */
 export function SchoolLandingPage() {
   return (
     <div id="top" className="bg-white text-slate-900">
-      <DemoNavbar brand={<SchoolLogo />} links={LANDING_NAV} cta={{ label: 'Request demo', href: '#contact' }} />
+      <DemoNavbar brand={<SchoolLogo />} links={LANDING_NAV} cta={{ label: 'Request demo', href: '#contact' }} standalone />
 
+      <main id="main">
       {/* Hero */}
       <section aria-labelledby="school-hero" className="relative overflow-x-clip bg-[radial-gradient(60%_70%_at_85%_0%,#eff6ff,transparent)]">
         <div className="mx-auto grid w-full max-w-7xl items-center gap-14 px-5 pb-20 pt-14 sm:px-8 sm:pt-20 lg:grid-cols-[1fr_1.05fr] lg:gap-10 lg:pb-28 lg:pt-24">
@@ -152,52 +154,8 @@ export function SchoolLandingPage() {
 
       {/* Pricing */}
       <section id="pricing" aria-labelledby="school-pricing" className={SECTION}>
-        <div className={cn(COL, 'group/billing')}>
-          <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between" data-reveal>
-            <SectionTitle id="school-pricing" eyebrow="Pricing" title="Simple pricing that grows with your school" description="Every plan includes onboarding, data migration and training." />
-            <fieldset className="inline-flex w-fit rounded-full border border-slate-200 bg-slate-100 p-1">
-              <legend className="sr-only">Billing period</legend>
-              {[
-                ['monthly', 'Monthly'],
-                ['annual', 'Annual (save 20%)'],
-              ].map(([value, text]) => (
-                <label key={value} className="cursor-pointer rounded-full px-4 py-2 text-sm font-semibold text-slate-600 transition-colors has-checked:bg-white has-checked:text-slate-900 has-checked:shadow-sm has-focus-visible:outline-2 has-focus-visible:outline-blue-600">
-                  <input type="radio" name="school-billing" value={value} defaultChecked={value === 'monthly'} className="sr-only" />
-                  {text}
-                </label>
-              ))}
-            </fieldset>
-          </div>
-          <ul className="mt-12 grid gap-4 lg:grid-cols-3">
-            {PRICING.map((plan, i) => (
-              <li key={plan.name} data-reveal style={{ ['--i' as string]: i }} className={cn('relative flex flex-col rounded-2xl border bg-white p-6 sm:p-8', plan.featured ? 'border-blue-600 shadow-[0_24px_50px_-28px_rgb(37_99_235/0.5)] ring-1 ring-blue-600' : 'border-slate-200')}>
-                {plan.featured && <span className="absolute -top-3 left-6 rounded-full bg-blue-600 px-3 py-1 text-xs font-semibold text-white">Most popular</span>}
-                <h3 className="text-lg font-semibold text-slate-900">{plan.name}</h3>
-                <p className="mt-1 text-sm text-slate-600">{plan.blurb}</p>
-                <p className="mt-6 flex items-baseline gap-1">
-                  {plan.monthly ? (
-                    <>
-                      <span className="text-4xl font-semibold tracking-tight text-slate-900 tabular-nums group-has-[input[value=annual]:checked]/billing:hidden">${plan.monthly}</span>
-                      <span className="hidden text-4xl font-semibold tracking-tight text-slate-900 tabular-nums group-has-[input[value=annual]:checked]/billing:inline">${plan.annual}</span>
-                      <span className="text-sm text-slate-500">/ month</span>
-                    </>
-                  ) : (
-                    <span className="text-4xl font-semibold tracking-tight text-slate-900">Custom</span>
-                  )}
-                </p>
-                <ul className="mt-6 flex-1 space-y-3">
-                  {plan.features.map((feature) => (
-                    <li key={feature} className="flex gap-2.5 text-sm text-slate-700">
-                      <Check className="mt-0.5 size-4 shrink-0 text-emerald-600" aria-hidden /> {feature}
-                    </li>
-                  ))}
-                </ul>
-                <a href="#contact" className={cn(BTN, 'mt-8 w-full', plan.featured ? 'bg-blue-600 text-white hover:bg-blue-700 focus-visible:outline-blue-600' : 'border border-slate-300 text-slate-900 hover:border-slate-900 focus-visible:outline-slate-900')}>
-                  {plan.cta}
-                </a>
-              </li>
-            ))}
-          </ul>
+        <div className={COL}>
+          <DemoPricing plans={PRICING} headingId="school-pricing" title="Simple pricing that grows with your school" description="Every plan includes onboarding, data migration and training." />
         </div>
       </section>
 
@@ -237,6 +195,8 @@ export function SchoolLandingPage() {
           <EnquiryForm copy={ENQUIRY_COPY} />
         </div>
       </section>
+
+      </main>
 
       {/* Footer */}
       <footer className="border-t border-slate-800 bg-slate-950 py-14 text-slate-400">

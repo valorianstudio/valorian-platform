@@ -1,5 +1,6 @@
 import type { IconName } from '@/lib/icon-names';
 import { CLINIC_DEMO, CLINIC_EXPERIENCES } from './clinic/meta';
+import { RESTAURANT_DEMO, RESTAURANT_EXPERIENCES } from './restaurant/meta';
 import { SCHOOL_DEMO, SCHOOL_EXPERIENCES } from './school/meta';
 
 /**
@@ -32,8 +33,10 @@ export interface Demo {
   aliases?: string[];
   /** Interactive experiences built for this demo, by platform: the platform chips on its card link straight to them. */
   experiences?: Partial<Record<DemoPlatform, string>>;
-  /** Real screenshot URL, once there is one. */
+  /** Real screenshot URL of the demo's dashboard, once there is one. Shown in the card's browser window. */
   image?: string;
+  /** Real screenshot of the demo's mobile app, shown as a phone in front of the dashboard. */
+  phoneImage?: string;
   /** Drawn in code until `image` exists. */
   placeholder: { icon: IconName; tone: PlaceholderTone };
   status: DemoStatus;
@@ -95,6 +98,8 @@ export const DEMOS: Demo[] = [
     aliases: ['educore'],
     experiences: { 'Landing Page': SCHOOL_EXPERIENCES[0].href, Website: SCHOOL_EXPERIENCES[1].href, 'Mobile App': SCHOOL_EXPERIENCES[2].href },
     title: SCHOOL_DEMO.title,
+    image: '/demos/school-management-dashboard.webp',
+    phoneImage: '/demos/school-management-phone.webp',
     category: 'full-stack',
     offerings: ['full-stack', 'mobile-app', 'landing-page'],
     industry: 'Education',
@@ -110,6 +115,8 @@ export const DEMOS: Demo[] = [
     aliases: ['clinicos'],
     experiences: { 'Landing Page': CLINIC_EXPERIENCES[0].href, Website: CLINIC_EXPERIENCES[1].href, 'Mobile App': CLINIC_EXPERIENCES[2].href },
     title: CLINIC_DEMO.title,
+    image: '/demos/clinic-management-dashboard.webp',
+    phoneImage: '/demos/clinic-management-phone.webp',
     category: 'full-stack',
     offerings: ['full-stack', 'mobile-app', 'landing-page'],
     industry: 'Healthcare',
@@ -121,8 +128,12 @@ export const DEMOS: Demo[] = [
     status: 'available',
   },
   {
-    slug: 'tableflow',
-    title: 'Restaurant Management System',
+    slug: RESTAURANT_DEMO.slug,
+    aliases: ['tableflow'],
+    experiences: { 'Landing Page': RESTAURANT_EXPERIENCES[0].href, Website: RESTAURANT_EXPERIENCES[1].href, 'Mobile App': RESTAURANT_EXPERIENCES[2].href },
+    title: RESTAURANT_DEMO.title,
+    image: '/demos/restaurant-management-dashboard.webp',
+    phoneImage: '/demos/restaurant-management-phone.webp',
     category: 'full-stack',
     offerings: ['full-stack', 'mobile-app', 'landing-page'],
     industry: 'Restaurant & Hospitality',

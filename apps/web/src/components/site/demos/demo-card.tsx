@@ -34,7 +34,7 @@ export function DemoVisual({ demo, className = 'aspect-[16/10]', phoneImage }: {
           <span aria-hidden className={DOTS} />
         </div>
         {demo.image ? (
-          <SmartImage src={demo.image} alt={`${demo.title} screenshot`} width={800} height={500} sizes="(min-width: 1280px) 30vw, (min-width: 768px) 45vw, 90vw" retry={false} className="img-zoom size-full object-cover object-top" />
+          <SmartImage src={demo.image} alt={`${demo.title} dashboard preview`} width={800} height={500} sizes="(min-width: 1280px) 30vw, (min-width: 768px) 45vw, 90vw" retry={false} className="img-zoom size-full object-cover object-top" />
         ) : (
           <div aria-hidden className="grid h-full grid-cols-[22%_1fr]">
             <span className="bg-slate" />
@@ -138,7 +138,7 @@ export function DemoCard({ demo }: { demo: Demo }) {
   const ready = demo.status === 'available';
   return (
     <article className="card-lift group relative flex h-full flex-col overflow-hidden">
-      <DemoVisual demo={demo} />
+      <DemoVisual demo={demo} phoneImage={demo.phoneImage} />
       <div className="flex flex-1 flex-col p-5 sm:p-6">
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-xs font-semibold uppercase tracking-[0.12em] text-accent">{demo.industry}</span>
