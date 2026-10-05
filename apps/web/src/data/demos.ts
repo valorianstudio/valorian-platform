@@ -1,5 +1,6 @@
 import type { IconName } from '@/lib/icon-names';
 import { CLINIC_DEMO, CLINIC_EXPERIENCES } from './clinic/meta';
+import { GYM_DEMO, GYM_EXPERIENCES } from './gym/meta';
 import { RESTAURANT_DEMO, RESTAURANT_EXPERIENCES } from './restaurant/meta';
 import { SCHOOL_DEMO, SCHOOL_EXPERIENCES } from './school/meta';
 
@@ -145,8 +146,12 @@ export const DEMOS: Demo[] = [
     status: 'available',
   },
   {
-    slug: 'fitcore',
-    title: 'Gym Management System',
+    slug: GYM_DEMO.slug,
+    aliases: ['fitcore'],
+    experiences: { 'Landing Page': GYM_EXPERIENCES[0].href, Website: GYM_EXPERIENCES[1].href, 'Mobile App': GYM_EXPERIENCES[2].href },
+    title: GYM_DEMO.title,
+    image: '/demos/gym-management-dashboard.webp',
+    phoneImage: '/demos/gym-management-phone.webp',
     category: 'full-stack',
     offerings: ['full-stack', 'mobile-app', 'landing-page'],
     industry: 'Fitness',

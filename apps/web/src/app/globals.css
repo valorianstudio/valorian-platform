@@ -93,6 +93,15 @@
   --color-fresh: #16a34a;
 }
 
+/* Gym Management demo palette: deep black, strong blue, fitness green and warm orange. */
+@theme {
+  --color-gym: #111827;
+  --color-gym-blue: #2563eb;
+  --color-gym-green: #22c55e;
+  --color-gym-orange: #f97316;
+  --color-gym-orange-ink: #c2410c;
+}
+
 @keyframes fade-up {
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
