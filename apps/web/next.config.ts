@@ -56,6 +56,10 @@ const config: NextConfig = {
     qualities: [60, 75, 90],
     minimumCacheTTL: 60 * 60 * 24 * 30,
   },
+  async redirects() {
+    // The School Management demo used to live at /demos/educore. One page per demo: the old address sends visitors (and search engines) to the new one.
+    return [{ source: '/demos/educore', destination: '/demos/school-management', permanent: true }];
+  },
   async rewrites() {
     return [{ source: '/api/:path*', destination: `${apiUrl}/api/:path*` }];
   },

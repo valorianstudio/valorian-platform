@@ -68,14 +68,30 @@ export function DemoVisual({ demo, className = 'aspect-[16/10]', phoneImage }: {
 
 const PLATFORM_ICON = { Website: Globe, 'Mobile App': Smartphone, 'Landing Page': Rocket } as const;
 
-export function PlatformChips({ platforms }: { platforms: DemoPlatform[] }) {
+/**
+ * The platforms a demo ships as. When `links` has an entry for a platform, its chip links straight to that interactive experience
+ * (it sits above the card's stretched link, so the rest of the card still opens the demo's overview).
+ */
+export function PlatformChips({ platforms, links }: { platforms: DemoPlatform[]; links?: Demo['experiences'] }) {
   return (
     <ul className="flex flex-wrap items-center gap-1.5" aria-label="Available as">
       {platforms.map((platform) => {
         const Icon = PLATFORM_ICON[platform];
-        return (
-          <li key={platform} className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background px-2.5 py-1 text-xs font-semibold text-primary">
+        const href = links?.[platform];
+        const body = (
+          <>
             <Icon className="size-3.5 text-accent" aria-hidden /> {platform}
+          </>
+        );
+        return (
+          <li key={platform}>
+            {href ? (
+              <Link href={href} className="relative z-10 inline-flex items-center gap-1.5 rounded-full border border-border bg-background px-2.5 py-1 text-xs font-semibold text-primary transition-colors hover:border-primary hover:bg-card focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
+                {body}
+              </Link>
+            ) : (
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background px-2.5 py-1 text-xs font-semibold text-primary">{body}</span>
+            )}
           </li>
         );
       })}
@@ -99,7 +115,7 @@ const PLATFORM_LABEL = { WEBSITE: 'Website', MOBILE: 'Mobile App' } as const;
  * When the CMS slug exists in data/demos.ts that entry is used, so a demo never looks different in two places.
  */
 export function demoFromApi(item: DemoCardData): Demo {
-  const known = DEMOS.find((demo) => demo.slug === item.slug);
+  const known = DEMOS.find((demo) => demo.slug === item.slug || demo.aliases?.includes(item.slug));
   if (known) return known;
   return {
     slug: item.slug,
@@ -160,7 +176,7 @@ export function DemoCard({ demo }: { demo: Demo }) {
         )}
 
         <div className="mt-auto flex items-center justify-between gap-3 border-t border-border pt-5">
-          <PlatformChips platforms={demo.platforms} />
+          <PlatformChips platforms={demo.platforms} links={demo.experiences} />
           <span aria-hidden className={cn('inline-flex h-9 shrink-0 items-center gap-1.5 rounded-full px-4 text-sm font-semibold transition-colors duration-200', ready ? 'bg-primary text-primary-foreground group-hover:bg-[#415558]' : 'border border-[rgb(52_70_72/0.25)] text-primary group-hover:border-primary')}>
             View Demo <ArrowRight className="size-4 transition-transform duration-200 group-hover:translate-x-1" />
           </span>

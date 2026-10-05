@@ -208,6 +208,23 @@ html[data-splash] .splash {
   html[data-splash] .splash { display: none; }
 }
 
+/* Interactive demo products (components/demos): short transform/opacity-only motion, so views and cards feel alive without layout work. */
+@keyframes demo-rise {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes demo-slide {
+  from { opacity: 0; transform: translateX(18px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes demo-grow {
+  from { transform: scaleY(0); }
+  to { transform: scaleY(1); }
+}
+.demo-rise { animation: demo-rise 0.45s var(--ease-out) both; animation-delay: calc(var(--i, 0) * 45ms); }
+.demo-slide { animation: demo-slide 0.32s var(--ease-out) both; }
+.demo-grow { transform-origin: bottom; animation: demo-grow 0.7s var(--ease-out) both; animation-delay: calc(var(--i, 0) * 40ms); }
+
 /* Demo showcase tabs: a native radio group drives which cards are visible, with no client JavaScript. Each card lists the
    categories it belongs to in data-tabs. Browsers without :has() simply show everything. */
 @supports selector(:has(*)) {

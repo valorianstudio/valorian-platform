@@ -1,11 +1,12 @@
 import type { IconName } from '@/lib/icon-names';
+import { SCHOOL_DEMO, SCHOOL_EXPERIENCES } from './school/meta';
 
 /**
  * The single source of truth for the Solutions & Demos showcase: the home page section, the /demos page and every demo
  * detail page read from this file, and every card is drawn by one component (components/site/demos/demo-card.tsx).
  *
  * Entries are placeholders until each demo is built. Set `status: 'available'` when it is ready and add a real screenshot
- * through `image`. A demo whose `slug` matches an interactive demo managed in the admin panel (educore, clinicos, ...) opens
+ * through `image`. A demo whose `slug` matches an interactive demo managed in the admin panel (clinicos, ...) opens
  * that demo at /demos/<slug>; any other slug opens the placeholder page generated from the entry below.
  */
 
@@ -26,6 +27,10 @@ export interface Demo {
   features: string[];
   technologies: string[];
   platforms: DemoPlatform[];
+  /** Former slugs that now redirect here (the CMS may still know the demo by an old slug). */
+  aliases?: string[];
+  /** Interactive experiences built for this demo, by platform: the platform chips on its card link straight to them. */
+  experiences?: Partial<Record<DemoPlatform, string>>;
   /** Real screenshot URL, once there is one. */
   image?: string;
   /** Drawn in code until `image` exists. */
@@ -85,8 +90,10 @@ export const DEMO_STATUS_LABEL: Record<DemoStatus, string> = {
 
 export const DEMOS: Demo[] = [
   {
-    slug: 'educore',
-    title: 'School Management System',
+    slug: SCHOOL_DEMO.slug,
+    aliases: ['educore'],
+    experiences: { 'Landing Page': SCHOOL_EXPERIENCES[0].href, Website: SCHOOL_EXPERIENCES[1].href, 'Mobile App': SCHOOL_EXPERIENCES[2].href },
+    title: SCHOOL_DEMO.title,
     category: 'full-stack',
     offerings: ['full-stack', 'mobile-app', 'landing-page'],
     industry: 'Education',
@@ -374,7 +381,7 @@ export const DEMOS: Demo[] = [
 
 
 export function getDemo(slug: string): Demo | undefined {
-  return DEMOS.find((demo) => demo.slug === slug);
+  return DEMOS.find((demo) => demo.slug === slug || demo.aliases?.includes(slug));
 }
 
 export function demosIn(category: DemoCategoryId): Demo[] {

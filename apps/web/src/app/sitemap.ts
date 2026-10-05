@@ -1,13 +1,17 @@
 import type { MetadataRoute } from 'next';
 import { getSeoConfig, getSlugs } from '@/lib/cms';
 import { PUBLIC_ROUTES, SITE_URL } from '@/lib/site';
-import { DEMO_SLUGS } from '@/data/demos';
+import { DEMOS, DEMO_SLUGS } from '@/data/demos';
+import { SCHOOL_EXPERIENCES } from '@/data/school/meta';
 
 /** Demos in data/demos.ts live in code, so their last-modified date is that of the last edit to the file rather than "now". */
 const SOLUTIONS_UPDATED = '2026-10-04T00:00:00.000Z';
 
 // Built once an hour instead of on every crawler hit.
 export const revalidate = 3600;
+
+/** Old demo slugs that redirect to a catalog demo: they must not be listed as pages of their own. */
+const aliases = new Set(DEMOS.flatMap((demo) => demo.aliases ?? []));
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [slugs, seo] = await Promise.all([getSlugs(), getSeoConfig()]);
@@ -17,7 +21,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...(slugs?.services ?? []).map((item) => ({ path: `/services/${item.slug}`, updatedAt: item.updatedAt })),
     ...DEMO_SLUGS.filter((slug) => !(slugs?.demos ?? []).some((demo) => demo.slug === slug)).map((slug) => ({ path: `/demos/${slug}`, updatedAt: SOLUTIONS_UPDATED })),
     ...(slugs?.solutions ?? []).map((item) => ({ path: `/solutions/${item.slug}`, updatedAt: item.updatedAt })),
-    ...(slugs?.demos ?? []).map((item) => ({ path: `/demos/${item.slug}`, updatedAt: item.updatedAt })),
+    ...(slugs?.demos ?? []).filter((item) => !aliases.has(item.slug)).map((item) => ({ path: `/demos/${item.slug}`, updatedAt: item.updatedAt })),
+    ...SCHOOL_EXPERIENCES.map((experience) => ({ path: experience.href, updatedAt: SOLUTIONS_UPDATED })),
     ...(slugs?.caseStudies ?? []).map((item) => ({ path: `/case-studies/${item.slug}`, updatedAt: item.updatedAt })),
     ...(slugs?.articles ?? []).map((item) => ({ path: `/insights/${item.slug}`, updatedAt: item.updatedAt })),
   ];
