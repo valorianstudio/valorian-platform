@@ -6,6 +6,7 @@ import { Breadcrumbs, JsonLd } from '@/components/site/seo';
 import { Badge } from '@/components/ui/badge';
 import { ButtonLink } from '@/components/ui/button';
 import { Section } from '@/components/ui/section';
+import { SmartImage } from '@/components/ui/smart-image';
 import type { Demo } from '@/data/demos';
 import { SITE_URL } from '@/lib/site';
 
@@ -74,9 +75,15 @@ export function DemoOverview({ demo, config, bar, visual, sectionTitle, closing,
             return (
               <li key={experience.key} data-reveal style={{ ['--i' as string]: index }}>
                 <article className="card-lift group relative flex h-full flex-col p-6 sm:p-7">
-                  <span className="grid size-12 place-items-center rounded-2xl bg-primary-soft text-primary">
-                    <Icon className="size-6" aria-hidden />
-                  </span>
+                  {experience.key === 'website' && demo.image ? (
+                    <SmartImage src={demo.image} alt={`${demo.title} website preview`} width={800} height={500} sizes="(min-width: 1024px) 33vw, 90vw" className="aspect-[16/10] w-full rounded-xl border border-border object-cover object-top" />
+                  ) : experience.key === 'mobile-app' && demo.phoneImage ? (
+                    <SmartImage src={demo.phoneImage} alt={`${demo.title} mobile app preview`} width={240} height={480} sizes="(min-width: 1024px) 12rem, 45vw" className="mx-auto aspect-[9/16] w-40 rounded-2xl border border-border object-cover object-top" />
+                  ) : (
+                    <span className="grid aspect-[16/10] w-full place-items-center rounded-xl bg-primary-soft text-primary">
+                      <Icon className="size-8" aria-hidden />
+                    </span>
+                  )}
                   <p className="mt-6 text-xs font-semibold uppercase tracking-[0.12em] text-accent">{experience.label} showcase</p>
                   <h2 className="display mt-2 text-2xl text-primary">
                     <Link href={experience.href} className="after:absolute after:inset-0 after:content-['']">
@@ -91,8 +98,8 @@ export function DemoOverview({ demo, config, bar, visual, sectionTitle, closing,
                       </li>
                     ))}
                   </ul>
-                  <span aria-hidden className="mt-auto inline-flex items-center gap-1.5 pt-7 text-sm font-semibold text-primary">
-                    Open {experience.label.toLowerCase()} demo <ArrowRight className="size-4 transition-transform duration-200 group-hover:translate-x-1" />
+                  <span aria-hidden className="mt-auto inline-flex h-11 items-center justify-center gap-2 self-start rounded-xl bg-primary px-5 text-sm font-semibold text-primary-foreground transition-colors duration-200 group-hover:bg-[#415558]">
+                    View {experience.label.toLowerCase()} <ArrowRight className="size-4 transition-transform duration-200 group-hover:translate-x-1" />
                   </span>
                 </article>
               </li>

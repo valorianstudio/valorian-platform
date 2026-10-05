@@ -309,15 +309,8 @@ html[data-splash] .splash {
 .demo-slide { animation: demo-slide 0.32s var(--ease-out) both; }
 .demo-grow { transform-origin: bottom; animation: demo-grow 0.7s var(--ease-out) both; animation-delay: calc(var(--i, 0) * 40ms); }
 
-/* Demo showcase tabs: a native radio group drives which cards are visible, with no client JavaScript. Each card lists the
-   categories it belongs to in data-tabs. Browsers without :has() simply show everything. */
 @supports selector(:has(*)) {
-  .demo-tabs [data-tabs] { display: none; }
-  .demo-tabs:has(input[value='landing-page']:checked) [data-tabs~='landing-page'],
-  .demo-tabs:has(input[value='full-stack']:checked) [data-tabs~='full-stack'],
-  .demo-tabs:has(input[value='mobile-app']:checked) [data-tabs~='mobile-app'] { display: block; }
-
-  /* Technology showcase tabs: same idea, one rule per category. */
+  /* Technology showcase tabs: a native radio group drives which cards are visible, one rule per category. */
   .tech-tabs [data-cat] { display: none; }
   .tech-tabs:has(input[value='all']:checked) [data-cat],
   .tech-tabs:has(input[value='frontend']:checked) [data-cat='frontend'],

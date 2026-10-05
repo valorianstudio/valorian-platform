@@ -17,7 +17,7 @@ export const defaultSettings: SiteSettings = {
   tagline: "Software Engineering & Digital Product Studio",
   description:
     "We design and engineer custom software, web applications, SaaS platforms, mobile apps and AI-powered solutions.",
-  primaryEmail: "hello.valorianstudio@gmail.com",
+  primaryEmail: "hello@valorianstudio.com",
   secondaryEmail: null,
   phone: null,
   whatsapp: null,

@@ -49,7 +49,7 @@ async function main(): Promise<void> {
       tagline: "Software Engineering & Digital Product Studio",
       description:
         "We design and engineer custom software, web applications, SaaS platforms, mobile apps and AI-powered solutions for ambitious businesses.",
-      primaryEmail: "hello.valorianstudio@gmail.com",
+      primaryEmail: "hello@valorianstudio.com",
       websiteUrl: "https://valorian.studio",
       defaultCurrency: "USD",
     },

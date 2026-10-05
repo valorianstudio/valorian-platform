@@ -23,6 +23,9 @@ import { SCHOOL_DEMO, SCHOOL_EXPERIENCES } from './school/meta';
 export type DemoCategoryId = 'landing-page' | 'full-stack' | 'mobile-app';
 export type DemoPlatform = 'Website' | 'Mobile App' | 'Landing Page';
 export type DemoStatus = 'available' | 'in-development' | 'coming-soon';
+/** The industry a demo is filtered by in the showcase. */
+export type DemoSector = 'Education' | 'Healthcare' | 'Restaurant' | 'E-commerce' | 'Hospitality' | 'Fitness' | 'Logistics' | 'Real Estate';
+export const DEMO_SECTORS: DemoSector[] = ['Education', 'Healthcare', 'Restaurant', 'E-commerce', 'Hospitality', 'Fitness', 'Logistics', 'Real Estate'];
 export type PlaceholderTone = 'cream' | 'coral' | 'slate' | 'mist';
 
 export interface Demo {
@@ -33,6 +36,8 @@ export interface Demo {
   /** Every category the demo is offered in (always includes `category`). One demo, shown once per tab it belongs to. */
   offerings: DemoCategoryId[];
   industry: string;
+  /** The showcase filter this demo belongs to. Required for a demo to be shown. */
+  sector?: DemoSector;
   description: string;
   features: string[];
   technologies: string[];
@@ -111,6 +116,7 @@ export const DEMOS: Demo[] = [
     category: 'full-stack',
     offerings: ['full-stack', 'mobile-app', 'landing-page'],
     industry: 'Education',
+    sector: 'Education',
     description: 'A complete school administration platform covering admissions, classes, attendance, fees and parent communication, with a mobile app and an admissions landing page.',
     features: ['Student and guardian records', 'Daily attendance with summaries', 'Fee invoicing and payment tracking', 'Timetables and class management', 'Parent and teacher portals', 'Admissions landing page with enquiry form'],
     technologies: ['Next.js', 'NestJS', 'PostgreSQL', 'React Native'],
@@ -128,6 +134,7 @@ export const DEMOS: Demo[] = [
     category: 'full-stack',
     offerings: ['full-stack', 'mobile-app', 'landing-page'],
     industry: 'Healthcare',
+    sector: 'Healthcare',
     description: 'Appointments, patient records and billing in one calm interface, with a patient booking app and a marketing landing page to attract new patients.',
     features: ['Appointment calendar by doctor and room', 'Patient profiles and visit history', 'Invoicing and payment tracking', 'Automated appointment reminders', 'Patient booking app', 'Clinic marketing landing page'],
     technologies: ['Next.js', 'NestJS', 'PostgreSQL', 'React Native'],
@@ -145,6 +152,7 @@ export const DEMOS: Demo[] = [
     category: 'full-stack',
     offerings: ['full-stack', 'mobile-app', 'landing-page'],
     industry: 'Restaurant & Hospitality',
+    sector: 'Restaurant',
     description: 'Reservations, table status, orders and daily sales connected across the dining room and kitchen, plus a guest ordering app and a restaurant landing page.',
     features: ['Reservations and table management', 'Order and kitchen display flow', 'Menu and pricing management', 'Daily sales reporting', 'Guest ordering and booking app', 'Restaurant landing page with online booking'],
     technologies: ['Next.js', 'NestJS', 'PostgreSQL', 'Flutter'],
@@ -162,6 +170,7 @@ export const DEMOS: Demo[] = [
     category: 'full-stack',
     offerings: ['full-stack', 'mobile-app', 'landing-page'],
     industry: 'Fitness',
+    sector: 'Fitness',
     description: 'Memberships, class schedules, check-ins and trainer management for gyms and studios, with a member app and a sign-up landing page.',
     features: ['Membership plans and renewals', 'Class and trainer scheduling', 'QR check-in and attendance', 'Payment tracking and reminders', 'Member progress and workout plans', 'Membership landing page'],
     technologies: ['Next.js', 'NestJS', 'PostgreSQL', 'React Native'],
@@ -179,6 +188,7 @@ export const DEMOS: Demo[] = [
     category: 'full-stack',
     offerings: ['full-stack', 'mobile-app', 'landing-page'],
     industry: 'EdTech',
+    sector: 'Education',
     description: 'Create, sell and deliver online courses with lessons, quizzes, progress tracking and certificates, for academies and independent instructors.',
     features: ['Course builder with video and documents', 'Quizzes and assignments', 'Student progress and certificates', 'Payments and enrolment', 'Instructor and admin dashboards', 'Course sales landing page'],
     technologies: ['Next.js', 'NestJS', 'PostgreSQL', 'Redis'],
@@ -209,6 +219,7 @@ export const DEMOS: Demo[] = [
     category: 'full-stack',
     offerings: ['full-stack', 'mobile-app', 'landing-page'],
     industry: 'Fashion & Retail',
+    sector: 'E-commerce',
     description: 'An online fashion store with product pages, filters, cart and checkout, an admin dashboard for stock and orders, and a shopping app.',
     features: ['Product catalog with search', 'Cart and secure checkout', 'Inventory and order management', 'Discounts and campaigns', 'Shopping mobile app', 'Campaign landing pages'],
     technologies: ['Next.js', 'NestJS', 'PostgreSQL', 'Cloudflare', 'React Native'],
@@ -304,12 +315,13 @@ export const DEMOS: Demo[] = [
     category: 'full-stack',
     offerings: ['full-stack', 'mobile-app', 'landing-page'],
     industry: 'Hospitality',
+    sector: 'Hospitality',
     description: 'Reservations, room inventory, housekeeping and billing for luxury hotels, with a guest booking app and a direct-booking landing page.',
     features: ['Room inventory and availability calendar', 'Reservations and check-in/out', 'Housekeeping task board', 'Billing and invoices', 'Guest app for bookings and requests', 'Direct-booking landing page'],
     technologies: ['Next.js', 'NestJS', 'PostgreSQL', 'Flutter'],
     platforms: ['Website', 'Mobile App', 'Landing Page'],
     placeholder: { icon: 'store', tone: 'slate' },
-    status: 'coming-soon',
+    status: 'available',
   },
   {
     slug: DELIVERY_DEMO.slug,
@@ -321,12 +333,13 @@ export const DEMOS: Demo[] = [
     category: 'full-stack',
     offerings: ['full-stack', 'mobile-app', 'landing-page'],
     industry: 'Logistics & Delivery',
+    sector: 'Logistics',
     description: 'Dispatch, track and prove deliveries across fleets and couriers, with live status for customers and a driver app.',
     features: ['Order intake and dispatch board', 'Driver app with navigation and proof of delivery', 'Live tracking and status updates', 'Zone and fee management', 'Customer notifications', 'Performance and cost reports'],
     technologies: ['React', 'NestJS', 'PostgreSQL', 'Redis', 'React Native'],
     platforms: ['Website', 'Mobile App'],
     placeholder: { icon: 'zap', tone: 'mist' },
-    status: 'coming-soon',
+    status: 'available',
   },
   {
     slug: 'event-management-system',
@@ -364,6 +377,7 @@ export const DEMOS: Demo[] = [
     category: 'full-stack',
     offerings: ['full-stack', 'mobile-app', 'landing-page'],
     industry: 'Pet Care & Retail',
+    sector: 'E-commerce',
     description: 'Pets, products, grooming and vet appointments, stock and orders for pet shops, with a customer app and a pet care landing page.',
     features: ['Product and stock management', 'Point of sale and invoices', 'Pet profiles and vaccination records', 'Grooming and vet appointments', 'Customer ordering app', 'Shop landing page'],
     technologies: ['Next.js', 'NestJS', 'PostgreSQL', 'Flutter'],
@@ -394,6 +408,7 @@ export const DEMOS: Demo[] = [
     category: 'full-stack',
     offerings: ['full-stack', 'mobile-app', 'landing-page'],
     industry: 'Healthcare',
+    sector: 'Healthcare',
     description: 'Stock, expiry tracking, prescriptions and sales for pharmacies, with an ordering app for customers and a pharmacy landing page.',
     features: ['Inventory with batch and expiry alerts', 'Point of sale and invoicing', 'Prescription records', 'Supplier and purchase management', 'Customer reorder app', 'Pharmacy landing page'],
     technologies: ['Next.js', 'NestJS', 'PostgreSQL', 'React Native'],
@@ -424,6 +439,7 @@ export const DEMOS: Demo[] = [
     category: 'full-stack',
     offerings: ['full-stack', 'mobile-app', 'landing-page'],
     industry: 'Real Estate & Property',
+    sector: 'Real Estate',
     description: 'Manage tenants, rent, maintenance requests and shared services for apartment buildings, landlords and property managers, with a resident app.',
     features: ['Unit and tenant records', 'Rent invoicing and payment tracking', 'Maintenance request tickets', 'Notices and resident messaging', 'Resident mobile app', 'Owner and manager reports'],
     technologies: ['Next.js', 'NestJS', 'PostgreSQL', 'React Native'],
@@ -440,6 +456,31 @@ export function getDemo(slug: string): Demo | undefined {
 
 export function demosIn(category: DemoCategoryId): Demo[] {
   return DEMOS.filter((demo) => demo.offerings.includes(category));
+}
+
+/** A demo is shown to clients only when it is finished: all three experiences, a preview image and a sector. */
+export function isShowcased(demo: Demo): boolean {
+  const e = demo.experiences;
+  return Boolean(e?.['Landing Page'] && e.Website && e['Mobile App'] && demo.image && demo.sector);
+}
+
+/** The showcase list: every finished demo, and nothing else. Incomplete catalog entries stay in DEMOS for the CMS but never reach a client. */
+export const SHOWCASE_DEMOS: Demo[] = DEMOS.filter(isShowcased);
+
+/** Which experiences a demo offers, in the shape the card and the filters read. */
+export function demoAvailability(demo: Demo) {
+  const landingPage = demo.experiences?.['Landing Page'];
+  const website = demo.experiences?.Website;
+  const mobileApp = demo.experiences?.['Mobile App'];
+  return {
+    title: demo.title,
+    category: demo.sector,
+    previewImage: demo.image,
+    hasLandingPage: Boolean(landingPage),
+    hasWebsite: Boolean(website),
+    hasMobileApp: Boolean(mobileApp),
+    routes: { landingPage, website, mobileApp },
+  };
 }
 
 export const DEMO_SLUGS = DEMOS.map((demo) => demo.slug);

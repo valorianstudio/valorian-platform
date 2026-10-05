@@ -22,7 +22,7 @@ const schema = z.object({
   SMTP_USER: z.string().optional(),
   SMTP_PASSWORD: z.string().optional(),
   SMTP_SECURE: z.enum(['true', 'false']).optional(),
-  EMAIL_FROM: z.string().max(200).default('Valorian Studio <no-reply@valorian.com>'),
+  EMAIL_FROM: z.string().max(200).default('Valorian Studio <hello@valorianstudio.com>'),
   /** Where new lead and contact notifications go when the CRM settings do not name a recipient. */
   EMAIL_TO: z.string().email().optional(),
   /** Older name for EMAIL_TO; still honored. */

@@ -4,7 +4,7 @@ import { JsonLd } from '@/components/site/seo';
 import { PageHero } from '@/components/site/page-hero';
 import { ButtonLink } from '@/components/ui/button';
 import { Section } from '@/components/ui/section';
-import { DEMOS } from '@/data/demos';
+import { SHOWCASE_DEMOS } from '@/data/demos';
 import { buildMetadata, getPageSeo } from '@/lib/cms';
 import { SITE_URL } from '@/lib/site';
 
@@ -25,7 +25,7 @@ export default function DemosPage() {
           '@context': 'https://schema.org',
           '@type': 'ItemList',
           name: 'Solutions & Product Demos',
-          itemListElement: DEMOS.map((demo, index) => ({ '@type': 'ListItem', position: index + 1, name: demo.title, url: `${SITE_URL}/demos/${demo.slug}` })),
+          itemListElement: SHOWCASE_DEMOS.map((demo, index) => ({ '@type': 'ListItem', position: index + 1, name: demo.title, url: `${SITE_URL}/demos/${demo.slug}` })),
         }}
       />
       <PageHero eyebrow="Solutions & Demos" title="See what we build, before we build it" description="Landing pages, full stack web applications and mobile apps for real businesses. Each demo is a showcase concept, not a client project.">

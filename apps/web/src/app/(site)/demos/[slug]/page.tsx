@@ -15,7 +15,7 @@ import { Section } from '@/components/ui/section';
 import { buildMetadata, getDemo } from '@/lib/cms';
 import type { DemoDetail } from '@/lib/cms-types';
 import { getIcon } from '@/lib/icons';
-import { getDemo as getCatalogDemo } from '@/data/demos';
+import { getDemo as getCatalogDemo, isShowcased } from '@/data/demos';
 import type { DemoPlatform } from '@/data/demos';
 import { getSiteSettings } from '@/lib/server-api';
 import { whatsappLink, whatsappMessages } from '@/lib/whatsapp';
@@ -39,7 +39,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const demo = await getDemo(slug);
   if (!demo) {
     const solution = getCatalogDemo(slug);
-    if (!solution) return {};
+    if (!solution || !isShowcased(solution)) return {};
     return buildMetadata(null, { title: `${solution.title} | Demo`, description: solution.description, path: `/demos/${slug}` });
   }
   return buildMetadata({ ...demo, ogImageUrl: demo.ogImageUrl ?? demo.coverImageUrl }, { title: demo.name, description: demo.shortDescription, path: `/demos/${slug}` });
@@ -160,7 +160,7 @@ export default async function DemoDetailPage({ params }: { params: Promise<{ slu
   const [demo, settings] = await Promise.all([getDemo(slug), getSiteSettings()]);
   if (!demo) {
     const solution = getCatalogDemo(slug);
-    if (!solution) notFound();
+    if (!solution || !isShowcased(solution)) notFound();
     return <DemoPlaceholderPage demo={solution} />;
   }
 

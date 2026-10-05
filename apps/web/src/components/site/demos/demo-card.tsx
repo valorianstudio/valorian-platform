@@ -1,10 +1,10 @@
 import Link from 'next/link';
-import { ArrowRight, Check, Clock, Globe, Rocket, Smartphone } from 'lucide-react';
+import { ArrowRight, Clock, Globe, Rocket, Smartphone } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { SmartImage } from '@/components/ui/smart-image';
 import { cn } from '@/lib/cn';
 import { getIcon } from '@/lib/icons';
-import { DEMOS, DEMO_STATUS_LABEL } from '@/data/demos';
+import { DEMOS, DEMO_STATUS_LABEL, demoAvailability } from '@/data/demos';
 import type { Demo, DemoPlatform, PlaceholderTone } from '@/data/demos';
 import type { DemoCardData } from '@/lib/cms-types';
 
@@ -99,6 +99,33 @@ export function PlatformChips({ platforms, links }: { platforms: DemoPlatform[];
   );
 }
 
+/** The three ways into a demo, as buttons. Only the experiences the demo really has are shown. */
+export function PlatformButtons({ demo }: { demo: Demo }) {
+  const a = demoAvailability(demo);
+  const versions = [
+    { href: a.routes.landingPage, label: 'View Landing Page', Icon: Rocket },
+    { href: a.routes.website, label: 'View Website', Icon: Globe },
+    { href: a.routes.mobileApp, label: 'View App', Icon: Smartphone },
+  ].filter((version): version is { href: string; label: string; Icon: typeof Rocket } => Boolean(version.href));
+
+  if (versions.length === 0) return null;
+  return (
+    <div className="mt-auto pt-5">
+      <p className="text-xs font-semibold uppercase tracking-[0.12em] text-muted">Available versions</p>
+      <ul className="mt-2.5 flex flex-wrap gap-2" aria-label="Available versions">
+        {versions.map(({ href, label, Icon }) => (
+          <li key={label}>
+            <Link href={href} className="relative z-10 inline-flex items-center gap-2 rounded-xl border border-primary/15 bg-primary-soft px-3 py-2 text-sm font-semibold text-primary transition-colors hover:border-primary hover:bg-primary hover:text-primary-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
+              <Icon className="size-4" aria-hidden />
+              {label}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 export function StatusBadge({ status }: { status: Demo['status'] }) {
   return (
     <Badge tone={status === 'available' ? 'accent' : 'neutral'} className="normal-case">
@@ -133,54 +160,29 @@ export function demoFromApi(item: DemoCardData): Demo {
   };
 }
 
-/** The one demo card: used by the home page, /demos, related-demo sections and the placeholder detail pages. */
+/**
+ * The one demo card: a preview, the sector, the title, a short description and clear buttons for the versions the demo offers.
+ * The whole card opens the demo's overview; the version buttons sit above that link and open each experience directly.
+ */
 export function DemoCard({ demo }: { demo: Demo }) {
-  const ready = demo.status === 'available';
   return (
     <article className="card-lift group relative flex h-full flex-col overflow-hidden">
       <DemoVisual demo={demo} phoneImage={demo.phoneImage} />
       <div className="flex flex-1 flex-col p-5 sm:p-6">
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-xs font-semibold uppercase tracking-[0.12em] text-accent">{demo.industry}</span>
-          <span className="ml-auto">
-            <StatusBadge status={demo.status} />
-          </span>
+          <span className="text-xs font-semibold uppercase tracking-[0.12em] text-accent">{demo.sector ?? demo.industry}</span>
+          {demo.status !== 'available' && <span className="ml-auto"><StatusBadge status={demo.status} /></span>}
         </div>
         <h3 className="display mt-3 text-xl text-primary sm:text-2xl">
-          {/* The whole card is the link target (stretched ::after), so the card stays a single tab stop. */}
           <Link href={`/demos/${demo.slug}`} className="after:absolute after:inset-0 after:content-['']">
             {demo.title}
           </Link>
         </h3>
-        <p className="mt-2.5 text-sm leading-relaxed text-muted">{demo.description}</p>
-
-        {demo.features.length > 0 && (
-          <ul className="mt-4 space-y-1.5" aria-label="Key features">
-            {demo.features.slice(0, 3).map((feature) => (
-              <li key={feature} className="flex gap-2.5 text-sm text-primary">
-                <Check className="mt-0.5 size-4 shrink-0 text-accent" aria-hidden />
-                {feature}
-              </li>
-            ))}
-          </ul>
-        )}
-
-        {demo.technologies.length > 0 && (
-          <ul className="mt-5 flex flex-wrap gap-1.5" aria-label="Technology stack">
-            {demo.technologies.slice(0, 5).map((tech) => (
-              <li key={tech} className="rounded-full bg-primary-soft px-2.5 py-1 text-[11px] font-semibold text-primary">
-                {tech}
-              </li>
-            ))}
-          </ul>
-        )}
-
-        <div className="mt-auto flex items-center justify-between gap-3 border-t border-border pt-5">
-          <PlatformChips platforms={demo.platforms} links={demo.experiences} />
-          <span aria-hidden className={cn('inline-flex h-9 shrink-0 items-center gap-1.5 rounded-full px-4 text-sm font-semibold transition-colors duration-200', ready ? 'bg-primary text-primary-foreground group-hover:bg-[#415558]' : 'border border-[rgb(52_70_72/0.25)] text-primary group-hover:border-primary')}>
-            View Demo <ArrowRight className="size-4 transition-transform duration-200 group-hover:translate-x-1" />
-          </span>
-        </div>
+        <p className="mt-2.5 line-clamp-2 text-sm leading-relaxed text-muted">{demo.description}</p>
+        <PlatformButtons demo={demo} />
+        <span aria-hidden className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-primary">
+          View full demo <ArrowRight className="size-4 transition-transform duration-200 group-hover:translate-x-1" />
+        </span>
       </div>
     </article>
   );

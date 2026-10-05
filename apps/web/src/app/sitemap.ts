@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next';
 import { getSeoConfig, getSlugs } from '@/lib/cms';
 import { PUBLIC_ROUTES, SITE_URL } from '@/lib/site';
-import { DEMOS, DEMO_SLUGS } from '@/data/demos';
+import { DEMOS, SHOWCASE_DEMOS } from '@/data/demos';
 import { CLINIC_EXPERIENCES } from '@/data/clinic/meta';
 import { CLOTHING_EXPERIENCES } from '@/data/clothing/meta';
 import { DELIVERY_EXPERIENCES } from '@/data/delivery/meta';
@@ -29,7 +29,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = seo?.canonicalBaseUrl || SITE_URL;
   const dynamicRoutes = [
     ...(slugs?.services ?? []).map((item) => ({ path: `/services/${item.slug}`, updatedAt: item.updatedAt })),
-    ...DEMO_SLUGS.filter((slug) => !(slugs?.demos ?? []).some((demo) => demo.slug === slug)).map((slug) => ({ path: `/demos/${slug}`, updatedAt: SOLUTIONS_UPDATED })),
+    ...SHOWCASE_DEMOS.map((demo) => demo.slug).filter((slug) => !(slugs?.demos ?? []).some((demo) => demo.slug === slug)).map((slug) => ({ path: `/demos/${slug}`, updatedAt: SOLUTIONS_UPDATED })),
     ...(slugs?.solutions ?? []).map((item) => ({ path: `/solutions/${item.slug}`, updatedAt: item.updatedAt })),
     ...(slugs?.demos ?? []).filter((item) => !aliases.has(item.slug)).map((item) => ({ path: `/demos/${item.slug}`, updatedAt: item.updatedAt })),
     ...[...SCHOOL_EXPERIENCES, ...CLINIC_EXPERIENCES, ...RESTAURANT_EXPERIENCES, ...GYM_EXPERIENCES, ...COURSE_EXPERIENCES, ...CLOTHING_EXPERIENCES, ...HOTEL_EXPERIENCES, ...DELIVERY_EXPERIENCES, ...PETSHOP_EXPERIENCES, ...PHARMACY_EXPERIENCES, ...PROPERTY_EXPERIENCES].map((experience) => ({ path: experience.href, updatedAt: SOLUTIONS_UPDATED })),

@@ -48,6 +48,8 @@ services:
       - key: SMTP_PASSWORD
         sync: false
       - key: EMAIL_FROM
-        value: Valorian Studio <no-reply@valorian.com>
+        value: Valorian Studio <hello@valorianstudio.com>
+      - key: NOTIFY_EMAIL
+        value: hello@valorianstudio.com
       - key: EMAIL_TO
         sync: false
