@@ -1,10 +1,10 @@
 'use client';
 
 import { useState } from 'react';
+import { BottomNav } from '@/components/demos/shared/mobile-kit';
 import { MobileFrame } from '@/components/demos/shared/mobile-frame';
 import { cn } from '@/lib/cn';
 import {
-  BottomNav,
   STUDENT_NAV,
   StudentAnnouncements,
   StudentAttendance,
@@ -20,7 +20,7 @@ import {
   TeacherReports,
 } from './mobile-screens';
 import type { StudentScreen, TeacherScreen } from './mobile-screens';
-import { Tabs } from './website-ui';
+import { Tabs } from '@/components/demos/shared/app-ui';
 
 type App = 'student' | 'teacher';
 

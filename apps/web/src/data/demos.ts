@@ -1,4 +1,5 @@
 import type { IconName } from '@/lib/icon-names';
+import { CLINIC_DEMO, CLINIC_EXPERIENCES } from './clinic/meta';
 import { SCHOOL_DEMO, SCHOOL_EXPERIENCES } from './school/meta';
 
 /**
@@ -6,7 +7,7 @@ import { SCHOOL_DEMO, SCHOOL_EXPERIENCES } from './school/meta';
  * detail page read from this file, and every card is drawn by one component (components/site/demos/demo-card.tsx).
  *
  * Entries are placeholders until each demo is built. Set `status: 'available'` when it is ready and add a real screenshot
- * through `image`. A demo whose `slug` matches an interactive demo managed in the admin panel (clinicos, ...) opens
+ * through `image`. A demo whose `slug` matches an interactive demo managed in the admin panel (...) opens
  * that demo at /demos/<slug>; any other slug opens the placeholder page generated from the entry below.
  */
 
@@ -105,8 +106,10 @@ export const DEMOS: Demo[] = [
     status: 'available',
   },
   {
-    slug: 'clinicos',
-    title: 'Clinic Management System',
+    slug: CLINIC_DEMO.slug,
+    aliases: ['clinicos'],
+    experiences: { 'Landing Page': CLINIC_EXPERIENCES[0].href, Website: CLINIC_EXPERIENCES[1].href, 'Mobile App': CLINIC_EXPERIENCES[2].href },
+    title: CLINIC_DEMO.title,
     category: 'full-stack',
     offerings: ['full-stack', 'mobile-app', 'landing-page'],
     industry: 'Healthcare',

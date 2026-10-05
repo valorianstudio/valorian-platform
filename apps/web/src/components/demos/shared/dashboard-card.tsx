@@ -4,8 +4,8 @@ import type { ReactNode } from 'react';
 import { cn } from '@/lib/cn';
 
 const TONES = {
-  blue: 'bg-blue-50 text-blue-600',
-  emerald: 'bg-emerald-50 text-emerald-700',
+  blue: 'bg-[var(--demo-accent-soft,#eff6ff)] text-[color:var(--demo-accent,#2563eb)]',
+  emerald: 'bg-[var(--demo-good-soft,#ecfdf5)] text-[color:var(--demo-good-ink,#047857)]',
   amber: 'bg-amber-50 text-amber-700',
   slate: 'bg-slate-100 text-slate-700',
 } as const;
@@ -22,7 +22,7 @@ export function DashboardCard({ label, value, delta, icon: Icon, tone = 'blue', 
       </div>
       <p className="mt-2 text-2xl font-semibold tracking-tight text-slate-900 tabular-nums">{value}</p>
       {delta && (
-        <p className={cn('mt-1 inline-flex items-center gap-1 text-xs font-medium', delta.up ? 'text-emerald-700' : 'text-amber-700')}>
+        <p className={cn('mt-1 inline-flex items-center gap-1 text-xs font-medium', delta.up ? 'text-[color:var(--demo-good-ink,#047857)]' : 'text-amber-700')}>
           {delta.up ? <TrendingUp className="size-3.5" aria-hidden /> : <TrendingDown className="size-3.5" aria-hidden />}
           {delta.value}
         </p>

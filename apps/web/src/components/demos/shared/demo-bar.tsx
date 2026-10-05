@@ -33,7 +33,7 @@ export function DemoBar({ title, slug, overviewHref, experiences, active }: { ti
             </Link>
           ))}
         </nav>
-        <Link href={`/contact?demo=${slug}`} className="ml-auto inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-300 transition-colors hover:text-emerald-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400">
+        <Link href={`/contact?demo=${slug}`} className="ml-auto inline-flex items-center gap-1.5 text-xs font-semibold text-[color:var(--demo-good-light,#6ee7b7)] transition-opacity hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400">
           Order a system like this <ArrowRight className="size-3.5" aria-hidden />
         </Link>
       </div>

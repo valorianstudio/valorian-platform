@@ -4,13 +4,25 @@ import { SectionTitle } from '@/components/demos/shared/section-title';
 import { FAQS, FEATURES, FOOTER_LINKS, LANDING_NAV, PRICING, SCHOOL_BRAND, STATS, TESTIMONIALS, WHY } from '@/data/school/landing';
 import { cn } from '@/lib/cn';
 import { DashboardPreview } from './dashboard-preview';
-import { EnquiryForm } from './enquiry-form';
+import { EnquiryForm } from '@/components/demos/shared/enquiry-form';
+import type { EnquiryCopy } from '@/components/demos/shared/enquiry-form';
 import { FeatureCard } from './feature-card';
 import { SchoolLogo } from './school-logo';
 
 const SECTION = 'scroll-mt-28 py-20 sm:py-24';
 /** Inner column shared by every section, with the same gutters as the navbar and hero so edges line up. */
 const COL = 'mx-auto w-full max-w-7xl px-5 sm:px-8';
+const ENQUIRY_COPY: EnquiryCopy = {
+  organisation: { label: 'School name', placeholder: 'Northfield Academy' },
+  emailPlaceholder: 'jordan@school.edu',
+  topics: [
+    { value: 'demo', label: 'Book a product demo' },
+    { value: 'admission', label: 'Ask about admissions' },
+    { value: 'pricing', label: 'Discuss pricing' },
+  ],
+  messagePlaceholder: 'Tell us about your school and what you need.',
+  submitLabel: 'Request demo',
+};
 const BTN = 'inline-flex h-12 items-center justify-center gap-2 rounded-lg px-6 text-[15px] font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2';
 
 /**
@@ -222,7 +234,7 @@ export function SchoolLandingPage() {
               ))}
             </ul>
           </div>
-          <EnquiryForm />
+          <EnquiryForm copy={ENQUIRY_COPY} />
         </div>
       </section>
 

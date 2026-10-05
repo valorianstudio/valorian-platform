@@ -2,6 +2,7 @@ import type { MetadataRoute } from 'next';
 import { getSeoConfig, getSlugs } from '@/lib/cms';
 import { PUBLIC_ROUTES, SITE_URL } from '@/lib/site';
 import { DEMOS, DEMO_SLUGS } from '@/data/demos';
+import { CLINIC_EXPERIENCES } from '@/data/clinic/meta';
 import { SCHOOL_EXPERIENCES } from '@/data/school/meta';
 
 /** Demos in data/demos.ts live in code, so their last-modified date is that of the last edit to the file rather than "now". */
@@ -22,7 +23,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...DEMO_SLUGS.filter((slug) => !(slugs?.demos ?? []).some((demo) => demo.slug === slug)).map((slug) => ({ path: `/demos/${slug}`, updatedAt: SOLUTIONS_UPDATED })),
     ...(slugs?.solutions ?? []).map((item) => ({ path: `/solutions/${item.slug}`, updatedAt: item.updatedAt })),
     ...(slugs?.demos ?? []).filter((item) => !aliases.has(item.slug)).map((item) => ({ path: `/demos/${item.slug}`, updatedAt: item.updatedAt })),
-    ...SCHOOL_EXPERIENCES.map((experience) => ({ path: experience.href, updatedAt: SOLUTIONS_UPDATED })),
+    ...[...SCHOOL_EXPERIENCES, ...CLINIC_EXPERIENCES].map((experience) => ({ path: experience.href, updatedAt: SOLUTIONS_UPDATED })),
     ...(slugs?.caseStudies ?? []).map((item) => ({ path: `/case-studies/${item.slug}`, updatedAt: item.updatedAt })),
     ...(slugs?.articles ?? []).map((item) => ({ path: `/insights/${item.slug}`, updatedAt: item.updatedAt })),
   ];

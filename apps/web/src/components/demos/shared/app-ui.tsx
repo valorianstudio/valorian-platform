@@ -6,7 +6,7 @@ import { useEffect, useId, useRef, useState } from 'react';
 import type { ReactNode, RefObject } from 'react';
 import { cn } from '@/lib/cn';
 
-/** Small interactive building blocks for the school website demo (client side). */
+/** Small interactive building blocks for the interactive website demos (client side). Colours come from the --demo-* CSS variables set by each demo, with the School palette as the default. */
 
 const AVATAR_TONES = ['bg-blue-100 text-blue-700', 'bg-emerald-100 text-emerald-800', 'bg-amber-100 text-amber-800', 'bg-slate-200 text-slate-700', 'bg-sky-100 text-sky-800'];
 
@@ -26,10 +26,10 @@ export function Avatar({ name, size = 'md' }: { name: string; size?: 'sm' | 'md'
 }
 
 const BADGE_TONES = {
-  green: 'bg-emerald-50 text-emerald-800 ring-emerald-200',
+  green: 'bg-[var(--demo-good-soft,#ecfdf5)] text-[color:var(--demo-good-ink,#065f46)] ring-[color:var(--demo-good-ring,#a7f3d0)]',
   amber: 'bg-amber-50 text-amber-800 ring-amber-200',
   red: 'bg-rose-50 text-rose-800 ring-rose-200',
-  blue: 'bg-blue-50 text-blue-800 ring-blue-200',
+  blue: 'bg-[var(--demo-accent-soft,#eff6ff)] text-[color:var(--demo-accent-ink,#1e40af)] ring-[color:var(--demo-accent-ring,#bfdbfe)]',
   slate: 'bg-slate-100 text-slate-700 ring-slate-200',
 } as const;
 
@@ -79,7 +79,7 @@ export function SelectMenu<T extends string>({ label, value, options, onChange, 
         aria-controls={open ? listId : undefined}
         aria-label={`${label}: ${value}`}
         onClick={() => setOpen((v) => !v)}
-        className="flex h-9 w-full items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 transition-colors hover:border-slate-300 focus-visible:outline-2 focus-visible:outline-blue-600"
+        className="flex h-9 w-full items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 transition-colors hover:border-slate-300 focus-visible:outline-2 focus-visible:outline-[color:var(--demo-accent,#2563eb)]"
       >
         {Icon && <Icon className="size-4 shrink-0 text-slate-500" aria-hidden />}
         <span className="min-w-0 flex-1 truncate text-left">{value}</span>
@@ -98,7 +98,7 @@ export function SelectMenu<T extends string>({ label, value, options, onChange, 
                 className="flex w-full items-center justify-between gap-6 whitespace-nowrap rounded-lg px-3 py-2 text-left text-sm text-slate-700 hover:bg-slate-50 focus-visible:bg-slate-50 focus-visible:outline-none"
               >
                 {option}
-                {option === value && <Check className="size-4 text-blue-600" aria-hidden />}
+                {option === value && <Check className="size-4 text-[color:var(--demo-accent,#2563eb)]" aria-hidden />}
               </button>
             </li>
           ))}
@@ -131,7 +131,7 @@ export function Tabs<T extends string>({ tabs, value, onChange, label, className
           tabIndex={tab.id === value ? 0 : -1}
           onClick={() => onChange(tab.id)}
           onKeyDown={(event) => onKeyDown(event, index)}
-          className={cn('shrink-0 whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-blue-600', tab.id === value ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900')}
+          className={cn('shrink-0 whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-[color:var(--demo-accent,#2563eb)]', tab.id === value ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900')}
         >
           {tab.label}
           {tab.count !== undefined && <span className="ml-1.5 text-xs text-slate-500">{tab.count}</span>}
@@ -156,7 +156,7 @@ export function PageHeading({ title, description, children }: { title: string; d
 export function ProgressBar({ value, tone = 'blue' }: { value: number; tone?: 'blue' | 'emerald' }) {
   return (
     <div role="progressbar" aria-valuenow={Math.round(value)} aria-valuemin={0} aria-valuemax={100} className="h-1.5 overflow-hidden rounded-full bg-slate-100">
-      <div className={cn('h-full rounded-full', tone === 'blue' ? 'bg-blue-600' : 'bg-emerald-500')} style={{ width: `${value}%` }} />
+      <div className={cn('h-full rounded-full', tone === 'blue' ? 'bg-[var(--demo-accent,#2563eb)]' : 'bg-[var(--demo-good,#10b981)]')} style={{ width: `${value}%` }} />
     </div>
   );
 }

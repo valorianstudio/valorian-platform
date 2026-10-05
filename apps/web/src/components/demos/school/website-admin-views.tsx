@@ -21,7 +21,7 @@ import {
 } from '@/data/school/app';
 import type { AttendanceStatus, FeeStatus, Student } from '@/data/school/app';
 import { cn } from '@/lib/cn';
-import { Avatar, PageHeading, Pill, ProgressBar, SelectMenu, Tabs, statusTone } from './website-ui';
+import { Avatar, PageHeading, Pill, ProgressBar, SelectMenu, Tabs, statusTone } from '@/components/demos/shared/app-ui';
 
 const money = (value: number) => `$${value.toLocaleString('en-US')}`;
 

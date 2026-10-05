@@ -7,7 +7,7 @@ import { DashboardCard, Panel } from '@/components/demos/shared/dashboard-card';
 import { ANNOUNCEMENTS, CLASSES, MONTH_ATTENDANCE, PARENT_CHILD, STUDENT_SCHEDULE, STUDENTS, TEACHER_SCHEDULE } from '@/data/school/app';
 import type { Announcement } from '@/data/school/app';
 import { cn } from '@/lib/cn';
-import { Avatar, PageHeading, Pill, ProgressBar, Tabs } from './website-ui';
+import { Avatar, PageHeading, Pill, ProgressBar, Tabs } from '@/components/demos/shared/app-ui';
 
 /* ---------------------------------- Teacher ---------------------------------- */
 

@@ -8,47 +8,15 @@ import { Ring } from '@/components/demos/shared/charts';
 import { ANNOUNCEMENTS, CLASSES, MONTH_ATTENDANCE, PARENT_CHILD, RESULTS, STUDENT_SCHEDULE, STUDENTS } from '@/data/school/app';
 import type { AttendanceStatus } from '@/data/school/app';
 import { cn } from '@/lib/cn';
+import { AppHeader, Body, Card } from '@/components/demos/shared/mobile-kit';
 import { SchoolLogo } from './school-logo';
-import { Avatar, Pill, ProgressBar, statusTone } from './website-ui';
+import { Avatar, Pill, ProgressBar, statusTone } from '@/components/demos/shared/app-ui';
 
 /** Screens of the student and teacher mobile apps. Compact, touch-sized and driven by dummy data. */
 
 export type StudentScreen = 'login' | 'home' | 'attendance' | 'results' | 'schedule' | 'announcements' | 'profile';
 export type TeacherScreen = 'dashboard' | 'classes' | 'attendance' | 'reports';
 type Go<T extends string> = (screen: T) => void;
-
-function AppHeader({ title, subtitle, right }: { title: string; subtitle?: string; right?: ReactNode }) {
-  return (
-    <header className="flex shrink-0 items-center justify-between gap-3 bg-slate-900 px-4 pb-4 pt-2 text-white">
-      <div className="min-w-0">
-        {subtitle && <p className="truncate text-[11px] text-slate-300">{subtitle}</p>}
-        <h3 className="truncate text-base font-semibold">{title}</h3>
-      </div>
-      {right}
-    </header>
-  );
-}
-
-function Body({ children }: { children: ReactNode }) {
-  return <div className="flex-1 space-y-3 overflow-y-auto bg-slate-50 p-3.5">{children}</div>;
-}
-
-function Card({ children, className }: { children: ReactNode; className?: string }) {
-  return <div className={cn('rounded-xl border border-slate-200 bg-white p-3', className)}>{children}</div>;
-}
-
-export function BottomNav<T extends string>({ items, value, onChange, label }: { items: { id: T; label: string; icon: LucideIcon }[]; value: T; onChange: (id: T) => void; label: string }) {
-  return (
-    <nav aria-label={label} className="flex shrink-0 border-t border-slate-200 bg-white px-1 pb-3 pt-1.5">
-      {items.map(({ id, label: text, icon: Icon }) => (
-        <button key={id} type="button" aria-current={id === value ? 'page' : undefined} onClick={() => onChange(id)} className={cn('flex min-w-0 flex-1 flex-col items-center gap-0.5 rounded-lg py-1 text-[10px] font-medium focus-visible:outline-2 focus-visible:outline-blue-600', id === value ? 'text-blue-600' : 'text-slate-500')}>
-          <Icon className="size-[18px]" aria-hidden />
-          <span className="truncate">{text}</span>
-        </button>
-      ))}
-    </nav>
-  );
-}
 
 export const STUDENT_NAV: { id: StudentScreen; label: string; icon: LucideIcon }[] = [
   { id: 'home', label: 'Home', icon: House },

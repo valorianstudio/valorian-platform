@@ -23,7 +23,7 @@ export function SectionTitle({
   const dark = tone === 'dark';
   return (
     <div className={cn('max-w-2xl', align === 'center' && 'mx-auto text-center', className)}>
-      {eyebrow && <p className={cn('mb-3 text-xs font-semibold uppercase tracking-[0.14em]', dark ? 'text-emerald-300' : 'text-blue-600')}>{eyebrow}</p>}
+      {eyebrow && <p className={cn('mb-3 text-xs font-semibold uppercase tracking-[0.14em]', dark ? 'text-[color:var(--demo-good-light,#6ee7b7)]' : 'text-[color:var(--demo-accent,#2563eb)]')}>{eyebrow}</p>}
       <Heading id={id} className={cn('text-balance text-3xl font-semibold tracking-tight sm:text-4xl', dark ? 'text-white' : 'text-slate-900')}>{title}</Heading>
       {description && <p className={cn('mt-4 text-pretty text-base leading-relaxed sm:text-lg', dark ? 'text-slate-300' : 'text-slate-600')}>{description}</p>}
     </div>

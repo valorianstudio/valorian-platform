@@ -76,6 +76,15 @@
   --animate-loading-bar: loading-bar 1.3s ease-in-out infinite;
 }
 
+/* Clinic Management demo palette: medical blue, teal and health green (teal-ink is the text-safe teal). */
+@theme {
+  --color-clinic: #0f4c81;
+  --color-clinic-ink: #0a2a47;
+  --color-clinic-teal: #0ea5a4;
+  --color-clinic-teal-ink: #0b7f7e;
+  --color-clinic-green: #22c55e;
+}
+
 @keyframes fade-up {
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }

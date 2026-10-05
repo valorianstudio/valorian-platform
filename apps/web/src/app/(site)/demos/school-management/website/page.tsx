@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { LazySchoolWebsiteDemo } from '@/components/demos/school/lazy';
 import { SchoolDemoBar } from '@/components/demos/school/school-demo-bar';
-import { SchoolExperienceIntro } from '@/components/demos/school/school-experience-intro';
+import { DemoExperienceIntro } from '@/components/demos/shared/experience-intro';
 import { Breadcrumbs } from '@/components/site/seo';
 import { SCHOOL_DEMO, SCHOOL_EXPERIENCES } from '@/data/school/meta';
 import { buildMetadata } from '@/lib/cms';
@@ -21,7 +21,7 @@ export default function SchoolWebsitePage() {
   return (
     <>
       <SchoolDemoBar active="website" />
-      <SchoolExperienceIntro
+      <DemoExperienceIntro
         eyebrow="Full website design"
         title="The school platform, for every role"
         description="Dashboards, student records, attendance, exams, results and fees in one clean interface. All data is dummy data."
@@ -31,7 +31,7 @@ export default function SchoolWebsitePage() {
           <Breadcrumbs items={[{ name: 'Demos', href: '/demos' }, { name: SCHOOL_DEMO.title, href: SCHOOL_DEMO.basePath }, { name: experience.label }]} />
         </div>
         <LazySchoolWebsiteDemo />
-      </SchoolExperienceIntro>
+      </DemoExperienceIntro>
     </>
   );
 }

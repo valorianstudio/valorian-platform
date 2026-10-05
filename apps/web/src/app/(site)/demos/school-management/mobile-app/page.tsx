@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { LazySchoolMobileDemo } from '@/components/demos/school/lazy';
 import { SchoolDemoBar } from '@/components/demos/school/school-demo-bar';
-import { SchoolExperienceIntro } from '@/components/demos/school/school-experience-intro';
+import { DemoExperienceIntro } from '@/components/demos/shared/experience-intro';
 import { Breadcrumbs } from '@/components/site/seo';
 import { SCHOOL_DEMO, SCHOOL_EXPERIENCES } from '@/data/school/meta';
 import { buildMetadata } from '@/lib/cms';
@@ -21,7 +21,7 @@ export default function SchoolMobileAppPage() {
   return (
     <>
       <SchoolDemoBar active="mobile-app" />
-      <SchoolExperienceIntro
+      <DemoExperienceIntro
         eyebrow="Mobile app design"
         title="School life, one tap away"
         description="A student app and a teacher app with bottom navigation, cards and smooth transitions. All data is dummy data."
@@ -31,7 +31,7 @@ export default function SchoolMobileAppPage() {
           <Breadcrumbs items={[{ name: 'Demos', href: '/demos' }, { name: SCHOOL_DEMO.title, href: SCHOOL_DEMO.basePath }, { name: experience.label }]} />
         </div>
         <LazySchoolMobileDemo />
-      </SchoolExperienceIntro>
+      </DemoExperienceIntro>
     </>
   );
 }
