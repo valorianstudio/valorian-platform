@@ -13,6 +13,8 @@ import { env, isProduction } from './config/env';
 import { MAX_PROJECT_FILE_BYTES } from './project-files/project-file-storage';
 import { MAX_UPLOAD_BYTES } from './storage/storage.service';
 
+const SLOW_REQUEST_MS = 700;
+
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
@@ -96,6 +98,13 @@ async function bootstrap(): Promise<void> {
   // Any successful admin change empties the public response cache, so edits show up straight away instead of after the cache lifetime.
   fastify.addHook('onResponse', async (request, reply) => {
     if (request.method !== 'GET' && request.url.startsWith('/api/admin') && reply.statusCode < 400) PublicCacheInterceptor.clear();
+  });
+
+  // Slow-request log: a public GET that takes this long missed the response cache and went to the database. The path is logged without its query string.
+  const timing = new Logger('Timing');
+  fastify.addHook('onResponse', async (request, reply) => {
+    const ms = Math.round(reply.elapsedTime);
+    if (ms >= SLOW_REQUEST_MS && request.url !== '/api/health') timing.warn(`${request.method} ${request.url.split('?')[0]} ${reply.statusCode} ${ms}ms`);
   });
 
   // Registered after the envelope hook above, so responses are wrapped first and compressed last.

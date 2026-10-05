@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import type { AdminPage } from "./cms-types";
 import type { ClientSession } from "./portal";
 import { unwrap } from "./api-response";
+import { timedFetch } from "./timed-fetch";
 import type { AdminProfile, SiteSettings } from "./types";
 
 const API_URL = process.env.API_URL ?? "http://localhost:4000";
@@ -37,7 +38,7 @@ export const defaultSettings: SiteSettings = {
 
 export async function getSiteSettings(): Promise<SiteSettings> {
   try {
-    const response = await fetch(`${API_URL}/api/settings`, {
+    const response = await timedFetch("settings", `${API_URL}/api/settings`, {
       next: { revalidate: 300, tags: [SETTINGS_TAG] },
       signal: AbortSignal.timeout(8000),
     });

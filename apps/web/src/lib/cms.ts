@@ -22,13 +22,14 @@ import type {
 import { unwrap } from './api-response';
 import { CMS_TAG } from './server-api';
 import { SITE_URL } from './site';
+import { timedFetch } from './timed-fetch';
 
 const API_URL = process.env.API_URL ?? 'http://localhost:4000';
 
 async function fetchContent<T>(path: string): Promise<T | null> {
   try {
     // A stalled API must never hang a page: give up after 8 s and let the page show its fallback.
-    const response = await fetch(`${API_URL}/api/content/${path}`, { next: { revalidate: 300, tags: [CMS_TAG] }, signal: AbortSignal.timeout(8000) });
+    const response = await timedFetch(`content/${path}`, `${API_URL}/api/content/${path}`, { next: { revalidate: 300, tags: [CMS_TAG] }, signal: AbortSignal.timeout(8000) });
     return response.ok ? (unwrap(await response.json()) as T) : null;
   } catch {
     return null;
